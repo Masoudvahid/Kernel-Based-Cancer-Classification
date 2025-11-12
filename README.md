@@ -1,4 +1,4 @@
-# Kernel-Based Medical Image Classification
+# Kernel-Based Cancer Classification
 
 This notebook implements a kernel-based feature extraction and classification pipeline for medical image analysis.
 
