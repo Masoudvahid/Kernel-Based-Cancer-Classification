@@ -73,7 +73,26 @@ Example run results:
   - Validation AUC: **0.9201**
   - Validation Accuracy: **0.6763**
 
+## Changes
+
+### 21.10.2025
+- [x] Switched response aggregation to mean_abs for smoother, less noisy features.
+- [x] Added feature standardization so all kernel responses are on comparable scale before training.
+- [x] Introduced an optional 2-layer MLP with dropout (used by default) to model nonlinear separations beyond logistic.
+- [x] Extended training (more epochs) and slightly reduced learning rate for steadier convergence.
+- [x] Searched over a larger candidate set for best 2/3-kernel subsets to pick stronger features.
+
+
 ## TODO
+
+### 21.10.2025
+- [x] Select the top 2 kernels (or best-performing 2-kernel model).
+- [x] Extract their outputs and use them as features **x** and **y**.
+- [X] Generate a 2D scatterplot of segmented areas:
+  - [x] Use distinct colors for *cancer* vs *non-cancer* regions.
+  - [x] Check visually whether the classes separate clearly.
+- [x] Select the best 3-feature model.
+- [x] Create a 3D scatterplot using the three outputs 
 
 - [ ] Experiment with different kernel families and parameter ranges
 - [ ] Tune hyperparameters (topM, K, lambda_mm) for better kernel selection
