@@ -1,0 +1,9 @@
+2025-12-06 16:15:54,806 [INFO] Starting pipeline. Output: results/exp_005 Device: cuda Selection: abess
+2025-12-06 16:15:56,639 [INFO] Loaded patches Xin=2000 Xout=2000 with resize=64
+2025-12-06 16:15:56,724 [INFO] Built kernel bank: 1000 kernels
+2025-12-06 16:16:55,303 [INFO] abess selected kernels (candidate idx): [105, 121, 150, 152, 154, 156, 158, 166, 184, 186, 187, 189, 190, 191, 192, 193, 194, 195, 196, 199]
+2025-12-06 16:17:01,309 [INFO] Classifier results: AUC=0.9803 ACC=0.9237
+2025-12-06 17:02:20,980 [INFO] No pair met |corr|<=0.100; best available (min corr=0.9941) kernels [913, 291] (cols (1, 17)) AUC=0.9820 ACC=0.9350 Corr=0.9941
+2025-12-06 17:02:20,980 [INFO] Best pair (plot candidate idx): (1, 19) AUC=0.9820
+2025-12-06 17:02:23,383 [INFO] Best triple (plot candidate idx): (0, 1, 6) AUC=0.9823
+2025-12-06 17:02:23,712 [INFO] Saved artifacts to results/exp_005

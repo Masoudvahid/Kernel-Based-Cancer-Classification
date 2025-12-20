@@ -2,6 +2,36 @@
 
 This notebook implements a kernel-based feature extraction and classification pipeline for medical image analysis.
 
+## New structured code
+
+The notebook logic now lives in a Python package so you can import and reuse it:
+
+- `kernel_model/config.py` – dataclass configs for data, bank, selection, training, subsets, pipeline
+- `kernel_model/data.py` – patch extraction/loading helpers
+- `kernel_model/kernels.py` – kernel generators and sampling
+- `kernel_model/responses.py` – kernel response computation
+- `kernel_model/selection.py` – scoring, feature matrix build, diversity selection
+- `kernel_model/models.py` – classifiers, training, subset search
+- `kernel_model/plots.py` – ROC/PR, confusion, scatter plots
+- `kernel_model/pipeline.py` – end-to-end orchestration (`run_pipeline`)
+- `kernel_model.py` – CLI entrypoint that wires configs and runs the pipeline
+
+There is also a lightweight notebook `kernel_model_structured.ipynb` that imports the modules above instead of redefining code.
+
+### CLI usage
+
+```bash
+python kernel_model.py --help
+# example (skip extraction, use existing patches)
+python kernel_model.py --skip-extract --data-root data/patches --out-dir results
+# try abess selector (requires `pip install abess`)
+python kernel_model.py --selection-method abess --K 2 --topM 50 --skip-extract
+# train on a smaller subset (25%)
+python kernel_model.py --skip-extract --train-subset-frac 0.25
+```
+
+Outputs are automatically versioned into subfolders under your `--out-dir` base (e.g., `results/exp_001`, `results/exp_002`, ...). If you pass an `--out-dir` that already looks like `exp_###`, it will be used directly.
+
 ## Overview
 
 The pipeline extracts image patches from annotated medical images, generates a diverse set of convolutional kernels, computes filter responses, and trains a logistic classifier to distinguish between tumor (inside) and healthy (outside) tissue patches.
@@ -115,4 +145,4 @@ Example run results:
 - scipy
 - matplotlib
 - tqdm
-
+- abess (optional; needed only if you use `--selection-method abess`)
