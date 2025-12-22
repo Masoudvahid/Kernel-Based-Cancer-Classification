@@ -1,5 +1,5 @@
 from itertools import combinations
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
@@ -109,18 +109,35 @@ def select_abess(
     return selected.tolist()
 
 
-def build_feature_matrix(selected_idxs: Iterable[int], responses: Sequence[Dict[str, np.ndarray]]) -> Tuple[np.ndarray, np.ndarray]:
+def build_feature_matrix(
+    selected_idxs: Iterable[int],
+    responses: Sequence[Dict[str, np.ndarray]],
+    patient_ids_in: Optional[Sequence[str]] = None,
+    patient_ids_out: Optional[Sequence[str]] = None,
+) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     features: List[np.ndarray] = []
     for idx in selected_idxs:
         resp = responses[idx]
         features.append(np.concatenate([resp["r_in"], resp["r_out"]]).reshape(-1, 1))
     if not features:
-        return np.zeros((0, 0)), np.array([])
+        return np.zeros((0, 0)), np.array([]), None
     X_feat = np.concatenate(features, axis=1)
     n_in = len(responses[0]["r_in"]) if responses else 0
     n_out = len(responses[0]["r_out"]) if responses else 0
     y = np.concatenate([np.ones(n_in), np.zeros(n_out)]) if (n_in or n_out) else np.array([])
-    return X_feat, y
+
+    patient_ids = None
+    if patient_ids_in is not None or patient_ids_out is not None:
+        patient_ids_in = list(patient_ids_in) if patient_ids_in is not None else ["unknown"] * n_in
+        patient_ids_out = list(patient_ids_out) if patient_ids_out is not None else ["unknown"] * n_out
+        if len(patient_ids_in) != n_in or len(patient_ids_out) != n_out:
+            raise ValueError(
+                f"Patient id length mismatch: n_in={n_in} len(in_ids)={len(patient_ids_in)} "
+                f"n_out={n_out} len(out_ids)={len(patient_ids_out)}"
+            )
+        patient_ids = np.array(list(patient_ids_in) + list(patient_ids_out))
+
+    return X_feat, y, patient_ids
 
 
 def rank_kernels(responses: Sequence[Dict[str, np.ndarray]]) -> List[Dict]:

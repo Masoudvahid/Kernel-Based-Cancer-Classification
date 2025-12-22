@@ -22,10 +22,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--patch-size", type=int, default=128, help="Patch size to extract from raw images")
     parser.add_argument("--resize-patch-size", type=int, default=64, help="Patch size to resize to for model input")
     parser.add_argument("--n-inside-per-image", type=int, default=50, help="Patches per image inside tumor")
-    parser.add_argument("--n-outside-per-image", type=int, default=100, help="Patches per image outside tumor")
+    parser.add_argument("--n-outside-per-image", type=int, default=50, help="Patches per image outside tumor")
     parser.add_argument("--green-threshold", type=int, default=150, help="Threshold for red/green contour extraction")
     parser.add_argument("--max-tries", type=int, default=500, help="Max attempts per image when sampling patches")
+    parser.add_argument("--min-pos-coverage", type=float, default=0.5, help="Minimum lesion fraction required in a positive patch")
+    parser.add_argument("--max-neg-coverage", type=float, default=0.05, help="Maximum lesion fraction allowed in a negative patch")
+    parser.add_argument("--near-neg-fraction", type=float, default=0.5, help="Fraction of negatives sampled near lesion boundary")
+    parser.add_argument("--near-neg-radius", type=int, default=None, help="Radius (pixels) for near-lesion negatives; defaults to patch size when unset")
+    parser.add_argument("--far-neg-radius", type=int, default=None, help="Minimum distance (pixels) for far negatives; defaults to 2x patch size when unset")
+    parser.add_argument("--no-bbox-positives", action="store_true", help="Disable sampling positives whose centers are only inside the lesion bounding box")
+    parser.add_argument("--min-nonzero-frac", type=float, default=0.0, help="Minimum fraction of nonzero pixels required to keep a patch")
+    parser.add_argument("--min-intensity-rel", type=float, default=0.0, help="Minimum mean intensity as a fraction of dtype max to keep a patch (0-1)")
+    parser.add_argument("--no-split-patients", action="store_true", help="Disable patient-level train/val/test partition when extracting patches")
+    parser.add_argument("--train-frac", type=float, default=0.7, help="Train fraction for patient-level split when extracting patches")
+    parser.add_argument("--val-frac", type=float, default=0.15, help="Validation fraction for patient-level split when extracting patches")
+    parser.add_argument("--test-frac", type=float, default=0.15, help="Test fraction for patient-level split when extracting patches")
+    parser.add_argument("--split-seed", type=int, default=42, help="Random seed for patient split")
     parser.add_argument("--max-per-class", type=int, default=2000, help="Maximum patches to load per class")
+    parser.add_argument("--load-splits", type=str, default="train,val,test", help="Comma-separated splits to load (e.g., 'train' or 'train,val')")
     parser.add_argument("--skip-extract", action="store_true", help="Skip patch extraction step and use existing patches")
     # kernels
     parser.add_argument(
@@ -74,6 +88,19 @@ def main() -> None:
         n_outside_per_image=args.n_outside_per_image,
         green_threshold=args.green_threshold,
         max_tries=args.max_tries,
+        min_pos_coverage=args.min_pos_coverage,
+        max_neg_coverage=args.max_neg_coverage,
+        near_neg_fraction=args.near_neg_fraction,
+        near_neg_radius=args.near_neg_radius,
+        far_neg_radius=args.far_neg_radius,
+        use_bbox_for_positives=not args.no_bbox_positives,
+        min_nonzero_frac=args.min_nonzero_frac,
+        min_intensity_rel=args.min_intensity_rel,
+        split_patients=not args.no_split_patients,
+        train_frac=args.train_frac,
+        val_frac=args.val_frac,
+        test_frac=args.test_frac,
+        split_seed=args.split_seed,
         run_extraction=not args.skip_extract,
     )
     bank_cfg = KernelBankConfig(
@@ -118,6 +145,7 @@ def main() -> None:
         max_per_class=args.max_per_class,
         resize_patch_size=args.resize_patch_size,
         device=args.device,
+        load_splits=tuple(s.strip() for s in args.load_splits.split(",") if s.strip()),
     )
     result = run_pipeline(cfg)
     print(f"Done. AUC={result['clf']['auc']:.4f} ACC={result['clf']['acc']:.4f}. Saved to {cfg.out_dir}")

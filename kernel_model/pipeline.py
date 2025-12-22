@@ -5,6 +5,7 @@ from typing import Dict
 
 import numpy as np
 import torch
+from sklearn.metrics import accuracy_score, roc_auc_score
 
 from .config import PipelineConfig
 from .data import extract_patches, load_patches_from_folders
@@ -84,16 +85,64 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
             n_outside_per_image=cfg.data.n_outside_per_image,
             max_tries=cfg.data.max_tries * 20,
             red_threshold=cfg.data.green_threshold,
+            min_pos_coverage=cfg.data.min_pos_coverage,
+            max_neg_coverage=cfg.data.max_neg_coverage,
+            near_neg_fraction=cfg.data.near_neg_fraction,
+            near_neg_radius=cfg.data.near_neg_radius,
+            far_neg_radius=cfg.data.far_neg_radius,
+            use_bbox_for_positives=cfg.data.use_bbox_for_positives,
+            split_patients=cfg.data.split_patients,
+            train_frac=cfg.data.train_frac,
+            val_frac=cfg.data.val_frac,
+            test_frac=cfg.data.test_frac,
+            split_seed=cfg.data.split_seed,
+            min_nonzero_frac=cfg.data.min_nonzero_frac,
+            min_intensity_rel=cfg.data.min_intensity_rel,
         )
         logger.info("Saved patches: inside=%s outside=%s", inside_count, outside_count)
 
-    Xin, Xout = load_patches_from_folders(
-        cfg.data_root,
-        max_per_class=cfg.max_per_class,
-        resize=(cfg.resize_patch_size, cfg.resize_patch_size),
+    splits_to_load = tuple(cfg.load_splits) if cfg.load_splits else ("train",)
+    if len(splits_to_load) == 0:
+        splits_to_load = ("train",)
+    train_split = "train" if "train" in splits_to_load else splits_to_load[0]
+    eval_splits = [s for s in splits_to_load if s != train_split]
+
+    def _load_split(split: str):
+        return load_patches_from_folders(
+            cfg.data_root,
+            max_per_class=cfg.max_per_class,
+            resize=(cfg.resize_patch_size, cfg.resize_patch_size),
+            splits=(split,),
+            return_patient_ids=True,
+        )
+
+    Xin, Xout, patients_in, patients_out = _load_split(train_split)
+    logger.info(
+        "Loaded %s split: Xin=%s Xout=%s resize=%s (patients in=%s out=%s)",
+        train_split,
+        len(Xin),
+        len(Xout),
+        cfg.resize_patch_size,
+        len(set(patients_in)),
+        len(set(patients_out)),
     )
-    
-    logger.info("Loaded patches Xin=%s Xout=%s with resize=%s", len(Xin), len(Xout), cfg.resize_patch_size)
+
+    eval_split_data: Dict[str, tuple] = {}
+    for split in eval_splits:
+        try:
+            split_data = _load_split(split)
+            eval_split_data[split] = split_data
+            logger.info(
+                "Loaded %s split: Xin=%s Xout=%s resize=%s (patients in=%s out=%s)",
+                split,
+                len(split_data[0]),
+                len(split_data[1]),
+                cfg.resize_patch_size,
+                len(set(split_data[2])),
+                len(set(split_data[3])),
+            )
+        except FileNotFoundError:
+            logger.warning("Split '%s' not found under %s; skipping.", split, cfg.data_root)
 
     bank = build_kernel_bank(cfg.bank.families, cfg.bank.n_per_family, cfg.bank.kernel_size)
     logger.info("Built kernel bank: %s kernels", len(bank))
@@ -108,11 +157,19 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
 
     kernel_scores = rank_kernels(responses)
     candidate_kernel_idxs = [s["idx"] for s in kernel_scores[: cfg.selection.topM]]
-    X_candidates, y_labels = build_feature_matrix(candidate_kernel_idxs, responses)
+    X_candidates, y_labels, patient_labels = build_feature_matrix(
+        candidate_kernel_idxs,
+        responses,
+        patient_ids_in=patients_in,
+        patient_ids_out=patients_out,
+    )
+    if patient_labels is not None:
+        logger.info("Patient-level grouping enabled (%s unique ids)", len(np.unique(patient_labels)))
 
-    X_for_selection, y_for_selection = subsample_features(
+    X_for_selection, y_for_selection, patients_for_selection = subsample_features(
         X_candidates,
         y_labels,
+        groups=patient_labels,
         subset_frac=cfg.training.train_subset_frac,
         subset_size=cfg.training.train_subset_size,
         seed=cfg.training.subset_seed,
@@ -152,18 +209,76 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         subset_frac=cfg.training.train_subset_frac,
         subset_size=cfg.training.train_subset_size,
         subset_seed=cfg.training.subset_seed,
+        patient_ids_in=patients_in,
+        patient_ids_out=patients_out,
     )
     logger.info("Classifier results: AUC=%.4f ACC=%.4f", clf_res.get("auc", 0.0), clf_res.get("acc", 0.0))
 
     plot_roc_pr(clf_res.get("val_labels"), clf_res.get("val_probs"), out_dir / "clf")
     plot_confusion(clf_res.get("val_labels"), clf_res.get("val_probs"), out_dir / "confusion.png")
 
-    plot_candidate_idxs = candidate_kernel_idxs[: cfg.selection.plot_top_kernels]
-    X_plot, y_plot = build_feature_matrix(plot_candidate_idxs, responses)
+    eval_results: Dict[str, Dict] = {}
+    model = clf_res.get("model")
+    model_device = next(model.parameters()).device if model is not None else None
 
-    X_for_search, y_for_search = subsample_features(
+    def _eval_split(split_name: str, split_data: tuple) -> Dict:
+        if model is None:
+            return {"auc": 0.5, "acc": 0.5, "n": 0, "n_pos": 0, "n_neg": 0}
+        Xin_split, Xout_split, patients_in_split, patients_out_split = split_data
+        responses_split = compute_responses(
+            bank,
+            Xin_split,
+            Xout_split,
+            device=device,
+            batch_size=cfg.training.batch_size,
+            response_fn=cfg.selection.response_fn,
+        )
+        X_feat, y_true, _ = build_feature_matrix(
+            selected_idxs,
+            responses_split,
+            patient_ids_in=patients_in_split,
+            patient_ids_out=patients_out_split,
+        )
+        if X_feat.size == 0 or y_true.size == 0:
+            return {"auc": 0.5, "acc": 0.5, "n": 0, "n_pos": 0, "n_neg": 0}
+        X_eval = X_feat
+        mean = clf_res.get("mean")
+        std = clf_res.get("std")
+        if clf_res.get("standardize") and mean is not None and std is not None:
+            X_eval = (X_eval - mean) / std
+        with torch.no_grad():
+            probs = torch.sigmoid(model(torch.from_numpy(X_eval).float().to(model_device))).cpu().numpy()
+        preds = (probs >= 0.5).astype(int)
+        try:
+            auc = roc_auc_score(y_true, probs)
+        except Exception:
+            auc = 0.5
+        acc = accuracy_score(y_true, preds)
+        return {
+            "auc": float(auc),
+            "acc": float(acc),
+            "n": int(len(y_true)),
+            "n_pos": int(np.sum(y_true)),
+            "n_neg": int(len(y_true) - np.sum(y_true)),
+        }
+
+    for split, split_data in eval_split_data.items():
+        res = _eval_split(split, split_data)
+        eval_results[split] = res
+        logger.info("Eval %s: AUC=%.4f ACC=%.4f", split, res.get("auc", 0.0), res.get("acc", 0.0))
+
+    plot_candidate_idxs = candidate_kernel_idxs[: cfg.selection.plot_top_kernels]
+    X_plot, y_plot, patient_plot = build_feature_matrix(
+        plot_candidate_idxs,
+        responses,
+        patient_ids_in=patients_in,
+        patient_ids_out=patients_out,
+    )
+
+    X_for_search, y_for_search, patients_for_search = subsample_features(
         X_plot,
         y_plot,
+        groups=patient_plot,
         subset_frac=cfg.training.train_subset_frac,
         subset_size=cfg.training.train_subset_size,
         seed=cfg.training.subset_seed,
@@ -182,6 +297,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         dropout=cfg.training.dropout,
         standardize=cfg.training.standardize_features,
         corr_thresholds={3: cfg.subset.triple_corr_threshold},
+        groups=patients_for_search,
     )
 
     low_corr_pair = find_best_low_corr_pair(
@@ -198,6 +314,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         dropout=cfg.training.dropout,
         standardize=cfg.training.standardize_features,
         refit_best=False,  # keep JSON-serializable
+        groups=patients_for_search,
     )
     if low_corr_pair.get("subset") is not None:
         if low_corr_pair.get("threshold_met"):
@@ -270,6 +387,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         "selection_method": cfg.selection.method,
         "train_subset_frac": cfg.training.train_subset_frac,
         "train_subset_size": cfg.training.train_subset_size,
+        "eval_results": eval_results,
     }
 
     np.savez(
@@ -295,6 +413,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         "candidate_kernel_idxs": candidate_kernel_idxs,
         "plot_candidate_idxs": plot_candidate_idxs,
         "selection_method": cfg.selection.method,
+        "eval_results": eval_results,
         "out_dir": out_dir,
     }
 

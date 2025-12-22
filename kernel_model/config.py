@@ -5,14 +5,28 @@ from typing import Optional, Sequence, Tuple
 
 @dataclass
 class PatchExtractionConfig:
-    image_dir: Path = Path("data/TIFF Images/all")
-    annotation_dir: Path = Path("data/Pixel-level annotation")
+    healthy_dir: Path = Path('data/TIFF Images/Normal'),
+    malignant_dir: Path = Path('data/TIFF Images/Malignant'),
+    annotation_dir: Path = Path('data/TIFF Images/malignantAnnotation'),
     output_dir: Path = Path("data/patches")
     patch_size: int = 128
     n_inside_per_image: int = 50
-    n_outside_per_image: int = 100
-    green_threshold: int = 150
+    n_outside_per_image: int = 50
+    red_threshold: int = 150
     max_tries: int = 500
+    min_pos_coverage: float = 0.5
+    max_neg_coverage: float = 0.05
+    near_neg_fraction: float = 0.5
+    near_neg_radius: Optional[int] = None
+    far_neg_radius: Optional[int] = None
+    use_bbox_for_positives: bool = True
+    min_nonzero_frac: float = 0.0
+    min_intensity_rel: float = 0.0  # between 0 and 1 of dtype max
+    split_patients: bool = True
+    train_frac: float = 0.7
+    val_frac: float = 0.15
+    test_frac: float = 0.15
+    split_seed: int = 42
     run_extraction: bool = True
 
 
@@ -76,3 +90,4 @@ class PipelineConfig:
     max_per_class: int = 2000
     resize_patch_size: int = 64
     device: Optional[str] = None  # auto-detect when None
+    load_splits: Tuple[str, ...] = ("train", "val", "test")

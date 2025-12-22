@@ -1,0 +1,28 @@
+2025-12-22 02:31:51,266 [INFO] Starting pipeline. Output: results/exp_007 Device: cuda Selection: abess
+2025-12-22 02:31:52,118 [INFO] Loaded train split: Xin=860 Xout=880 resize=128 (patients in=86 out=88)
+2025-12-22 02:31:52,336 [INFO] Loaded val split: Xin=190 Xout=190 resize=128 (patients in=19 out=19)
+2025-12-22 02:31:52,550 [INFO] Loaded test split: Xin=180 Xout=180 resize=128 (patients in=18 out=18)
+2025-12-22 02:31:52,628 [INFO] Built kernel bank: 1000 kernels
+2025-12-22 02:33:26,556 [INFO] Patient-level grouping enabled (88 unique ids)
+2025-12-22 02:33:26,583 [INFO] abess selected kernels (candidate idx): [113, 128, 131, 134, 138, 140, 147, 149, 155, 164, 175, 178, 179, 180, 181, 182, 192, 193, 197, 198]
+2025-12-22 02:33:29,542 [INFO] Classifier results: AUC=0.8556 ACC=0.7722
+2025-12-22 02:33:50,936 [INFO] Eval val: AUC=0.9149 ACC=0.8368
+2025-12-22 02:34:10,876 [INFO] Eval test: AUC=0.8583 ACC=0.7750
+2025-12-22 02:51:52,860 [INFO] No pair met |corr|<=0.050; best available (min corr=0.9240) kernels [828, 370] (cols (0, 14)) AUC=0.8835 ACC=0.8083 Corr=0.9240
+2025-12-22 02:51:52,860 [INFO] Best pair (plot candidate idx): (0, 1) AUC=0.8917
+2025-12-22 02:51:54,014 [INFO] Best triple (plot candidate idx): (1, 2, 7) AUC=0.8770
+2025-12-22 02:51:54,265 [INFO] Saved artifacts to results/exp_007
+2025-12-22 03:15:06,401 [INFO] Starting pipeline. Output: results/exp_008 Device: cuda Selection: mmr
+2025-12-22 03:15:06,953 [INFO] Loaded train split: Xin=860 Xout=880 resize=128 (patients in=86 out=88)
+2025-12-22 03:15:07,069 [INFO] Loaded val split: Xin=190 Xout=190 resize=128 (patients in=19 out=19)
+2025-12-22 03:15:07,190 [INFO] Loaded test split: Xin=180 Xout=180 resize=128 (patients in=18 out=18)
+2025-12-22 03:15:07,264 [INFO] Built kernel bank: 1000 kernels
+2025-12-22 03:16:40,341 [INFO] Patient-level grouping enabled (88 unique ids)
+2025-12-22 03:16:41,881 [INFO] MMR selected kernels (bank idx): [854, 803, 265, 918, 950, 895, 390, 150, 285, 43]
+2025-12-22 03:16:43,984 [INFO] Classifier results: AUC=0.8880 ACC=0.8194
+2025-12-22 03:17:04,993 [INFO] Eval val: AUC=0.9348 ACC=0.8579
+2025-12-22 03:17:24,794 [INFO] Eval test: AUC=0.8864 ACC=0.7806
+2025-12-22 03:35:15,975 [INFO] No pair met |corr|<=0.000; best available (min corr=0.9278) kernels [918, 306] (cols (3, 14)) AUC=0.8747 ACC=0.8056 Corr=0.9278
+2025-12-22 03:35:15,975 [INFO] Best pair (plot candidate idx): (2, 3) AUC=0.8882
+2025-12-22 03:35:17,121 [INFO] Best triple (plot candidate idx): (1, 3, 16) AUC=0.8826
+2025-12-22 03:35:17,369 [INFO] Saved artifacts to results/exp_008

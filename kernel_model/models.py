@@ -4,6 +4,7 @@ from typing import Dict, Iterable, Optional, Sequence, Tuple
 import numpy as np
 import torch
 from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.model_selection import GroupShuffleSplit, train_test_split
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 
@@ -49,22 +50,27 @@ def subsample_features(
     subset_frac: Optional[float] = None,
     subset_size: Optional[int] = None,
     seed: int = 42,
-) -> Tuple[np.ndarray, np.ndarray]:
+    groups: Optional[Sequence[str]] = None,
+) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
     """
     Randomly subsample rows of a feature matrix for faster experiments.
     """
-    if subset_frac is None and subset_size is None:
-        return X_feat, y
     n = len(y)
+    groups_arr = np.asarray(groups) if groups is not None else None
+    if groups_arr is not None and len(groups_arr) != n:
+        raise ValueError(f"groups length {len(groups_arr)} does not match y length {n}")
+    if subset_frac is None and subset_size is None:
+        return X_feat, y, groups_arr
     if n == 0:
-        return X_feat, y
+        return X_feat, y, groups_arr
     target = subset_size if subset_size is not None else int(np.ceil(n * float(subset_frac)))
     target = min(max(target, 0), n)
     if target == 0:
-        return X_feat[:0], y[:0]
+        return X_feat[:0], y[:0], groups_arr[:0] if groups_arr is not None else None
     rng = np.random.default_rng(seed)
     idx = rng.choice(n, size=target, replace=False)
-    return X_feat[idx], y[idx]
+    groups_sub = groups_arr[idx] if groups_arr is not None else None
+    return X_feat[idx], y[idx], groups_sub
 
 
 def _build_model(
@@ -90,6 +96,8 @@ def train_binary_model(
     hidden_dims: Tuple[int, int] = (64, 32),
     dropout: float = 0.2,
     standardize: bool = True,
+    groups: Optional[Sequence[str]] = None,
+    val_size: float = 0.2,
 ) -> Dict:
     """
     Train a simple binary classifier on feature matrix X_feat.
@@ -98,13 +106,33 @@ def train_binary_model(
         return {"model": None, "auc": 0.5, "acc": 0.5}
 
     device = torch.device(device)
-    from sklearn.model_selection import train_test_split
+    groups_arr = None
+    if groups is not None:
+        groups_arr = np.asarray(groups)
+        if len(groups_arr) != len(y):
+            raise ValueError(f"groups length {len(groups_arr)} does not match labels length {len(y)}")
 
-    X_tr, X_val, y_tr, y_val = train_test_split(
-        X_feat, y, test_size=0.2, stratify=y, random_state=42
-    )
+    if groups_arr is not None:
+        splitter = GroupShuffleSplit(n_splits=1, test_size=val_size, random_state=42)
+        train_idx, val_idx = next(splitter.split(X_feat, y, groups=groups_arr))
+        if len(train_idx) == 0 or len(val_idx) == 0:
+            X_tr, X_val, y_tr, y_val = train_test_split(
+                X_feat, y, test_size=val_size, stratify=y, random_state=42
+            )
+        else:
+            X_tr, X_val = X_feat[train_idx], X_feat[val_idx]
+            y_tr, y_val = y[train_idx], y[val_idx]
+    else:
+        X_tr, X_val, y_tr, y_val = train_test_split(
+            X_feat, y, test_size=val_size, stratify=y, random_state=42
+        )
+    mean = std = None
     if standardize:
-        X_tr, X_val = standardize_split(X_tr, X_val)
+        mean = X_tr.mean(axis=0, keepdims=True)
+        std = X_tr.std(axis=0, keepdims=True)
+        std[std < 1e-6] = 1.0
+        X_tr = (X_tr - mean) / std
+        X_val = (X_val - mean) / std
 
     tr_ds = TensorDataset(
         torch.from_numpy(X_tr).float().to(device),
@@ -159,13 +187,19 @@ def train_binary_model(
     with torch.no_grad():
         probs = torch.sigmoid(model(X_val_t)).cpu().numpy()
     acc = accuracy_score(y_val, (probs > 0.5).astype(int))
-    auc = roc_auc_score(y_val, probs)
+    try:
+        auc = roc_auc_score(y_val, probs)
+    except Exception:
+        auc = 0.5
     return {
         "model": model if return_model else None,
         "auc": auc,
         "acc": acc,
         "val_probs": probs,
         "val_labels": y_val,
+        "mean": mean,
+        "std": std,
+        "standardize": standardize,
     }
 
 
@@ -182,6 +216,7 @@ def find_best_subsets(
     dropout: float = 0.2,
     standardize: bool = True,
     corr_thresholds: Optional[Dict[int, float]] = None,
+    groups: Optional[Sequence[str]] = None,
 ) -> Dict[int, Dict]:
     """
     Brute-force search over small subset sizes to find best AUC subsets, optionally enforcing a
@@ -216,6 +251,7 @@ def find_best_subsets(
                 hidden_dims=hidden_dims,
                 dropout=dropout,
                 standardize=standardize,
+                groups=groups,
             )
             entry = {"subset": combo, "auc": res["auc"], "acc": res["acc"], "max_abs_corr": max_abs_corr}
 
@@ -269,6 +305,7 @@ def find_best_low_corr_pair(
     dropout: float = 0.2,
     standardize: bool = True,
     refit_best: bool = False,
+    groups: Optional[Sequence[str]] = None,
 ) -> Dict:
     """
     Iterate over kernel pairs with correlation below ``corr_threshold`` and return the best-performing pair.
@@ -312,6 +349,7 @@ def find_best_low_corr_pair(
                 hidden_dims=hidden_dims,
                 dropout=dropout,
                 standardize=standardize,
+                groups=groups,
             )
             entry = {
                 "subset": (i, j),
@@ -356,6 +394,7 @@ def find_best_low_corr_pair(
             hidden_dims=hidden_dims,
             dropout=dropout,
             standardize=standardize,
+            groups=groups,
         )
         best["auc"] = res["auc"]
         best["acc"] = res["acc"]
@@ -429,13 +468,21 @@ def train_classifier(
     subset_frac: Optional[float] = None,
     subset_size: Optional[int] = None,
     subset_seed: int = 42,
+    patient_ids_in: Optional[Sequence[str]] = None,
+    patient_ids_out: Optional[Sequence[str]] = None,
 ) -> Dict:
     from .selection import build_feature_matrix
 
-    X_feat, y = build_feature_matrix(selected_idxs, responses)
-    X_feat, y = subsample_features(
+    X_feat, y, patient_ids = build_feature_matrix(
+        selected_idxs,
+        responses,
+        patient_ids_in=patient_ids_in,
+        patient_ids_out=patient_ids_out,
+    )
+    X_feat, y, patient_ids = subsample_features(
         X_feat,
         y,
+        groups=patient_ids,
         subset_frac=subset_frac,
         subset_size=subset_size,
         seed=subset_seed,
@@ -451,6 +498,7 @@ def train_classifier(
         hidden_dims=hidden_dims,
         dropout=dropout,
         standardize=standardize,
+        groups=patient_ids,
     )
 
 
