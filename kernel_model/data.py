@@ -403,31 +403,14 @@ def extract_patches(
     annotation_images = sorted(annotation_dir.glob("*.tif"))
     healthy_images = sorted(healthy_dir.glob("*.tif"))
 
-    # annotated_pairs = [
-    #     (malignant_dir / annot.name, annot)
-    #     for annot in sorted(annotation_dir.glob("*.tif"))
-    #     if (malignant_dir / annot.name).exists()
-    # ]
-    # annotated_stems = {p.stem for p, _ in annotated_pairs}
-    # healthy_pairs = [
-    #     (p, None)
-    #     for p in sorted(healthy_dir.glob("*.tif"))
-    #     if p.stem not in annotated_stems
-    # ][: len(annotated_pairs)]
-
-    # print(f"Found {len(annotated_pairs)} annotated malignant images.")
-    # print(f"Found {len(healthy_pairs)} healthy images.")
-
-    # image_entries = annotated_pairs + healthy_pairs
-    # image_paths = [p for p, _ in image_entries]
-
     malignant_pairs = [
         (malignant_dir / annot.name, annot)
         for annot in sorted(annotation_dir.glob("*.tif"))
         if (malignant_dir / annot.name).exists()
     ]
+    healthy_pairs = [(p, None) for p in healthy_images]
 
-    image_entries = malignant_pairs
+    image_entries = malignant_pairs + healthy_pairs
     image_paths = [p for p, _ in image_entries]
 
     split_map = _assign_patient_splits(

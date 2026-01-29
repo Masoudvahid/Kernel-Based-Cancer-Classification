@@ -31,6 +31,10 @@ Generates a diverse set of convolutional kernels from multiple families:
 - **DoG (Difference of Gaussians)**: Edge detection kernels
 - **LoG (Laplacian of Gaussian)**: Blob detection kernels
 - **Gabor**: Oriented texture analysis kernels
+- **HOG (Histogram of Oriented Gradients)**: Oriented gradient kernels
+- **GLCM (Gray-Level Co-occurrence)**: Pairwise offset kernels
+- **LBP (Local Binary Pattern)**: Neighbor-center contrast kernels
+- **MRF (Markov Random Field)**: Smoothness (Laplacian) kernels
 
 ### 3. **Response Computation**
 - Computes filter responses for each kernel on all patches
@@ -57,7 +61,7 @@ The notebook is configured to:
 ### Default Parameters
 - Patch size: 128×128 pixels
 - Kernel size: 31×31 pixels
-- Kernel families: All 5 types
+- Kernel families: All 9 types
 - Kernels per family: 200
 - Selected kernels: Top 20 diverse kernels
 - Training epochs: 30
@@ -78,7 +82,7 @@ Example run results:
 - **Training data**: 2,000 inside patches (small windows of size 128×128) and 2,000 outside patches (limited by `max_per_class`) were extracted from the total 130 images
   - Inside patches saved to: `data/patches/inside/`
   - Outside patches saved to: `data/patches/outside/`
-- **Kernel bank**: 1,000 kernels generated (200 per family × 5 families)
+- **Kernel bank**: 1,800 kernels generated (200 per family × 9 families)
 - **Selected kernels**: 20 diverse kernels (indices: [340, 852, 970, 964, 938, 315, 282, 234, 252, 346, 355, 246, 325, 60, 378, 37, 385, 128, 107, 97])
 - **Classifier performance**:
   - Validation AUC: **0.9201**

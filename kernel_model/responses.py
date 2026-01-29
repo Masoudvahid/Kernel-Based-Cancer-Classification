@@ -15,6 +15,7 @@ def compute_responses(
     device: str = "cpu",
     batch_size: int = 64,
     response_fn: str = "abs_max",
+    standardize_patches: bool = True,
 ) -> List[Dict[str, np.ndarray]]:
     """
     Convolve every kernel in the bank over the input patches and aggregate responses.
@@ -22,6 +23,18 @@ def compute_responses(
     device = torch.device(device)
     Xin_t = to_tensor_batch(X_in, device)
     Xout_t = to_tensor_batch(X_out, device)
+
+    if standardize_patches:
+        def _standardize(t: torch.Tensor) -> torch.Tensor:
+            mean = t.mean(dim=[2, 3], keepdim=True)
+            std = t.std(dim=[2, 3], keepdim=True)
+            std = torch.where(std < 1e-6, torch.ones_like(std), std)
+            return (t - mean) / std
+
+        if Xin_t.numel() > 0:
+            Xin_t = _standardize(Xin_t)
+        if Xout_t.numel() > 0:
+            Xout_t = _standardize(Xout_t)
     responses: List[Dict[str, np.ndarray]] = []
 
     filters = [

@@ -1,15 +1,16 @@
 import json
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 import torch
+from dataclasses import asdict
 from sklearn.metrics import accuracy_score, roc_auc_score
 
 from .config import PipelineConfig
 from .data import extract_patches, load_patches_from_folders
-from .kernels import build_kernel_bank
+from .kernels import build_kernel_bank, combine_kernels
 from .models import (
     fit_subset_model,
     find_best_low_corr_pair,
@@ -69,22 +70,32 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
     End-to-end pipeline for training the kernel model.
     """
     out_dir = _next_experiment_dir(cfg.out_dir)
-    cfg.out_dir = out_dir 
+    # Use cfg.results_fname if provided (treat a path with an extension as a file -> use its parent dir)
+    if cfg.results_fname:
+        rpath = Path(cfg.results_fname)
+        out_dir = rpath if rpath.suffix == "" else rpath.parent
+    cfg.out_dir = out_dir
     logger = _setup_logger(out_dir)
     device = _resolve_device(cfg)
     logger.info("Starting pipeline. Output: %s Device: %s Selection: %s", out_dir, device, cfg.selection.method)
 
     if cfg.data.run_extraction:
-        logger.info("Extracting patches from %s", cfg.data.image_dir)
+        logger.info(
+            "Extracting patches (malignant=%s, healthy=%s, annotations=%s)",
+            cfg.data.malignant_dir,
+            cfg.data.healthy_dir,
+            cfg.data.annotation_dir,
+        )
         inside_count, outside_count = extract_patches(
-            image_dir=cfg.data.image_dir,
+            healthy_dir=cfg.data.healthy_dir,
+            malignant_dir=cfg.data.malignant_dir,
             annotation_dir=cfg.data.annotation_dir,
             output_dir=cfg.data.output_dir,
             patch_size=cfg.data.patch_size,
             n_inside_per_image=cfg.data.n_inside_per_image,
             n_outside_per_image=cfg.data.n_outside_per_image,
             max_tries=cfg.data.max_tries * 20,
-            red_threshold=cfg.data.green_threshold,
+            red_threshold=cfg.data.red_threshold,
             min_pos_coverage=cfg.data.min_pos_coverage,
             max_neg_coverage=cfg.data.max_neg_coverage,
             near_neg_fraction=cfg.data.near_neg_fraction,
@@ -153,9 +164,11 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         device=device,
         batch_size=cfg.training.batch_size,
         response_fn=cfg.selection.response_fn,
+        standardize_patches=cfg.selection.standardize_responses,
     )
 
     kernel_scores = rank_kernels(responses)
+    score_lookup = {s["idx"]: s for s in kernel_scores}
     candidate_kernel_idxs = [s["idx"] for s in kernel_scores[: cfg.selection.topM]]
     X_candidates, y_labels, patient_labels = build_feature_matrix(
         candidate_kernel_idxs,
@@ -219,22 +232,19 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
 
     eval_results: Dict[str, Dict] = {}
     model = clf_res.get("model")
-    model_device = next(model.parameters()).device if model is not None else None
 
-    def _eval_split(split_name: str, split_data: tuple) -> Dict:
-        if model is None:
+    def _eval_from_responses(
+        responses_split: Sequence[Dict[str, np.ndarray]],
+        split_data: tuple,
+        selected_idxs_eval: Sequence[int],
+        clf_res_eval: Dict,
+        model_eval: Optional[torch.nn.Module],
+    ) -> Dict:
+        if model_eval is None:
             return {"auc": 0.5, "acc": 0.5, "n": 0, "n_pos": 0, "n_neg": 0}
         Xin_split, Xout_split, patients_in_split, patients_out_split = split_data
-        responses_split = compute_responses(
-            bank,
-            Xin_split,
-            Xout_split,
-            device=device,
-            batch_size=cfg.training.batch_size,
-            response_fn=cfg.selection.response_fn,
-        )
         X_feat, y_true, _ = build_feature_matrix(
-            selected_idxs,
+            selected_idxs_eval,
             responses_split,
             patient_ids_in=patients_in_split,
             patient_ids_out=patients_out_split,
@@ -242,12 +252,13 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         if X_feat.size == 0 or y_true.size == 0:
             return {"auc": 0.5, "acc": 0.5, "n": 0, "n_pos": 0, "n_neg": 0}
         X_eval = X_feat
-        mean = clf_res.get("mean")
-        std = clf_res.get("std")
-        if clf_res.get("standardize") and mean is not None and std is not None:
+        mean = clf_res_eval.get("mean")
+        std = clf_res_eval.get("std")
+        if clf_res_eval.get("standardize") and mean is not None and std is not None:
             X_eval = (X_eval - mean) / std
+        model_device = next(model_eval.parameters()).device
         with torch.no_grad():
-            probs = torch.sigmoid(model(torch.from_numpy(X_eval).float().to(model_device))).cpu().numpy()
+            probs = torch.sigmoid(model_eval(torch.from_numpy(X_eval).float().to(model_device))).cpu().numpy()
         preds = (probs >= 0.5).astype(int)
         try:
             auc = roc_auc_score(y_true, probs)
@@ -262,10 +273,153 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
             "n_neg": int(len(y_true) - np.sum(y_true)),
         }
 
+    def _eval_split(split_name: str, split_data: tuple) -> Dict:
+        if model is None:
+            return {"auc": 0.5, "acc": 0.5, "n": 0, "n_pos": 0, "n_neg": 0}
+        Xin_split, Xout_split, patients_in_split, patients_out_split = split_data
+        responses_split = compute_responses(
+            bank,
+            Xin_split,
+            Xout_split,
+            device=device,
+            batch_size=cfg.training.batch_size,
+            response_fn=cfg.selection.response_fn,
+            standardize_patches=cfg.selection.standardize_responses,
+        )
+        return _eval_from_responses(
+            responses_split,
+            split_data,
+            selected_idxs,
+            clf_res,
+            model,
+        )
+
     for split, split_data in eval_split_data.items():
         res = _eval_split(split, split_data)
         eval_results[split] = res
         logger.info("Eval %s: AUC=%.4f ACC=%.4f", split, res.get("auc", 0.0), res.get("acc", 0.0))
+
+    composite_info: Dict[str, Dict] = {}
+    if cfg.composite.enabled:
+        try:
+            source = cfg.composite.source.lower()
+            if source not in ("selected", "topm"):
+                raise ValueError(f"Unknown composite source '{cfg.composite.source}'. Use 'selected' or 'topM'.")
+            source_idxs = list(selected_idxs) if source == "selected" else list(candidate_kernel_idxs)
+            default_n = cfg.selection.K if source == "selected" else cfg.selection.topM
+            n_use = cfg.composite.n_kernels if cfg.composite.n_kernels is not None else default_n
+            if n_use is not None:
+                source_idxs = source_idxs[: int(n_use)]
+            if not source_idxs:
+                logger.warning("Composite kernel requested but no source kernels available.")
+            else:
+                weight_method = cfg.composite.weight_method.lower()
+                weights = None
+                if weight_method == "uniform":
+                    weights = None
+                elif weight_method in ("auc", "fisher"):
+                    weights = [float(score_lookup.get(idx, {}).get(weight_method, 0.0)) for idx in source_idxs]
+                    if not np.any(np.abs(weights) > 0):
+                        weights = None
+                else:
+                    raise ValueError(
+                        f"Unknown composite weight_method '{cfg.composite.weight_method}'. Use 'uniform', 'auc', or 'fisher'."
+                    )
+
+                composite_kernel = combine_kernels(
+                    [bank[idx]["kernel"] for idx in source_idxs],
+                    weights=weights,
+                    normalize=cfg.composite.normalize,
+                )
+                composite_bank = [
+                    {
+                        "family": "composite",
+                        "params": {
+                            "source": source,
+                            "n_kernels": len(source_idxs),
+                            "weight_method": weight_method,
+                            "normalize": cfg.composite.normalize,
+                            "kernel_idxs": source_idxs,
+                        },
+                        "kernel": composite_kernel,
+                    }
+                ]
+                composite_responses = compute_responses(
+                    composite_bank,
+                    Xin,
+                    Xout,
+                    device=device,
+                    batch_size=cfg.training.batch_size,
+                    response_fn=cfg.selection.response_fn,
+                    standardize_patches=cfg.selection.standardize_responses,
+                )
+                composite_clf = train_classifier(
+                    Xin,
+                    Xout,
+                    [0],
+                    composite_responses,
+                    epochs=cfg.training.epochs,
+                    batch_size=cfg.training.batch_size,
+                    lr=cfg.training.lr,
+                    device=device,
+                    model_type=cfg.training.model_type,
+                    hidden_dims=cfg.training.hidden_dims,
+                    dropout=cfg.training.dropout,
+                    standardize=cfg.training.standardize_features,
+                    subset_frac=cfg.training.train_subset_frac,
+                    subset_size=cfg.training.train_subset_size,
+                    subset_seed=cfg.training.subset_seed,
+                    patient_ids_in=patients_in,
+                    patient_ids_out=patients_out,
+                )
+                plot_roc_pr(composite_clf.get("val_labels"), composite_clf.get("val_probs"), out_dir / "composite")
+                plot_confusion(composite_clf.get("val_labels"), composite_clf.get("val_probs"), out_dir / "confusion_composite.png")
+                composite_eval_results: Dict[str, Dict] = {}
+                composite_model = composite_clf.get("model")
+                for split, split_data in eval_split_data.items():
+                    Xin_split, Xout_split, _, _ = split_data
+                    responses_split = compute_responses(
+                        composite_bank,
+                        Xin_split,
+                        Xout_split,
+                        device=device,
+                        batch_size=cfg.training.batch_size,
+                        response_fn=cfg.selection.response_fn,
+                        standardize_patches=cfg.selection.standardize_responses,
+                    )
+                    res = _eval_from_responses(
+                        responses_split,
+                        split_data,
+                        [0],
+                        composite_clf,
+                        composite_model,
+                    )
+                    composite_eval_results[split] = res
+                    logger.info(
+                        "Composite eval %s: AUC=%.4f ACC=%.4f",
+                        split,
+                        res.get("auc", 0.0),
+                        res.get("acc", 0.0),
+                    )
+                np.save(out_dir / "composite_kernel.npy", composite_kernel)
+                composite_info = {
+                    "kernel_idxs": source_idxs,
+                    "weight_method": weight_method,
+                    "normalize": cfg.composite.normalize,
+                    "weights": weights if weights is None else [float(w) for w in weights],
+                    "clf_auc": float(composite_clf.get("auc", 0.0)),
+                    "clf_acc": float(composite_clf.get("acc", 0.0)),
+                    "eval_results": composite_eval_results,
+                }
+                logger.info(
+                    "Composite kernel results: AUC=%.4f ACC=%.4f (n=%s)",
+                    composite_info.get("clf_auc", 0.0),
+                    composite_info.get("clf_acc", 0.0),
+                    len(source_idxs),
+                )
+        except Exception as exc:
+            logger.warning("Composite kernel evaluation failed: %s", exc)
+            composite_info = {"error": str(exc)}
 
     plot_candidate_idxs = candidate_kernel_idxs[: cfg.selection.plot_top_kernels]
     X_plot, y_plot, patient_plot = build_feature_matrix(
@@ -296,7 +450,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         hidden_dims=cfg.training.hidden_dims,
         dropout=cfg.training.dropout,
         standardize=cfg.training.standardize_features,
-        corr_thresholds={3: cfg.subset.triple_corr_threshold},
+        corr_thresholds={2: cfg.subset.pair_corr_threshold, 3: cfg.subset.triple_corr_threshold},
         groups=patients_for_search,
     )
 
@@ -388,6 +542,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         "train_subset_frac": cfg.training.train_subset_frac,
         "train_subset_size": cfg.training.train_subset_size,
         "eval_results": eval_results,
+        "composite": composite_info,
     }
 
     np.savez(
@@ -401,6 +556,34 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
     with open(out_dir / "results.json", "w") as f:
         json.dump(out, f, indent=2)
     np.save(out_dir / "kernels.npy", np.stack([b["kernel"] for b in bank], axis=0))
+    # Save model + config for reproducibility.
+    if clf_res.get("model") is not None:
+        torch.save(
+            {
+                "model_state": clf_res["model"].state_dict(),
+                "model_type": cfg.training.model_type,
+                "in_features": int(len(selected_idxs)),
+                "hidden_dims": cfg.training.hidden_dims,
+                "dropout": cfg.training.dropout,
+                "mean": clf_res.get("mean"),
+                "std": clf_res.get("std"),
+                "standardize": clf_res.get("standardize"),
+                "selected_idxs": selected_idxs,
+                "out_dir": str(out_dir),
+            },
+            out_dir / "checkpoint.pt",
+        )
+    def _jsonify(obj):
+        if isinstance(obj, Path):
+            return str(obj)
+        if isinstance(obj, dict):
+            return {k: _jsonify(v) for k, v in obj.items()}
+        if isinstance(obj, (list, tuple)):
+            return [_jsonify(v) for v in obj]
+        return obj
+
+    with open(out_dir / "config.json", "w") as f:
+        json.dump(_jsonify(asdict(cfg)), f, indent=2)
     logger.info("Saved artifacts to %s", out_dir)
 
     return {
@@ -414,6 +597,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         "plot_candidate_idxs": plot_candidate_idxs,
         "selection_method": cfg.selection.method,
         "eval_results": eval_results,
+        "composite": composite_info,
         "out_dir": out_dir,
     }
 

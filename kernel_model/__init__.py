@@ -6,6 +6,7 @@ notebook can focus on experiments while the heavy lifting lives in Python code.
 """
 
 from .config import (
+    CompositeKernelConfig,
     KernelBankConfig,
     PatchExtractionConfig,
     PipelineConfig,
@@ -16,6 +17,7 @@ from .config import (
 from .pipeline import run_pipeline
 
 __all__ = [
+    "CompositeKernelConfig",
     "KernelBankConfig",
     "PatchExtractionConfig",
     "PipelineConfig",

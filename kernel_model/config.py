@@ -5,21 +5,21 @@ from typing import Optional, Sequence, Tuple
 
 @dataclass
 class PatchExtractionConfig:
-    healthy_dir: Path = Path('data/TIFF Images/Normal'),
-    malignant_dir: Path = Path('data/TIFF Images/Malignant'),
-    annotation_dir: Path = Path('data/TIFF Images/malignantAnnotation'),
+    healthy_dir: Path = Path("data/TIFF Images/Normal")
+    malignant_dir: Path = Path("data/TIFF Images/Malignant")
+    annotation_dir: Path = Path("data/TIFF Images/malignantAnnotation")
     output_dir: Path = Path("data/patches")
     patch_size: int = 128
     n_inside_per_image: int = 50
     n_outside_per_image: int = 50
     red_threshold: int = 150
     max_tries: int = 500
-    min_pos_coverage: float = 0.5
-    max_neg_coverage: float = 0.05
-    near_neg_fraction: float = 0.5
+    min_pos_coverage: float = 0.8
+    max_neg_coverage: float = 0.02
+    near_neg_fraction: float = 0.2
     near_neg_radius: Optional[int] = None
     far_neg_radius: Optional[int] = None
-    use_bbox_for_positives: bool = True
+    use_bbox_for_positives: bool = False
     min_nonzero_frac: float = 0.0
     min_intensity_rel: float = 0.0  # between 0 and 1 of dtype max
     split_patients: bool = True
@@ -39,6 +39,10 @@ class KernelBankConfig:
             "dog",
             "log",
             "gabor",
+            "hog",
+            "glcm",
+            "lbp",
+            "mrf",
         )
     )
     n_per_family: int = 200
@@ -48,11 +52,12 @@ class KernelBankConfig:
 @dataclass
 class SelectionConfig:
     method: str = "mmr"  # "mmr" or "abess"
-    response_fn: str = "mean_abs"
+    response_fn: str = "abs_max"
     topM: int = 200
     K: int = 20
     lambda_mm: float = 0.75
     plot_top_kernels: int = 20
+    standardize_responses: bool = False
 
 
 @dataclass
@@ -79,15 +84,26 @@ class SubsetSearchConfig:
 
 
 @dataclass
+class CompositeKernelConfig:
+    enabled: bool = False
+    source: str = "selected"  # "selected" or "topM"
+    n_kernels: Optional[int] = None  # None -> use selection.K or selection.topM depending on source
+    weight_method: str = "uniform"  # "uniform", "auc", or "fisher"
+    normalize: str = "l1"  # "l1", "l2", or "none"
+
+
+@dataclass
 class PipelineConfig:
     data: PatchExtractionConfig = field(default_factory=PatchExtractionConfig)
     bank: KernelBankConfig = field(default_factory=KernelBankConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)
     training: TrainingConfig = field(default_factory=TrainingConfig)
     subset: SubsetSearchConfig = field(default_factory=SubsetSearchConfig)
+    composite: CompositeKernelConfig = field(default_factory=CompositeKernelConfig)
     data_root: Path = Path("data/patches")
     out_dir: Path = Path("./results")
     max_per_class: int = 2000
     resize_patch_size: int = 64
     device: Optional[str] = None  # auto-detect when None
     load_splits: Tuple[str, ...] = ("train", "val", "test")
+    results_fname: str = None
