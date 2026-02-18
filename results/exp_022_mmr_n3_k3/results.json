@@ -1,0 +1,311 @@
+{
+  "selected_idxs": [
+    2,
+    10,
+    20
+  ],
+  "bank_meta": [
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 2.4329212804771445,
+        "sigma_y": 2.4329212804771445,
+        "theta": 3.0683631406962224,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 3.8022776288782647,
+        "sigma_y": 3.8022776288782647,
+        "theta": 1.980156125722419,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 12.870110747649598,
+        "sigma_y": 12.870110747649598,
+        "theta": 0.8115836961881729,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 4.4039783194458675,
+        "sigma_y": 8.233619588794841,
+        "theta": 1.7076165366757496,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 5.908983160322236,
+        "sigma_y": 6.593318439046992,
+        "theta": 0.6116001309967857,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 7.645934778753199,
+        "sigma_y": 16.125880159883316,
+        "theta": 2.867951552179825,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 8.785311182409309,
+        "sigma2": 12.271897743132676,
+        "theta": 0.9590603936205813,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 13.737384075103513,
+        "sigma2": 18.884077226705553,
+        "theta": 2.9383296607804352,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 14.254997690298328,
+        "sigma2": 33.60770156280796,
+        "theta": 2.698907819095988,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 5.437538486668443,
+        "theta": 2.3957043520693966,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 0.9096350974525897,
+        "theta": 0.4523428823985352,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 4.756016833207513,
+        "theta": 2.1599794180119374,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 9.532290328689925,
+        "freq": 0.15398047557345776,
+        "theta": 1.9042202986105616,
+        "phase": 4.490667306404361,
+        "gamma": 0.6780645238500318,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 12.023033555758158,
+        "freq": 0.09194287658418855,
+        "theta": 0.2539667008852913,
+        "phase": 1.3075471165181176,
+        "gamma": 1.2686247693280104,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 7.312606496226711,
+        "freq": 0.06441710125649662,
+        "theta": 0.7666303044959119,
+        "phase": 3.056695283562932,
+        "gamma": 1.408637180742332,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 10.647919381084405,
+        "theta": 1.5152271045618566,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 5.8752762743872164,
+        "theta": 0.3614204855499319,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 12.881089180581082,
+        "theta": 1.3304632966016692,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 4,
+        "theta": 2.916782448808152,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 11,
+        "theta": 2.9626421032714507,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 1,
+        "theta": 1.5062361699661526,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 13,
+        "theta": 3.850673373909693,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 10,
+        "theta": 5.117122472924878,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 11,
+        "theta": 2.3203202077756893,
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 7,
+        "beta": 0.6973472112918413,
+        "neighborhood": "full",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 14,
+        "beta": 1.6254236696385607,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 9,
+        "beta": 0.6211754254405146,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    }
+  ],
+  "clf_auc": 0.9264651639344262,
+  "clf_acc": 0.8605504587155963,
+  "selection_candidate_idxs": [
+    2,
+    5,
+    4,
+    3,
+    1,
+    0,
+    17,
+    15,
+    16,
+    13,
+    18,
+    19,
+    22,
+    21,
+    23,
+    8,
+    10,
+    7,
+    6,
+    9,
+    11,
+    24,
+    20,
+    14,
+    12,
+    26,
+    25
+  ],
+  "plot_candidate_idxs": [],
+  "subset_results": {},
+  "low_corr_pair": {
+    "subset": null,
+    "kernel_idxs": [],
+    "auc": 0.5,
+    "acc": 0.5,
+    "corr": null,
+    "abs_corr": null,
+    "threshold_met": false
+  },
+  "selection_method": "mmr",
+  "train_subset_frac": null,
+  "train_subset_size": null,
+  "eval_results": {
+    "val": {
+      "auc": 0.9084756410256409,
+      "acc": 0.8497206703910615,
+      "n": 1790,
+      "n_pos": 1040,
+      "n_neg": 750
+    },
+    "test": {
+      "auc": 0.9100613994439296,
+      "acc": 0.841711229946524,
+      "n": 1870,
+      "n_pos": 1040,
+      "n_neg": 830
+    }
+  },
+  "composite": {}
+}

@@ -1,0 +1,936 @@
+{
+  "selected_idxs": [
+    13,
+    83,
+    55
+  ],
+  "bank_meta": [
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 8.643630297893944,
+        "sigma_y": 8.643630297893944,
+        "theta": 3.1228066238056713,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 3.4142985994503143,
+        "sigma_y": 3.4142985994503143,
+        "theta": 0.7167343269585869,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 5.69901347128075,
+        "sigma_y": 5.69901347128075,
+        "theta": 0.10891312897854849,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 8.320215772844707,
+        "sigma_y": 8.320215772844707,
+        "theta": 3.1109364630090495,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 1.1058691798109506,
+        "sigma_y": 1.1058691798109506,
+        "theta": 1.9881902909883336,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 3.775266966971001,
+        "sigma_y": 3.775266966971001,
+        "theta": 1.879501755597395,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 2.014527346594106,
+        "sigma_y": 2.014527346594106,
+        "theta": 1.1316437333571288,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 9.012967523242272,
+        "sigma_y": 9.012967523242272,
+        "theta": 0.1283098166977858,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 8.626757256124007,
+        "sigma_y": 8.626757256124007,
+        "theta": 0.5571287090178012,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 9.257556635304091,
+        "sigma_y": 9.257556635304091,
+        "theta": 0.5649203214371042,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 4.468935716345009,
+        "sigma_y": 4.535730374163794,
+        "theta": 1.4790399168947852,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 2.7153275477006367,
+        "sigma_y": 1.7898738521705155,
+        "theta": 1.1096783327971478,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 1.111726921441477,
+        "sigma_y": 0.7111692054051119,
+        "theta": 1.532651431136572,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 12.416914144374738,
+        "sigma_y": 15.681856416720814,
+        "theta": 2.036696543327441,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 1.8322060399212945,
+        "sigma_y": 3.4525419543116738,
+        "theta": 2.0263828212919988,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 7.9484673506679115,
+        "sigma_y": 15.6257230941954,
+        "theta": 2.8552594667720106,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 1.5536087316474698,
+        "sigma_y": 0.911172741303709,
+        "theta": 2.4565335468515674,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 0.7329398243177934,
+        "sigma_y": 1.9148705854748458,
+        "theta": 2.758008781131332,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 4.210019856224898,
+        "sigma_y": 6.0511192720871465,
+        "theta": 0.1730214517039538,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 5.699798712094847,
+        "sigma_y": 4.299751731568327,
+        "theta": 0.34381427919519875,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 10.087285369350127,
+        "sigma2": 28.82731469827778,
+        "theta": 0.8957575655345761,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 2.1955821860607516,
+        "sigma2": 4.120609057835662,
+        "theta": 0.15033201686174505,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 1.3950450252810016,
+        "sigma2": 3.8915522879500277,
+        "theta": 0.878341129920318,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 9.077670096674092,
+        "sigma2": 11.005778557713775,
+        "theta": 0.09272544753865869,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 8.659197798497845,
+        "sigma2": 17.009190390332414,
+        "theta": 0.8455948127721844,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 0.7212923575101283,
+        "sigma2": 1.7399303426800938,
+        "theta": 2.9242607309988373,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 5.817817317609667,
+        "sigma2": 9.040169379655886,
+        "theta": 0.4620635679210792,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 5.368079412853518,
+        "sigma2": 15.572136294820057,
+        "theta": 2.0423075500538963,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 12.345196271431703,
+        "sigma2": 28.572814922972725,
+        "theta": 3.036258878120453,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 14.015577513630536,
+        "sigma2": 21.030555595043293,
+        "theta": 0.9546080262710486,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 11.029672298150631,
+        "theta": 2.60148950804892,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 10.556065512437856,
+        "theta": 1.673396772744649,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 9.140250618247777,
+        "theta": 2.139867550532895,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 7.542353035788937,
+        "theta": 1.5529929867119927,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 8.733101912118393,
+        "theta": 1.5644914357429411,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 5.221478714961168,
+        "theta": 0.5498141506576366,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 14.428975498472463,
+        "theta": 2.7054966971325167,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 5.199126090592033,
+        "theta": 2.7378064594680294,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 12.942187580448266,
+        "theta": 1.8462716077302956,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 13.206134727968132,
+        "theta": 1.4668336282950545,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 8.492164736888252,
+        "freq": 0.12673245452671306,
+        "theta": 2.2507074307356136,
+        "phase": 2.572015360818519,
+        "gamma": 0.5443540787525989,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 3.3427662101529547,
+        "freq": 0.4130039321834678,
+        "theta": 0.7065979971803202,
+        "phase": 3.049678764551092,
+        "gamma": 1.2991985714162007,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 2.850659285329199,
+        "freq": 0.1114840412007033,
+        "theta": 1.3865336322823223,
+        "phase": 1.6655657378245803,
+        "gamma": 0.5722314552802646,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 14.712937409576925,
+        "freq": 0.43825772702720833,
+        "theta": 1.3207347711791113,
+        "phase": 2.9288193091672063,
+        "gamma": 0.9921725339796466,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 5.488282384611859,
+        "freq": 0.46666010433211863,
+        "theta": 1.5531043816263848,
+        "phase": 3.347665844293306,
+        "gamma": 1.245709880808088,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 9.535921846414688,
+        "freq": 0.10473888707618334,
+        "theta": 0.6353498292670888,
+        "phase": 1.4069081540281017,
+        "gamma": 1.2973095533686485,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 6.924667470432961,
+        "freq": 0.15086541875663959,
+        "theta": 0.03017003615786291,
+        "phase": 4.55633443629823,
+        "gamma": 1.018922788859507,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 8.69259076025859,
+        "freq": 0.2152683052456585,
+        "theta": 1.405680755985119,
+        "phase": 2.961478530456245,
+        "gamma": 0.9262089120572361,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 13.01035160694506,
+        "freq": 0.11354381126211995,
+        "theta": 0.2034606235853592,
+        "phase": 1.8475629628553882,
+        "gamma": 1.2300178401939554,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 12.995431843692499,
+        "freq": 0.43835612065933854,
+        "theta": 2.71188532013594,
+        "phase": 3.944017521434295,
+        "gamma": 0.8952320870391768,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 7.07926648905169,
+        "theta": 0.9788812886848067,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 8.082105026697857,
+        "theta": 1.7776702362648606,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 14.29303789076505,
+        "theta": 1.473344106829355,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 6.096005553439285,
+        "theta": 0.36153296882941494,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 6.6560476233618076,
+        "theta": 3.0169156730121682,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 1.463262620052567,
+        "theta": 2.7048582914683985,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 6.394927285866281,
+        "theta": 2.7354452977322934,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 7.147461043334544,
+        "theta": 0.18962405939655344,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 11.066185267871319,
+        "theta": 1.5610256974214096,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 7.048903401414562,
+        "theta": 0.7927251172970203,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 3,
+        "theta": 2.4459694686735935,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 2,
+        "theta": 0.07147261220232862,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 12,
+        "theta": 2.732648777832755,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 14,
+        "theta": 0.23688916354303774,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 8,
+        "theta": 2.727671518147917,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 8,
+        "theta": 2.078256999850574,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 1,
+        "theta": 2.591645067944171,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 14,
+        "theta": 2.253206971099718,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 9,
+        "theta": 3.051693081284415,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 2,
+        "theta": 2.192630101405102,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 2,
+        "theta": 6.030043164752325,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 12,
+        "theta": 3.7562950195170273,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 3,
+        "theta": 4.718542283225004,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 4,
+        "theta": 1.1856635326432052,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 14,
+        "theta": 1.140244109273498,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 7,
+        "theta": 0.5517834573250755,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 15,
+        "theta": 3.0398654321092775,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 10,
+        "theta": 4.872139885622913,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 13,
+        "theta": 3.12171993614174,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 10,
+        "theta": 5.4112433060314,
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 2,
+        "beta": 1.41658782120826,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 9,
+        "beta": 1.268763826633412,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 13,
+        "beta": 1.8351569621291237,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 2,
+        "beta": 1.7942850119468559,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 12,
+        "beta": 1.4170580805217605,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 4,
+        "beta": 1.387306278129215,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 6,
+        "beta": 1.7640412097499993,
+        "neighborhood": "full",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 15,
+        "beta": 0.7234736927187695,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 4,
+        "beta": 1.5599285972011285,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 4,
+        "beta": 1.621841271492365,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    }
+  ],
+  "clf_auc": 0.920754781420765,
+  "clf_acc": 0.8541284403669724,
+  "selection_candidate_idxs": [
+    13,
+    15,
+    9,
+    7,
+    0,
+    8,
+    3,
+    18,
+    2,
+    19,
+    10,
+    5,
+    1,
+    11,
+    57,
+    14,
+    6,
+    54,
+    52,
+    56,
+    53,
+    58,
+    17,
+    51,
+    50,
+    16,
+    4,
+    55,
+    59,
+    12,
+    44,
+    42,
+    73,
+    46,
+    70,
+    69,
+    75,
+    68,
+    47,
+    83,
+    80,
+    71,
+    77,
+    74,
+    79,
+    29,
+    36,
+    76,
+    28,
+    39,
+    38,
+    20,
+    30,
+    25,
+    31,
+    48,
+    24,
+    23,
+    32,
+    34,
+    33,
+    27,
+    22,
+    60,
+    26
+  ],
+  "plot_candidate_idxs": [],
+  "subset_results": {},
+  "low_corr_pair": {
+    "subset": null,
+    "kernel_idxs": [],
+    "auc": 0.5,
+    "acc": 0.5,
+    "corr": null,
+    "abs_corr": null,
+    "threshold_met": false
+  },
+  "selection_method": "mmr",
+  "train_subset_frac": null,
+  "train_subset_size": null,
+  "eval_results": {
+    "val": {
+      "auc": 0.9048756410256409,
+      "acc": 0.8463687150837989,
+      "n": 1790,
+      "n_pos": 1040,
+      "n_neg": 750
+    },
+    "test": {
+      "auc": 0.9096072752548656,
+      "acc": 0.848663101604278,
+      "n": 1870,
+      "n_pos": 1040,
+      "n_neg": 830
+    }
+  },
+  "composite": {
+    "kernel_idxs": [
+      13,
+      83,
+      55
+    ],
+    "weight_method": "uniform",
+    "normalize": "l1",
+    "weights": null,
+    "clf_auc": 0.8517247267759563,
+    "clf_acc": 0.7788990825688074,
+    "eval_results": {
+      "val": {
+        "auc": 0.8537935897435898,
+        "acc": 0.7977653631284917,
+        "n": 1790,
+        "n_pos": 1040,
+        "n_neg": 750
+      },
+      "test": {
+        "auc": 0.8662430491195551,
+        "acc": 0.7967914438502673,
+        "n": 1870,
+        "n_pos": 1040,
+        "n_neg": 830
+      }
+    }
+  }
+}

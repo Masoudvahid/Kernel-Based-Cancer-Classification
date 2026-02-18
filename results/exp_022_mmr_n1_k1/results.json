@@ -1,0 +1,131 @@
+{
+  "selected_idxs": [
+    1
+  ],
+  "bank_meta": [
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 4.722938436681104,
+        "sigma_y": 4.722938436681104,
+        "theta": 0.7963911864370954,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 4.3469106261750765,
+        "sigma_y": 12.155128111153331,
+        "theta": 1.6230838280609035,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 2.657915873429031,
+        "sigma2": 6.434601090280063,
+        "theta": 1.7047658034940256,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 12.337922934669065,
+        "theta": 1.869195083823161,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 4.1242401874199555,
+        "freq": 0.1769983884274828,
+        "theta": 2.2781758572946496,
+        "phase": 0.8532289093605308,
+        "gamma": 1.4274145829672427,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 0.7034256652333455,
+        "theta": 0.7791023544445579,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 14,
+        "theta": 2.2387924106510733,
+        "offset_weight": 1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 10,
+        "theta": 5.850230990216655,
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 5,
+        "beta": 1.2203096238215234,
+        "neighborhood": "full",
+        "size": 31
+      }
+    }
+  ],
+  "clf_auc": 0.9238797814207651,
+  "clf_acc": 0.8440366972477065,
+  "selection_candidate_idxs": [
+    1,
+    0,
+    7,
+    3,
+    8,
+    2,
+    5,
+    4,
+    6
+  ],
+  "plot_candidate_idxs": [],
+  "subset_results": {},
+  "low_corr_pair": {
+    "subset": null,
+    "kernel_idxs": [],
+    "auc": 0.5,
+    "acc": 0.5,
+    "corr": null,
+    "abs_corr": null,
+    "threshold_met": false
+  },
+  "selection_method": "mmr",
+  "train_subset_frac": null,
+  "train_subset_size": null,
+  "eval_results": {
+    "val": {
+      "auc": 0.8994410256410257,
+      "acc": 0.8307262569832402,
+      "n": 1790,
+      "n_pos": 1040,
+      "n_neg": 750
+    },
+    "test": {
+      "auc": 0.9157252085264134,
+      "acc": 0.8449197860962567,
+      "n": 1870,
+      "n_pos": 1040,
+      "n_neg": 830
+    }
+  },
+  "composite": {}
+}

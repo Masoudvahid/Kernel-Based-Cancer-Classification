@@ -1,0 +1,15 @@
+2026-02-12 21:08:21,199 [INFO] Starting pipeline. Output: results/exp_022 Device: cuda Selection: mmr
+2026-02-12 21:08:23,083 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-02-12 21:08:23,593 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-02-12 21:08:24,120 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-02-12 21:08:24,380 [INFO] Built kernel bank: 4500 kernels
+2026-02-12 21:32:48,244 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-02-12 21:42:44,277 [INFO] MMR selected kernels (bank idx): [778, 2097, 2412, 2193, 2190, 2151, 2475, 2127, 2333, 2124, 2448, 2180, 2393, 2413, 2082, 2252, 2329, 2048, 2466, 2271, 3162, 755, 3067, 3623, 2831, 2568, 2567, 2240, 2512, 2430, 2418, 546, 600, 2392, 934, 695, 927, 633, 841, 913, 636, 763, 682, 831, 602, 575, 623, 867, 752, 904, 910, 810, 2300, 825, 976, 708, 731, 596, 947, 543, 838, 979, 247, 249, 684, 65, 262, 448, 533, 943, 898, 928, 134, 209, 183, 692, 310, 999, 192, 493, 461, 792, 433, 605, 686, 248, 489, 212, 365, 956]
+2026-02-12 21:42:49,634 [INFO] Classifier results: AUC=0.9243 ACC=0.8615
+2026-02-12 21:50:14,842 [INFO] Eval val: AUC=0.9273 ACC=0.8620
+2026-02-12 21:58:10,968 [INFO] Eval test: AUC=0.9376 ACC=0.8888
+2026-02-12 21:58:19,795 [INFO] Composite eval val: AUC=0.9049 ACC=0.8425
+2026-02-12 21:58:20,652 [INFO] Composite eval test: AUC=0.9026 ACC=0.8299
+2026-02-12 21:58:20,653 [INFO] Composite results: AUC=0.9233 ACC=0.8541 (groups=8 total kernels=90)
+2026-02-12 21:58:20,653 [INFO] No kernel pair met correlation threshold 0.200
+2026-02-12 21:58:20,720 [INFO] Saved artifacts to results/exp_022

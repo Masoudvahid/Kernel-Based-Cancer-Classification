@@ -69,6 +69,8 @@ class TrainingConfig:
     hidden_dims: Tuple[int, int] = (64, 32)
     dropout: float = 0.2
     standardize_features: bool = True
+    rotation_aug: bool = False
+    rotation_aug_choices: Tuple[int, ...] = (0, 1, 2, 3)  # quarter turns for torch.rot90
     force_cpu: bool = False
     train_subset_frac: Optional[float] = None  # e.g., 0.25 to train on 25%
     train_subset_size: Optional[int] = None    # or a fixed count to subsample
@@ -88,6 +90,7 @@ class CompositeKernelConfig:
     enabled: bool = False
     source: str = "selected"  # "selected" or "topM"
     n_kernels: Optional[int] = None  # None -> use selection.K or selection.topM depending on source
+    n_composites: int = 1  # number of composed kernels/features to build
     weight_method: str = "uniform"  # "uniform", "auc", or "fisher"
     normalize: str = "l1"  # "l1", "l2", or "none"
 

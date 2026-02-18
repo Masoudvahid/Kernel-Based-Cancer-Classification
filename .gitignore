@@ -1,2 +1,4 @@
 **/*.tif
 Kernel Based Cancer Classification.code-workspace
+.venv
+__pycache__

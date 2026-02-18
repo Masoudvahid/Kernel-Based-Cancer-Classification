@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Sequence
 
 import numpy as np
 import torch
@@ -16,6 +16,8 @@ def compute_responses(
     batch_size: int = 64,
     response_fn: str = "abs_max",
     standardize_patches: bool = True,
+    rotation_aug: bool = False,
+    rotation_aug_choices: Sequence[int] = (0, 1, 2, 3),
 ) -> List[Dict[str, np.ndarray]]:
     """
     Convolve every kernel in the bank over the input patches and aggregate responses.
@@ -35,6 +37,27 @@ def compute_responses(
             Xin_t = _standardize(Xin_t)
         if Xout_t.numel() > 0:
             Xout_t = _standardize(Xout_t)
+
+    if not rotation_aug_choices:
+        rotation_aug_choices = (0,)
+    if any(int(k) not in (0, 1, 2, 3) for k in rotation_aug_choices):
+        raise ValueError("rotation_aug_choices must contain quarter-turn values in {0,1,2,3}.")
+    rotation_choices = tuple(int(k) % 4 for k in rotation_aug_choices)
+
+    def _maybe_rotate_batch(batch: torch.Tensor) -> torch.Tensor:
+        if not rotation_aug or batch.numel() == 0:
+            return batch
+        if len(rotation_choices) == 1 and rotation_choices[0] == 0:
+            return batch
+        idx = torch.randint(0, len(rotation_choices), (batch.shape[0],), device=batch.device)
+        out = batch.clone()
+        for choice_idx, k in enumerate(rotation_choices):
+            if k == 0:
+                continue
+            mask = idx == choice_idx
+            if mask.any():
+                out[mask] = torch.rot90(out[mask], k=k, dims=(2, 3))
+        return out
     responses: List[Dict[str, np.ndarray]] = []
 
     filters = [
@@ -45,6 +68,7 @@ def compute_responses(
         r_in_batches: List[np.ndarray] = []
         for i in range(0, Xin_t.shape[0], batch_size):
             batch = Xin_t[i : i + batch_size]
+            batch = _maybe_rotate_batch(batch)
             with torch.no_grad():
                 out = F.conv2d(batch, k_t, padding=k_t.shape[-1] // 2)
                 if response_fn == "mean_abs":
@@ -57,6 +81,7 @@ def compute_responses(
         r_out_batches: List[np.ndarray] = []
         for i in range(0, Xout_t.shape[0], batch_size):
             batch = Xout_t[i : i + batch_size]
+            batch = _maybe_rotate_batch(batch)
             with torch.no_grad():
                 out = F.conv2d(batch, k_t, padding=k_t.shape[-1] // 2)
                 if response_fn == "mean_abs":

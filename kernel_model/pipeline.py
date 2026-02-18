@@ -165,6 +165,8 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         batch_size=cfg.training.batch_size,
         response_fn=cfg.selection.response_fn,
         standardize_patches=cfg.selection.standardize_responses,
+        rotation_aug=cfg.training.rotation_aug,
+        rotation_aug_choices=cfg.training.rotation_aug_choices,
     )
 
     kernel_scores = rank_kernels(responses)
@@ -314,36 +316,49 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
                 logger.warning("Composite kernel requested but no source kernels available.")
             else:
                 weight_method = cfg.composite.weight_method.lower()
-                weights = None
-                if weight_method == "uniform":
-                    weights = None
-                elif weight_method in ("auc", "fisher"):
-                    weights = [float(score_lookup.get(idx, {}).get(weight_method, 0.0)) for idx in source_idxs]
-                    if not np.any(np.abs(weights) > 0):
-                        weights = None
-                else:
+                if weight_method not in ("uniform", "auc", "fisher"):
                     raise ValueError(
                         f"Unknown composite weight_method '{cfg.composite.weight_method}'. Use 'uniform', 'auc', or 'fisher'."
                     )
 
-                composite_kernel = combine_kernels(
-                    [bank[idx]["kernel"] for idx in source_idxs],
-                    weights=weights,
-                    normalize=cfg.composite.normalize,
-                )
-                composite_bank = [
-                    {
-                        "family": "composite",
-                        "params": {
-                            "source": source,
-                            "n_kernels": len(source_idxs),
-                            "weight_method": weight_method,
-                            "normalize": cfg.composite.normalize,
-                            "kernel_idxs": source_idxs,
-                        },
-                        "kernel": composite_kernel,
-                    }
+                n_composites = max(1, int(getattr(cfg.composite, "n_composites", 1)))
+                idx_groups = [
+                    g.astype(int).tolist()
+                    for g in np.array_split(np.array(source_idxs, dtype=int), n_composites)
+                    if len(g) > 0
                 ]
+                composite_bank = []
+                group_weights = []
+                for group_id, group_idxs in enumerate(idx_groups):
+                    weights = None
+                    if weight_method in ("auc", "fisher"):
+                        weights = [float(score_lookup.get(idx, {}).get(weight_method, 0.0)) for idx in group_idxs]
+                        if not np.any(np.abs(weights) > 0):
+                            weights = None
+
+                    comp_kernel = combine_kernels(
+                        [bank[idx]["kernel"] for idx in group_idxs],
+                        weights=weights,
+                        normalize=cfg.composite.normalize,
+                    )
+                    composite_bank.append(
+                        {
+                            "family": "composite",
+                            "params": {
+                                "source": source,
+                                "group_id": group_id,
+                                "n_groups": len(idx_groups),
+                                "n_kernels": len(group_idxs),
+                                "weight_method": weight_method,
+                                "normalize": cfg.composite.normalize,
+                                "kernel_idxs": group_idxs,
+                            },
+                            "kernel": comp_kernel,
+                        }
+                    )
+                    group_weights.append(None if weights is None else [float(w) for w in weights])
+
+                composite_feature_idxs = list(range(len(composite_bank)))
                 composite_responses = compute_responses(
                     composite_bank,
                     Xin,
@@ -352,11 +367,13 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
                     batch_size=cfg.training.batch_size,
                     response_fn=cfg.selection.response_fn,
                     standardize_patches=cfg.selection.standardize_responses,
+                    rotation_aug=cfg.training.rotation_aug,
+                    rotation_aug_choices=cfg.training.rotation_aug_choices,
                 )
                 composite_clf = train_classifier(
                     Xin,
                     Xout,
-                    [0],
+                    composite_feature_idxs,
                     composite_responses,
                     epochs=cfg.training.epochs,
                     batch_size=cfg.training.batch_size,
@@ -390,7 +407,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
                     res = _eval_from_responses(
                         responses_split,
                         split_data,
-                        [0],
+                        composite_feature_idxs,
                         composite_clf,
                         composite_model,
                     )
@@ -401,20 +418,30 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
                         res.get("auc", 0.0),
                         res.get("acc", 0.0),
                     )
-                np.save(out_dir / "composite_kernel.npy", composite_kernel)
+                composite_kernels_arr = np.stack([entry["kernel"] for entry in composite_bank], axis=0)
+                np.save(out_dir / "composite_kernels.npy", composite_kernels_arr)
+                if composite_kernels_arr.shape[0] == 1:
+                    np.save(out_dir / "composite_kernel.npy", composite_kernels_arr[0])
                 composite_info = {
-                    "kernel_idxs": source_idxs,
+                    "n_composites_requested": n_composites,
+                    "n_composites_built": len(composite_bank),
+                    "kernel_idx_groups": idx_groups,
                     "weight_method": weight_method,
                     "normalize": cfg.composite.normalize,
-                    "weights": weights if weights is None else [float(w) for w in weights],
+                    "weights_by_group": group_weights,
                     "clf_auc": float(composite_clf.get("auc", 0.0)),
                     "clf_acc": float(composite_clf.get("acc", 0.0)),
                     "eval_results": composite_eval_results,
                 }
+                if len(idx_groups) == 1:
+                    # Backward-compatible keys expected by older notebooks/reports.
+                    composite_info["kernel_idxs"] = idx_groups[0]
+                    composite_info["weights"] = group_weights[0]
                 logger.info(
-                    "Composite kernel results: AUC=%.4f ACC=%.4f (n=%s)",
+                    "Composite results: AUC=%.4f ACC=%.4f (groups=%s total kernels=%s)",
                     composite_info.get("clf_auc", 0.0),
                     composite_info.get("clf_acc", 0.0),
+                    len(composite_bank),
                     len(source_idxs),
                 )
         except Exception as exc:

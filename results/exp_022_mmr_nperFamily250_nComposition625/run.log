@@ -1,0 +1,45 @@
+2026-02-06 13:38:36,882 [INFO] Starting pipeline. Output: results/exp_022 Device: cuda Selection: mmr
+2026-02-06 13:38:40,792 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-02-06 13:38:41,795 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-02-06 13:38:42,899 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-02-06 13:38:43,044 [INFO] Built kernel bank: 2250 kernels
+2026-02-06 13:52:13,698 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-02-06 13:52:19,001 [INFO] MMR selected kernels (bank idx): [290, 1001, 1141]
+2026-02-06 13:52:25,931 [INFO] Classifier results: AUC=0.9131 ACC=0.8578
+2026-02-06 13:56:29,852 [INFO] Eval val: AUC=0.9084 ACC=0.8363
+2026-02-06 14:00:44,664 [INFO] Eval test: AUC=0.9141 ACC=0.8492
+2026-02-06 14:00:51,438 [INFO] Composite eval val: AUC=0.8937 ACC=0.8268
+2026-02-06 14:00:51,589 [INFO] Composite eval test: AUC=0.8869 ACC=0.8107
+2026-02-06 14:00:51,590 [INFO] Composite kernel results: AUC=0.8884 ACC=0.8211 (n=3)
+2026-02-06 14:00:51,590 [INFO] No kernel pair met correlation threshold 0.200
+2026-02-06 14:00:51,631 [INFO] Saved artifacts to results/exp_022
+2026-02-06 14:52:24,061 [INFO] Starting pipeline. Output: results/exp_022 Device: cuda Selection: mmr
+2026-02-06 14:52:26,043 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-02-06 14:52:26,941 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-02-06 14:52:27,924 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-02-06 14:52:27,955 [INFO] Built kernel bank: 450 kernels
+2026-02-06 14:54:58,523 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-02-06 14:54:59,364 [INFO] MMR selected kernels (bank idx): [74, 442, 229]
+2026-02-06 14:55:04,137 [INFO] Classifier results: AUC=0.9291 ACC=0.8569
+2026-02-06 14:55:50,768 [INFO] Eval val: AUC=0.9130 ACC=0.8592
+2026-02-06 14:56:39,459 [INFO] Eval test: AUC=0.9214 ACC=0.8503
+2026-02-06 14:56:45,264 [INFO] Composite eval val: AUC=0.8765 ACC=0.8056
+2026-02-06 14:56:45,398 [INFO] Composite eval test: AUC=0.8666 ACC=0.7920
+2026-02-06 14:56:45,398 [INFO] Composite kernel results: AUC=0.8826 ACC=0.8156 (n=3)
+2026-02-06 14:56:45,399 [INFO] No kernel pair met correlation threshold 0.200
+2026-02-06 14:56:45,408 [INFO] Saved artifacts to results/exp_022
+2026-02-06 15:25:25,795 [INFO] Starting pipeline. Output: results/exp_022 Device: cuda Selection: mmr
+2026-02-06 15:25:27,731 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-02-06 15:25:28,336 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-02-06 15:25:28,901 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-02-06 15:25:29,180 [INFO] Built kernel bank: 4500 kernels
+2026-02-06 15:51:53,558 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-02-06 16:02:01,009 [INFO] MMR selected kernels (bank idx): [892, 2080, 2166, 2437, 2328, 2033, 2164, 2225, 2196, 2414, 2918, 2138, 2359, 832, 2454, 2948, 2310, 2596, 2807, 2320, 3279, 3047, 2453, 2215, 779, 968, 755, 709, 883, 632, 869, 880, 606, 741, 916, 811, 3718, 715, 873, 547, 626, 601, 933, 789, 549, 702, 677, 900, 591, 696, 979, 183, 891, 907, 389, 847, 419, 86, 745, 319, 150, 27, 731, 460, 107, 865, 31, 273, 936, 735, 104, 940, 966, 250, 304, 798, 913, 543, 488, 105, 235, 655, 526, 4281, 299, 592, 925, 340, 766, 584]
+2026-02-06 16:02:05,842 [INFO] Classifier results: AUC=0.9227 ACC=0.8642
+2026-02-06 16:10:24,141 [INFO] Eval val: AUC=0.9252 ACC=0.8626
+2026-02-06 16:19:06,634 [INFO] Eval test: AUC=0.9333 ACC=0.8733
+2026-02-06 16:19:15,284 [INFO] Composite eval val: AUC=0.9076 ACC=0.8464
+2026-02-06 16:19:15,435 [INFO] Composite eval test: AUC=0.8933 ACC=0.8150
+2026-02-06 16:19:15,436 [INFO] Composite kernel results: AUC=0.9007 ACC=0.8294 (n=90)
+2026-02-06 16:19:15,437 [INFO] No kernel pair met correlation threshold 0.200
+2026-02-06 16:19:15,511 [INFO] Saved artifacts to results/exp_022

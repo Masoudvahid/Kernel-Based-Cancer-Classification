@@ -1,0 +1,222 @@
+{
+  "selected_idxs": [
+    0,
+    17,
+    8
+  ],
+  "bank_meta": [
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 12.926861066284486,
+        "sigma_y": 12.926861066284486,
+        "theta": 0.9528505564043824,
+        "size": 31
+      }
+    },
+    {
+      "family": "gaussian",
+      "params": {
+        "sigma_x": 3.5411626403633774,
+        "sigma_y": 3.5411626403633774,
+        "theta": 2.6713784062322175,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 0.8163561175652126,
+        "sigma_y": 1.1637202259353838,
+        "theta": 1.4624361363599498,
+        "size": 31
+      }
+    },
+    {
+      "family": "anisotropic_gaussian",
+      "params": {
+        "sigma_x": 2.199309324003808,
+        "sigma_y": 4.1356450548907295,
+        "theta": 2.1960246390504605,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 15.010258895903187,
+        "sigma2": 41.99827550716316,
+        "theta": 2.13666196026253,
+        "size": 31
+      }
+    },
+    {
+      "family": "dog",
+      "params": {
+        "sigma1": 2.6134802046719003,
+        "sigma2": 6.021183652383582,
+        "theta": 1.6392438409270145,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 4.113232591691137,
+        "theta": 0.26954872610561503,
+        "size": 31
+      }
+    },
+    {
+      "family": "log",
+      "params": {
+        "sigma": 11.379035501267614,
+        "theta": 0.26500920676281947,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 5.417130445131734,
+        "freq": 0.467969774063473,
+        "theta": 0.4974357698814563,
+        "phase": 4.012233395954964,
+        "gamma": 1.3774174680553966,
+        "size": 31
+      }
+    },
+    {
+      "family": "gabor",
+      "params": {
+        "sigma": 10.39581840506967,
+        "freq": 0.3784985251467581,
+        "theta": 1.3351579425018383,
+        "phase": 2.4815475069226753,
+        "gamma": 1.0413694795382642,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 5.519135373881511,
+        "theta": 0.8121635093958846,
+        "size": 31
+      }
+    },
+    {
+      "family": "hog",
+      "params": {
+        "sigma": 12.864385519252208,
+        "theta": 2.8139931379761567,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 10,
+        "theta": 0.1801715417218095,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "glcm",
+      "params": {
+        "radius": 6,
+        "theta": 0.19760763744396073,
+        "offset_weight": -1.0,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 11,
+        "theta": 1.553681553883704,
+        "size": 31
+      }
+    },
+    {
+      "family": "lbp",
+      "params": {
+        "radius": 3,
+        "theta": 3.8144980695300186,
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 11,
+        "beta": 0.6966133144710445,
+        "neighborhood": "cross",
+        "size": 31
+      }
+    },
+    {
+      "family": "mrf",
+      "params": {
+        "radius": 2,
+        "beta": 1.364103072533195,
+        "neighborhood": "full",
+        "size": 31
+      }
+    }
+  ],
+  "clf_auc": 0.9171209016393443,
+  "clf_acc": 0.8577981651376146,
+  "selection_candidate_idxs": [
+    0,
+    11,
+    1,
+    3,
+    10,
+    2,
+    13,
+    15,
+    17,
+    12,
+    4,
+    7,
+    6,
+    9,
+    5,
+    14,
+    16,
+    8
+  ],
+  "plot_candidate_idxs": [],
+  "subset_results": {},
+  "low_corr_pair": {
+    "subset": null,
+    "kernel_idxs": [],
+    "auc": 0.5,
+    "acc": 0.5,
+    "corr": null,
+    "abs_corr": null,
+    "threshold_met": false
+  },
+  "selection_method": "abess",
+  "train_subset_frac": null,
+  "train_subset_size": null,
+  "eval_results": {
+    "val": {
+      "auc": 0.9117,
+      "acc": 0.8458100558659218,
+      "n": 1790,
+      "n_pos": 1040,
+      "n_neg": 750
+    },
+    "test": {
+      "auc": 0.9154680259499537,
+      "acc": 0.8593582887700535,
+      "n": 1870,
+      "n_pos": 1040,
+      "n_neg": 830
+    }
+  },
+  "composite": {}
+}

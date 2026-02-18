@@ -50,6 +50,10 @@ Generates a diverse set of convolutional kernels from multiple families:
 - **DoG (Difference of Gaussians)**: Edge detection kernels
 - **LoG (Laplacian of Gaussian)**: Blob detection kernels
 - **Gabor**: Oriented texture analysis kernels
+- **HOG (Histogram of Oriented Gradients)**: Oriented gradient kernels
+- **GLCM (Gray-Level Co-occurrence)**: Pairwise offset kernels
+- **LBP (Local Binary Pattern)**: Neighbor-center contrast kernels
+- **MRF (Markov Random Field)**: Smoothness (Laplacian) kernels
 
 ### 3. **Response Computation**
 - Computes filter responses for each kernel on all patches
@@ -76,7 +80,7 @@ The notebook is configured to:
 ### Default Parameters
 - Patch size: 128×128 pixels
 - Kernel size: 31×31 pixels
-- Kernel families: All 5 types
+- Kernel families: All 9 types
 - Kernels per family: 200
 - Selected kernels: Top 20 diverse kernels
 - Training epochs: 30
@@ -97,7 +101,7 @@ Example run results:
 - **Training data**: 2,000 inside patches (small windows of size 128×128) and 2,000 outside patches (limited by `max_per_class`) were extracted from the total 130 images
   - Inside patches saved to: `data/patches/inside/`
   - Outside patches saved to: `data/patches/outside/`
-- **Kernel bank**: 1,000 kernels generated (200 per family × 5 families)
+- **Kernel bank**: 1,800 kernels generated (200 per family × 9 families)
 - **Selected kernels**: 20 diverse kernels (indices: [340, 852, 970, 964, 938, 315, 282, 234, 252, 346, 355, 246, 325, 60, 378, 37, 385, 128, 107, 97])
 - **Classifier performance**:
   - Validation AUC: **0.9201**
@@ -124,16 +128,20 @@ Example run results:
 - [x] Select the best 3-feature model.
 - [x] Create a 3D scatterplot using the three outputs 
 
-- [ ] Experiment with different kernel families and parameter ranges
-- [ ] Tune hyperparameters (topM, K, lambda_mm) for better kernel selection
-- [ ] Try different response functions (mean_abs, etc.)
-- [ ] Evaluate on test set (currently only validation split)
+- [x] Experiment with different kernel families and parameter ranges
+- [x] Tune hyperparameters (topM, K, lambda_mm) for better kernel selection
+- [x] Try different response functions (mean_abs, etc.)
+- [x] Evaluate on test set (currently only validation split)
 - [ ] Add cross-validation for more robust performance estimates
-- [ ] Visualize selected kernels and their responses
+- [x] Visualize selected kernels and their responses
 - [ ] Compare with deep learning baselines
 - [ ] Optimize patch sampling strategy (currently random sampling)
 - [ ] Add support for multi-class classification
 - [ ] Implement feature importance analysis for selected kernels
+
+### 30.01.2026
+- [ ] Find best kernel combination and visualize it.
+
 
 ## Dependencies
 

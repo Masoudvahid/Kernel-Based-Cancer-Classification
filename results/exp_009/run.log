@@ -1,0 +1,30 @@
+2025-12-23 21:22:57,679 [INFO] Starting pipeline. Output: results/exp_009 Device: cuda Selection: mmr
+2025-12-23 21:22:57,679 [INFO] Extracting patches (malignant=data/TIFF Images/Malignant, healthy=data/TIFF Images/Normal, annotations=data/TIFF Images/malignantAnnotation)
+2025-12-24 00:25:48,489 [INFO] Saved patches: inside=1220 outside=4910
+2025-12-24 00:25:50,359 [INFO] Loaded train split: Xin=700 Xout=3000 resize=128 (patients in=70 out=293)
+2025-12-24 00:25:50,823 [INFO] Loaded val split: Xin=260 Xout=750 resize=128 (patients in=26 out=73)
+2025-12-24 00:25:51,337 [INFO] Loaded test split: Xin=260 Xout=830 resize=128 (patients in=26 out=73)
+2025-12-24 00:25:51,415 [INFO] Built kernel bank: 1000 kernels
+2025-12-24 00:29:18,603 [INFO] Patient-level grouping enabled (303 unique ids)
+2025-12-24 00:29:20,618 [INFO] MMR selected kernels (bank idx): [932, 802, 893, 970, 971, 301, 869, 990, 822, 927]
+2025-12-24 00:29:26,217 [INFO] Classifier results: AUC=0.7165 ACC=0.8384
+2025-12-24 00:30:24,283 [INFO] Eval val: AUC=0.7798 ACC=0.7594
+2025-12-24 00:31:26,799 [INFO] Eval test: AUC=0.7775 ACC=0.7780
+2025-12-24 01:09:13,345 [INFO] No pair met |corr|<=0.000; best available (min corr=0.4611) kernels [866, 863] (cols (12, 15)) AUC=0.5939 ACC=0.8329 Corr=0.4611
+2025-12-24 01:09:13,346 [INFO] Best pair (plot candidate idx): (12, 15) AUC=0.6025
+2025-12-24 01:09:15,598 [INFO] Best triple (plot candidate idx): (11, 15, 17) AUC=0.6125
+2025-12-24 01:09:15,908 [INFO] Saved artifacts to results/exp_009
+2025-12-24 02:09:56,974 [INFO] Starting pipeline. Output: results/exp_010 Device: cuda Selection: abess
+2025-12-24 02:09:58,301 [INFO] Loaded train split: Xin=700 Xout=3000 resize=128 (patients in=70 out=293)
+2025-12-24 02:09:58,691 [INFO] Loaded val split: Xin=260 Xout=750 resize=128 (patients in=26 out=73)
+2025-12-24 02:09:59,093 [INFO] Loaded test split: Xin=260 Xout=830 resize=128 (patients in=26 out=73)
+2025-12-24 02:09:59,168 [INFO] Built kernel bank: 1000 kernels
+2025-12-24 02:13:24,242 [INFO] Patient-level grouping enabled (303 unique ids)
+2025-12-24 02:13:24,328 [INFO] abess selected kernels (candidate idx): [2, 7, 60, 65, 66, 67, 70, 71, 114, 145]
+2025-12-24 02:13:28,809 [INFO] Classifier results: AUC=0.7358 ACC=0.8384
+2025-12-24 02:14:26,593 [INFO] Eval val: AUC=0.7639 ACC=0.7564
+2025-12-24 02:15:28,956 [INFO] Eval test: AUC=0.7424 ACC=0.7780
+2025-12-24 02:52:41,967 [INFO] No pair met |corr|<=0.000; best available (min corr=0.5483) kernels [904, 830] (cols (11, 16)) AUC=0.6018 ACC=0.8315 Corr=0.5483
+2025-12-24 02:52:41,967 [INFO] Best pair (plot candidate idx): (11, 16) AUC=0.6017
+2025-12-24 02:52:44,150 [INFO] Best triple (plot candidate idx): (6, 11, 19) AUC=0.6241
+2025-12-24 02:52:44,464 [INFO] Saved artifacts to results/exp_010

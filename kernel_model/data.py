@@ -363,9 +363,30 @@ def load_patches_from_folders(
 
 def to_tensor_batch(X: np.ndarray, device: torch.device) -> torch.Tensor:
     """
-    Convert an array of patches (N,H,W) into a torch tensor (N,1,H,W).
+    Convert patches to a torch tensor (N,1,H,W).
+    Supported input layouts:
+      - (N, H, W)
+      - (N, H, W, C)
+      - (N, C, H, W)
+    Multi-channel inputs are reduced to a single channel via mean.
     """
-    return torch.from_numpy(X).unsqueeze(1).to(device)
+    t = torch.from_numpy(X)
+    if t.ndim == 3:
+        # (N,H,W) -> (N,1,H,W)
+        t = t.unsqueeze(1)
+    elif t.ndim == 4:
+        # (N,H,W,C) -> (N,C,H,W)
+        if t.shape[-1] in (1, 3):
+            t = t.permute(0, 3, 1, 2)
+        # else assume already (N,C,H,W)
+        if t.shape[1] != 1:
+            t = t.mean(dim=1, keepdim=True)
+    else:
+        raise ValueError(
+            f"Unsupported patch tensor shape {tuple(t.shape)}. "
+            "Expected (N,H,W), (N,H,W,C), or (N,C,H,W)."
+        )
+    return t.to(device)
 
 
 def extract_patches(

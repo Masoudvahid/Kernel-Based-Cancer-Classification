@@ -1,0 +1,74 @@
+2026-01-26 15:04:37,346 [INFO] Starting pipeline. Output: results/exp_022 Device: cuda Selection: mmr
+2026-01-26 15:04:39,402 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-01-26 15:04:39,979 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-01-26 15:04:40,582 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-01-26 15:04:40,694 [INFO] Built kernel bank: 1800 kernels
+2026-01-26 15:15:03,918 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-01-26 15:15:07,850 [INFO] MMR selected kernels (bank idx): [297, 961, 915]
+2026-01-26 15:15:14,801 [INFO] Classifier results: AUC=0.9275 ACC=0.7339
+2026-01-26 15:27:05,281 [INFO] Eval val: AUC=0.9085 ACC=0.8011
+2026-01-26 15:30:18,083 [INFO] Eval test: AUC=0.9239 ACC=0.7914
+2026-01-26 15:30:18,084 [INFO] No kernel pair met correlation threshold 0.000
+2026-01-26 15:30:18,113 [INFO] Saved artifacts to results/exp_022
+2026-01-26 15:30:18,118 [INFO] Starting pipeline. Output: results/exp_023 Device: cuda Selection: mmr
+2026-01-26 15:30:20,288 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-01-26 15:30:20,907 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-01-26 15:30:21,541 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-01-26 15:30:21,664 [INFO] Built kernel bank: 1800 kernels
+2026-01-26 15:52:58,515 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-01-26 15:53:01,775 [INFO] MMR selected kernels (bank idx): [237, 32, 1181, 340, 289]
+2026-01-26 15:53:07,098 [INFO] Classifier results: AUC=0.9273 ACC=0.6927
+2026-01-26 15:56:11,204 [INFO] Eval val: AUC=0.9071 ACC=0.7765
+2026-01-26 15:59:27,927 [INFO] Eval test: AUC=0.9234 ACC=0.7594
+2026-01-26 15:59:27,928 [INFO] No kernel pair met correlation threshold 0.000
+2026-01-26 15:59:27,957 [INFO] Saved artifacts to results/exp_023
+2026-01-26 15:59:27,963 [INFO] Starting pipeline. Output: results/exp_024 Device: cuda Selection: mmr
+2026-01-26 15:59:30,206 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-01-26 15:59:30,827 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-01-26 15:59:31,493 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-01-26 15:59:31,630 [INFO] Built kernel bank: 1800 kernels
+2026-01-26 16:32:22,362 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-01-26 16:33:49,840 [INFO] MMR selected kernels (bank idx): [281, 352, 1185, 327, 210, 387, 312, 310, 350, 216, 272, 188, 340, 118, 93, 214, 32, 59, 168, 273, 97, 57, 260, 363, 215, 62, 375, 349, 129, 2, 385, 393, 127, 248, 130, 213, 302, 258, 128, 343, 120, 369, 303, 265, 194, 394, 276, 267, 268, 270, 238, 23, 108, 379, 1, 358, 226, 60, 8, 180, 339, 316, 48, 336, 286, 105, 153, 396, 24, 308, 132, 77, 378, 177, 73, 294, 271, 159, 325, 266, 335, 372, 84, 279, 364, 383, 341, 107, 324, 262, 176, 64, 337, 231, 95, 313, 28, 326, 278, 373, 1015, 239, 91, 150, 328, 183, 1123, 20, 366, 283, 297, 50, 92, 1036, 172, 1139, 1014, 15, 1092, 162, 220, 381, 139, 182, 330, 193, 161, 102, 1181, 386, 6, 184, 1137, 26, 158, 299, 39, 368, 31, 76, 1133, 257, 99, 1044, 229, 280, 78, 1011, 301, 1054, 304, 82, 112, 16, 68, 309, 202, 380, 317, 250, 109, 1099, 100, 49, 1104, 53, 1020, 361, 315, 146, 390, 334, 1087, 395, 232, 285, 1070, 10, 1007, 1142, 65, 1131, 359, 1017, 295, 34, 397, 169, 1038, 167, 164, 356, 307, 1196, 1152, 241, 208, 54, 284, 1151]
+2026-01-26 16:33:55,079 [INFO] Classifier results: AUC=0.9099 ACC=0.7358
+2026-01-26 16:36:54,524 [INFO] Eval val: AUC=0.9047 ACC=0.8156
+2026-01-26 16:40:08,046 [INFO] Eval test: AUC=0.9180 ACC=0.7909
+2026-01-26 16:40:08,047 [INFO] No kernel pair met correlation threshold 0.000
+2026-01-26 16:40:08,076 [INFO] Saved artifacts to results/exp_024
+2026-01-26 16:40:08,080 [INFO] Starting pipeline. Output: results/exp_025 Device: cuda Selection: mmr
+2026-01-26 16:40:10,333 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-01-26 16:40:10,949 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-01-26 16:40:11,602 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-01-26 16:40:11,730 [INFO] Built kernel bank: 1800 kernels
+2026-01-26 17:17:25,159 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-01-26 17:19:38,900 [INFO] MMR selected kernels (bank idx): [272, 947, 283, 1137, 347, 288, 377, 205, 286, 203, 318, 207, 289, 344, 274, 269, 341, 255, 363, 23, 86, 10, 215, 312, 139, 313, 310, 227, 38, 47, 308, 356, 223, 328, 62, 285, 172, 198, 36, 97, 163, 69, 111, 200, 270, 110, 91, 357, 858, 20, 314, 19, 68, 253, 333, 138, 41, 394, 123, 54, 304, 190, 353, 43, 61, 30, 173, 252, 352, 277, 324, 322, 116, 284, 366, 159, 231, 53, 147, 9, 359, 355, 149, 390, 125, 136, 27, 292, 181, 225, 320, 371, 299, 141, 87, 39, 233, 101, 389, 368, 133, 220, 226, 221, 135, 126, 75, 208, 332, 298, 230, 28, 243, 397, 72, 144, 251, 25, 12, 235, 180, 267, 102, 1082, 238, 183, 1190, 362, 1023, 257, 164, 1040, 264, 302, 1125, 1145, 44, 124, 343, 83, 259, 244, 282, 157, 1021, 81, 331, 1198, 42, 1186, 40, 2, 217, 46, 0, 209, 384, 1067, 1074, 301, 58, 294, 383, 29, 112, 1069, 34, 1113, 94, 16, 297, 1151, 1068, 316, 360, 349, 1054, 327, 239, 129, 22, 260, 1185, 340, 52, 1181, 1011, 60, 107, 268, 1, 153, 317, 1180, 1099, 7, 1075, 134, 160, 319, 17, 1168, 398, 211, 169, 370, 358, 131, 1055, 249, 396, 4, 166, 1094, 1142, 387, 305, 165, 1085, 376, 1020, 330, 265, 137, 1090, 399, 1031, 1007, 168, 256, 202, 15, 338, 1006, 26, 375, 242, 45, 143, 373, 32, 154, 388, 148, 85, 14, 329, 258, 108, 372, 367, 1135, 99, 216, 51, 1174, 115, 77, 1147, 281, 65, 175, 171, 113, 167, 37, 142, 35, 189, 63, 70, 346, 103, 118, 187, 193, 21, 48, 177, 119, 191, 73, 199, 158, 95, 1138, 1197, 219, 174, 395, 307, 229, 3, 381, 350, 266, 342, 1189, 275, 300]
+2026-01-26 17:19:45,233 [INFO] Classifier results: AUC=0.8759 ACC=0.7872
+2026-01-26 17:37:20,700 [INFO] Eval val: AUC=0.8790 ACC=0.8006
+2026-01-26 17:55:28,293 [INFO] Eval test: AUC=0.8927 ACC=0.8182
+2026-01-26 17:55:28,293 [INFO] No kernel pair met correlation threshold 0.000
+2026-01-26 17:55:28,321 [INFO] Saved artifacts to results/exp_025
+2026-01-27 14:16:19,766 [INFO] Starting pipeline. Output: results/exp_026 Device: cuda Selection: abbes
+2026-01-27 14:16:23,550 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-01-27 14:16:24,666 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-01-27 14:16:25,941 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-01-27 14:16:26,061 [INFO] Built kernel bank: 1800 kernels
+2026-01-27 14:31:48,663 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-01-27 15:06:57,542 [INFO] Starting pipeline. Output: results/exp_027 Device: cuda Selection: abess
+2026-01-27 15:07:00,718 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-01-27 15:07:01,545 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-01-27 15:07:02,281 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-01-27 15:07:02,389 [INFO] Built kernel bank: 1800 kernels
+2026-01-27 15:23:58,993 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-01-27 15:23:59,073 [INFO] abess selected kernels (candidate idx): [0, 1, 5]
+2026-01-27 15:24:04,258 [INFO] Classifier results: AUC=0.9256 ACC=0.7257
+2026-01-27 15:40:38,901 [INFO] Eval val: AUC=0.9073 ACC=0.7950
+2026-01-27 15:57:20,599 [INFO] Eval test: AUC=0.9224 ACC=0.7856
+2026-01-27 15:57:20,601 [INFO] No kernel pair met correlation threshold 0.000
+2026-01-27 15:57:20,641 [INFO] Saved artifacts to results/exp_027
+2026-01-27 15:57:20,646 [INFO] Starting pipeline. Output: results/exp_028 Device: cuda Selection: abess
+2026-01-27 15:57:23,042 [INFO] Loaded train split: Xin=2800 Xout=3000 resize=128 (patients in=70 out=293)
+2026-01-27 15:57:23,831 [INFO] Loaded val split: Xin=1040 Xout=750 resize=128 (patients in=26 out=73)
+2026-01-27 15:57:24,724 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-01-27 15:57:24,868 [INFO] Built kernel bank: 1800 kernels
+2026-01-27 16:28:03,108 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-01-27 16:28:03,167 [INFO] abess selected kernels (candidate idx): [0, 1, 2, 7, 169]
+2026-01-27 16:28:09,344 [INFO] Classifier results: AUC=0.9266 ACC=0.7367

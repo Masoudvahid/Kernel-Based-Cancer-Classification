@@ -1,0 +1,135 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+\begin{document}
+
+\title{Updates on data processing pipeline}
+\author{}
+\date{09 January 2026 \ \small Reference: 23 December 2025}
+\maketitle
+
+\section*{Key Changes}
+\begin{itemize}[leftmargin=*]
+    \item Patch extraction was rebuilt: positives come from the malignant mask or its bounding box with a minimum lesion coverage, negatives are split into near/far groups with coverage caps, intensity filters, and balanced 1:1 targets for malignant vs.\ healthy patches.
+    \item Patient-level train/val/test splitting is now supported (seeded) to avoid leakage, with per-split patch folders and patient IDs carried through loading and feature building.
+    \item Config, selection, and models with support for the new sampling features (coverage thresholds, near/far radii, nonzero/intensity filters) plus group subsampling and GroupShuffleSplit based validation; mean/std are only stored when standardizing and AUC handling is more robust.
+    \item Pipeline now loads arbitrary splits, to keep patient labels through response computation, evaluates trained models on additional splits, and logs per split metrics alongside ROC/PR and confusion plots.
+    \item Drop patches containing dark pixels more than 35\%.
+\end{itemize}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+
+        % Left images
+        \node (L1) {\includegraphics[width=0.22\linewidth]{23_december_images/healthy_old.png}};
+        \node (L2) [below=0.2cm of L1] {\includegraphics[width=0.22\linewidth]{23_december_images/cancer_old.png}};
+
+        % Right images
+        \node (R1) [right=3cm of L1] {\includegraphics[width=0.22\linewidth]{23_december_images/healthy_new.png}};
+        \node (R2) [below=0.2cm of R1] {\includegraphics[width=0.22\linewidth]{23_december_images/cancer_new.png}};
+
+        % Midpoints of left and right columns
+        \coordinate (Lmid) at ($(L1)!0.5!(L2)$);
+        \coordinate (Rmid) at ($(R1)!0.5!(R2)$);
+
+        % Arrow with centered text
+        \draw[-{Stealth}, thick]
+            (Lmid) -- node[midway, above]{\small Old to New} (Rmid);
+
+    \end{tikzpicture}
+    \caption{Inspection of data.}
+    \label{fig:new_data_pipeline}
+\end{figure}
+
+\newpage
+
+I was expecting more changes in decision boundary graph but I got a similar pattern. I ran multiple experiments with different configuration of kernel selection (ABESS/MMR, Number of Kernels, K best kernels) but unfortunately I could not get a better distinction.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+
+        % Left images
+        \node (L1) {\includegraphics[width=0.22\linewidth]{23_december_images/scatter_best_pair_exp5.png}};
+
+        % Right images
+        \node (R1) [right=3cm of L1] {\includegraphics[width=0.22\linewidth]{23_december_images/scatter_best_pair_exp7.png}};
+
+        \draw[-{Stealth}, thick]
+            (L1.east) -- node[above]{\small New Data Pipeline} (R1.west);
+
+    \end{tikzpicture}
+    \caption{Overview of the new data pipeline from original samples to processed outputs.}
+    \label{fig:new_data_pipeline}
+\end{figure}
+
+\section*{More changes and a new experiment}
+\begin{itemize}[leftmargin=*]
+    \item In the previous experiments, I was using the non malignant parts of the image (healthy parts of malignant image) as healthy, in the following I included patches from truly healthy data as well.
+    \item Feature side: per-patch responses are z-scored before convolution and default aggregation switched to \texttt{abs\_max}. (I think not a good idea)
+    \item Standardize patches using their mean and std.
+\end{itemize}
+I managed to make a less reliable experiment using these 3 changes:
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+
+        % Left images
+        \node (L1) {\includegraphics[width=0.3\linewidth]{23_december_images/scatter_best_pair_exp9.png}};
+
+        % Right images
+        \node (R1) [right=1cm of L1] {\includegraphics[width=0.3\linewidth]{23_december_images/scatter_best_triple_exp9.png}};
+
+    \end{tikzpicture}
+    \caption{}
+    \label{fig:new_data_pipeline}
+\end{figure}
+
+\section*{Pairwise preview}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.55\linewidth]{../results/pairwise_preview/selected/pairwise_correlation_heatmap.png}
+    \caption{Selected pairwise correlation heatmap from the latest run.}
+    \label{fig:pairwise_heatmap}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k236_k314.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k236_k601.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k236_k810.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k236_k828.png}
+    \\[0.2cm]
+    \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k810_k601.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k828_k631.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k828_k810.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k869_k236.png}
+    \caption{Selected pairwise scatter previews (1/2)}
+    \label{fig:pairwise_scatter_1}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k869_k828.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k905_k236.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k905_k314.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k905_k631.png}
+    \\[0.2cm]
+    \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k929_k236.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k929_k314.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k929_k828.png} \hfill     \includegraphics[width=0.23\linewidth]{../results/pairwise_preview/selected/scatter_k929_k869.png}
+    \caption{Selected pairwise scatter previews (2/2)}
+    \label{fig:pairwise_scatter_2}
+\end{figure}
+
+\noindent\textbf{Short notes.} The heatmap summarizes kernel-response similarity to flag redundancy, and the selected scatter grids show class overlap patterns for the curated kernel pairs.
+
+Current plans:
+\begin{itemize}
+    \item Rebalance negatives: reduce/disable malignant-background negatives and keep most negatives from healthy slides; also increase far neg radius.
+    \item Loosen positive strictness slightly: drop min\_pos\_coverage back toward 0.6–0.7; keep bbox positives off (bbox around the lesion tissue).
+    \item Try response\_fn="abs\_max" vs mean\_abs and turn off patch z-scoring.
+    \item Model: standardize features, use logistic (not MLP) for the 2D/3D plots to avoid overfitting on small subsets; rerun subset search with a fixed train\_subset\_frac (e.g., 0.5) for stability.
+    \item And a lot more experiments...
+\end{itemize}
+\href{https://github.com/Masoudvahid/Kernel-Based-Cancer-Classification}{link to github}
+
+
+\end{document}
