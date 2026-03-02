@@ -36,6 +36,11 @@ Generates a diverse set of convolutional kernels from multiple families:
 - **LBP (Local Binary Pattern)**: Neighbor-center contrast kernels
 - **MRF (Markov Random Field)**: Smoothness (Laplacian) kernels
 
+Sampling modes for kernel parameters:
+- `random` (legacy behavior)
+- `qmc` (Sobol low-discrepancy sequence)
+- `lhs` (Latin Hypercube Sampling)
+
 ### 3. **Response Computation**
 - Computes filter responses for each kernel on all patches
 - Uses PyTorch for efficient batch processing

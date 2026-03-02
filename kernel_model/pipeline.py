@@ -155,8 +155,20 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         except FileNotFoundError:
             logger.warning("Split '%s' not found under %s; skipping.", split, cfg.data_root)
 
-    bank = build_kernel_bank(cfg.bank.families, cfg.bank.n_per_family, cfg.bank.kernel_size)
-    logger.info("Built kernel bank: %s kernels", len(bank))
+    bank = build_kernel_bank(
+        cfg.bank.families,
+        cfg.bank.n_per_family,
+        cfg.bank.kernel_size,
+        sampling_method=cfg.bank.sampling_method,
+        sampling_seed=cfg.bank.sampling_seed,
+        qmc_scramble=cfg.bank.sampling_qmc_scramble,
+    )
+    logger.info(
+        "Built kernel bank: %s kernels (sampling=%s seed=%s)",
+        len(bank),
+        cfg.bank.sampling_method,
+        cfg.bank.sampling_seed,
+    )
     responses = compute_responses(
         bank,
         Xin,

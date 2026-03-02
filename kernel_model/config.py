@@ -47,6 +47,9 @@ class KernelBankConfig:
     )
     n_per_family: int = 200
     kernel_size: int = 31
+    sampling_method: str = "random"  # "random", "qmc" (Sobol), or "lhs"
+    sampling_seed: Optional[int] = None  # None keeps legacy non-deterministic behavior
+    sampling_qmc_scramble: bool = True
 
 
 @dataclass

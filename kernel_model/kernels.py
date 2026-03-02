@@ -1,4 +1,5 @@
 import math
+import warnings
 from typing import Dict, List, Optional, Sequence
 
 import numpy as np
@@ -158,70 +159,245 @@ def make_mrf_kernel(size: int, radius: int, beta: float = 1.0, neighborhood: str
     return K.astype(np.float32)
 
 
-def sample_parameters(family: str, n_samples: int, size: int) -> List[Dict]:
+def _clip_unit_interval(u: float) -> float:
+    # Keep values in [0, 1) so integer binning is stable even if samplers return edge values.
+    return float(np.clip(u, 0.0, np.nextafter(1.0, 0.0)))
+
+
+def _sample_uniform(u: float, low: float, high: float) -> float:
+    u = _clip_unit_interval(u)
+    return float(low + (high - low) * u)
+
+
+def _sample_log_uniform(u: float, low: float, high: float) -> float:
+    u = _clip_unit_interval(u)
+    log_low = math.log10(low)
+    log_high = math.log10(high)
+    return float(10 ** (log_low + (log_high - log_low) * u))
+
+
+def _sample_int_uniform(u: float, low: int, high: int) -> int:
+    if high < low:
+        raise ValueError(f"Invalid integer bounds: low={low} high={high}")
+    u = _clip_unit_interval(u)
+    span = high - low + 1
+    return int(low + math.floor(u * span))
+
+
+def _unit_samples(
+    n_samples: int,
+    dim: int,
+    sampling_method: str = "random",
+    seed: Optional[int] = None,
+    qmc_scramble: bool = True,
+) -> np.ndarray:
+    method = (sampling_method or "random").lower()
+    if dim <= 0:
+        return np.zeros((n_samples, 0), dtype=np.float64)
+
+    if method == "random":
+        if seed is None:
+            # Legacy behavior: use numpy global RNG when no explicit seed is provided.
+            return np.random.random((n_samples, dim))
+        rng = np.random.default_rng(seed)
+        return rng.random((n_samples, dim))
+
+    qmc_aliases = {"qmc", "sobol", "low_discrepancy", "low-discrepancy"}
+    lhs_aliases = {"lhs", "latin_hypercube", "latin-hypercube"}
+    if method not in qmc_aliases and method not in lhs_aliases:
+        raise ValueError(
+            f"Unknown sampling_method '{sampling_method}'. Use 'random', 'qmc', or 'lhs'."
+        )
+
+    try:
+        from scipy.stats import qmc
+    except Exception as exc:
+        warnings.warn(
+            f"SciPy qmc is unavailable ({exc}); falling back to random sampling.",
+            RuntimeWarning,
+        )
+        if seed is None:
+            return np.random.random((n_samples, dim))
+        rng = np.random.default_rng(seed)
+        return rng.random((n_samples, dim))
+
+    if method in lhs_aliases:
+        sampler = qmc.LatinHypercube(d=dim, scramble=qmc_scramble, seed=seed)
+        return sampler.random(n=n_samples)
+
+    sampler = qmc.Sobol(d=dim, scramble=qmc_scramble, seed=seed)
+    # Prefer balance properties when n is a power-of-two; otherwise still support arbitrary n.
+    if n_samples > 0 and (n_samples & (n_samples - 1)) == 0:
+        return sampler.random_base2(m=int(math.log2(n_samples)))
+    return sampler.random(n=n_samples)
+
+
+def sample_parameters(
+    family: str,
+    n_samples: int,
+    size: int,
+    sampling_method: str = "random",
+    sampling_seed: Optional[int] = None,
+    qmc_scramble: bool = True,
+) -> List[Dict]:
+    """
+    Sample kernel-family parameters using one of:
+    - random: legacy iid uniform sampling
+    - qmc: Sobol low-discrepancy sampling
+    - lhs: Latin Hypercube sampling
+    """
     params: List[Dict] = []
-    for _ in range(n_samples):
-        if family == "gaussian":
-            sigma = float(10 ** np.random.uniform(np.log10(0.5), np.log10(size / 2)))
-            theta = np.random.uniform(0, math.pi)
+
+    if family == "gaussian":
+        u = _unit_samples(
+            n_samples,
+            dim=2,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            sigma = _sample_log_uniform(ui[0], 0.5, size / 2)
+            theta = _sample_uniform(ui[1], 0.0, math.pi)
             params.append({"sigma_x": sigma, "sigma_y": sigma, "theta": theta, "size": size})
-        elif family == "anisotropic_gaussian":
-            sigma_x = float(10 ** np.random.uniform(np.log10(0.5), np.log10(size / 2)))
-            sigma_y = float(sigma_x * np.random.uniform(0.5, 3.0))
-            theta = np.random.uniform(0, math.pi)
+    elif family == "anisotropic_gaussian":
+        u = _unit_samples(
+            n_samples,
+            dim=3,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            sigma_x = _sample_log_uniform(ui[0], 0.5, size / 2)
+            sigma_y = float(sigma_x * _sample_uniform(ui[1], 0.5, 3.0))
+            theta = _sample_uniform(ui[2], 0.0, math.pi)
             params.append({"sigma_x": sigma_x, "sigma_y": sigma_y, "theta": theta, "size": size})
-        elif family == "dog":
-            s1 = float(np.random.uniform(0.5, size / 2))
-            s2 = float(s1 * np.random.uniform(1.2, 3.0))
-            theta = np.random.uniform(0, math.pi)
+    elif family == "dog":
+        u = _unit_samples(
+            n_samples,
+            dim=3,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            s1 = _sample_uniform(ui[0], 0.5, size / 2)
+            s2 = float(s1 * _sample_uniform(ui[1], 1.2, 3.0))
+            theta = _sample_uniform(ui[2], 0.0, math.pi)
             params.append({"sigma1": s1, "sigma2": s2, "theta": theta, "size": size})
-        elif family == "log":
-            s = float(np.random.uniform(0.5, size / 2))
-            theta = np.random.uniform(0, math.pi)
-            params.append({"sigma": s, "theta": theta, "size": size})
-        elif family in ("gabor", "gabor_filter"):
-            sigma = float(np.random.uniform(0.5, size / 2))
-            freq = float(np.random.uniform(0.02, 0.5))
-            theta = np.random.uniform(0, math.pi)
-            phase = float(np.random.uniform(0, 2 * math.pi))
-            gamma = float(np.random.uniform(0.5, 1.5))
+    elif family == "log":
+        u = _unit_samples(
+            n_samples,
+            dim=2,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            sigma = _sample_uniform(ui[0], 0.5, size / 2)
+            theta = _sample_uniform(ui[1], 0.0, math.pi)
+            params.append({"sigma": sigma, "theta": theta, "size": size})
+    elif family in ("gabor", "gabor_filter"):
+        u = _unit_samples(
+            n_samples,
+            dim=5,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            sigma = _sample_uniform(ui[0], 0.5, size / 2)
+            freq = _sample_uniform(ui[1], 0.02, 0.5)
+            theta = _sample_uniform(ui[2], 0.0, math.pi)
+            phase = _sample_uniform(ui[3], 0.0, 2 * math.pi)
+            gamma = _sample_uniform(ui[4], 0.5, 1.5)
             params.append(
                 {"sigma": sigma, "freq": freq, "theta": theta, "phase": phase, "gamma": gamma, "size": size}
             )
-        elif family == "hog":
-            sigma = float(np.random.uniform(0.5, size / 2))
-            theta = np.random.uniform(0, math.pi)
+    elif family == "hog":
+        u = _unit_samples(
+            n_samples,
+            dim=2,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            sigma = _sample_uniform(ui[0], 0.5, size / 2)
+            theta = _sample_uniform(ui[1], 0.0, math.pi)
             params.append({"sigma": sigma, "theta": theta, "size": size})
-        elif family == "lbp":
-            half = max(1, size // 2)
-            radius = int(np.random.randint(1, half + 1))
-            theta = np.random.uniform(0, 2 * math.pi)
+    elif family == "lbp":
+        half = max(1, size // 2)
+        u = _unit_samples(
+            n_samples,
+            dim=2,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            radius = _sample_int_uniform(ui[0], 1, half)
+            theta = _sample_uniform(ui[1], 0.0, 2 * math.pi)
             params.append({"radius": radius, "theta": theta, "size": size})
-        elif family == "glcm":
-            half = max(1, size // 2)
-            radius = int(np.random.randint(1, half + 1))
-            theta = np.random.uniform(0, math.pi)
-            offset_weight = float(np.random.choice([-1.0, 1.0]))
-            params.append(
-                {"radius": radius, "theta": theta, "offset_weight": offset_weight, "size": size}
-            )
-        elif family == "mrf":
-            half = max(1, size // 2)
-            radius = int(np.random.randint(1, half + 1))
-            beta = float(np.random.uniform(0.5, 2.0))
-            neighborhood = str(np.random.choice(["cross", "full"]))
-            params.append(
-                {"radius": radius, "beta": beta, "neighborhood": neighborhood, "size": size}
-            )
-        else:
-            raise ValueError(f"Unknown family '{family}'")
+    elif family == "glcm":
+        half = max(1, size // 2)
+        u = _unit_samples(
+            n_samples,
+            dim=3,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            radius = _sample_int_uniform(ui[0], 1, half)
+            theta = _sample_uniform(ui[1], 0.0, math.pi)
+            offset_weight = -1.0 if _clip_unit_interval(ui[2]) < 0.5 else 1.0
+            params.append({"radius": radius, "theta": theta, "offset_weight": offset_weight, "size": size})
+    elif family == "mrf":
+        half = max(1, size // 2)
+        u = _unit_samples(
+            n_samples,
+            dim=3,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            radius = _sample_int_uniform(ui[0], 1, half)
+            beta = _sample_uniform(ui[1], 0.5, 2.0)
+            neighborhood = "cross" if _clip_unit_interval(ui[2]) < 0.5 else "full"
+            params.append({"radius": radius, "beta": beta, "neighborhood": neighborhood, "size": size})
+    else:
+        raise ValueError(f"Unknown family '{family}'")
     return params
 
 
-def build_kernel_bank(families: Sequence[str], n_per_family: int, size: int) -> List[Dict]:
+def build_kernel_bank(
+    families: Sequence[str],
+    n_per_family: int,
+    size: int,
+    sampling_method: str = "random",
+    sampling_seed: Optional[int] = None,
+    qmc_scramble: bool = True,
+) -> List[Dict]:
     bank: List[Dict] = []
-    for fam in families:
-        params = sample_parameters(fam, n_per_family, size)
+    spawned_seeds: Optional[List[Optional[int]]] = None
+    if sampling_seed is not None:
+        seq = np.random.SeedSequence(int(sampling_seed))
+        children = seq.spawn(len(families))
+        spawned_seeds = [int(child.generate_state(1, dtype=np.uint32)[0]) for child in children]
+
+    for i, fam in enumerate(families):
+        fam_seed = spawned_seeds[i] if spawned_seeds is not None else None
+        params = sample_parameters(
+            fam,
+            n_per_family,
+            size,
+            sampling_method=sampling_method,
+            sampling_seed=fam_seed,
+            qmc_scramble=qmc_scramble,
+        )
         for p in params:
             if fam in ("gaussian", "anisotropic_gaussian"):
                 kernel = make_gaussian_kernel(p["size"], p["sigma_x"], p.get("sigma_y", None), p["theta"])
