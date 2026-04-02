@@ -1,0 +1,102 @@
+{
+  "data": {
+    "healthy_dir": "data/TIFF Images/Normal",
+    "malignant_dir": "data/TIFF Images/Malignant",
+    "annotation_dir": "data/TIFF Images/malignantAnnotation",
+    "output_dir": "data/patches",
+    "patch_size": 128,
+    "n_inside_per_image": 40,
+    "n_outside_per_image": 10,
+    "red_threshold": 150,
+    "max_tries": 250,
+    "min_pos_coverage": 0.8,
+    "max_neg_coverage": 0.02,
+    "near_neg_fraction": 0.2,
+    "near_neg_radius": null,
+    "far_neg_radius": null,
+    "use_bbox_for_positives": false,
+    "min_nonzero_frac": 0.35,
+    "min_intensity_rel": 0.0,
+    "split_patients": true,
+    "train_frac": 0.7,
+    "val_frac": 0.15,
+    "test_frac": 0.15,
+    "split_seed": 42,
+    "run_extraction": false
+  },
+  "bank": {
+    "families": [
+      "gaussian",
+      "anisotropic_gaussian",
+      "dog",
+      "log",
+      "gabor",
+      "hog",
+      "glcm",
+      "lbp",
+      "mrf"
+    ],
+    "n_per_family": 500,
+    "kernel_size": 31,
+    "sampling_method": "qmc",
+    "sampling_seed": 42,
+    "sampling_qmc_scramble": true
+  },
+  "selection": {
+    "method": "mmr",
+    "response_fn": "abs_max",
+    "topM": 3250,
+    "K": 90,
+    "lambda_mm": 0.75,
+    "plot_top_kernels": 0,
+    "standardize_responses": false
+  },
+  "training": {
+    "epochs": 60,
+    "batch_size": 64,
+    "lr": 0.0005,
+    "model_type": "logistic",
+    "hidden_dims": [
+      64,
+      32
+    ],
+    "dropout": 0.2,
+    "standardize_features": true,
+    "rotation_aug": false,
+    "rotation_aug_choices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "force_cpu": false,
+    "train_subset_frac": null,
+    "train_subset_size": null,
+    "subset_seed": 42
+  },
+  "subset": {
+    "subset_search_epochs": 20,
+    "boundary_epochs": 25,
+    "pair_corr_threshold": 0.2,
+    "triple_corr_threshold": 0.2
+  },
+  "composite": {
+    "enabled": true,
+    "source": "selected",
+    "n_kernels": 1250,
+    "n_composites": 1,
+    "weight_method": "uniform",
+    "normalize": "l1"
+  },
+  "data_root": "data/patches",
+  "out_dir": "results/exp_025",
+  "max_per_class": 3000,
+  "resize_patch_size": 128,
+  "device": null,
+  "load_splits": [
+    "train",
+    "val",
+    "test"
+  ],
+  "results_fname": null
+}

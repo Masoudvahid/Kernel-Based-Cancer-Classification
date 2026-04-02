@@ -1,0 +1,15 @@
+2026-03-05 16:14:37,322 [INFO] Starting pipeline. Output: results/exp_026 Device: cuda Selection: mmr
+2026-03-05 16:14:39,239 [INFO] Loaded train split: Xin=2900 Xout=3000 resize=128 (patients in=71 out=284)
+2026-03-05 16:14:40,072 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-03-05 16:14:40,915 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-03-05 16:14:40,934 [INFO] Built kernel bank: 90 kernels (sampling=qmc seed=42)
+2026-03-05 16:15:09,307 [INFO] Patient-level grouping enabled (303 unique ids)
+2026-03-05 16:15:09,462 [INFO] MMR selected kernels (bank idx): [14, 83, 45]
+2026-03-05 16:15:15,034 [INFO] Classifier results: AUC=0.8995 ACC=0.8389
+2026-03-05 16:15:24,570 [INFO] Eval val: AUC=0.9132 ACC=0.8508
+2026-03-05 16:15:33,731 [INFO] Eval test: AUC=0.9216 ACC=0.8529
+2026-03-05 16:15:39,310 [INFO] Composite eval val: AUC=0.8762 ACC=0.8032
+2026-03-05 16:15:39,437 [INFO] Composite eval test: AUC=0.8464 ACC=0.7567
+2026-03-05 16:15:39,437 [INFO] Composite results: AUC=0.8421 ACC=0.7762 (groups=1 total kernels=3)
+2026-03-05 16:15:39,438 [INFO] No kernel pair met correlation threshold 0.200
+2026-03-05 16:15:39,449 [INFO] Saved artifacts to results/exp_026

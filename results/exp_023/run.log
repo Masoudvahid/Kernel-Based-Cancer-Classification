@@ -1,0 +1,17 @@
+2026-02-20 22:44:23,196 [INFO] Starting pipeline. Output: results/exp_023 Device: cuda Selection: mmr
+2026-02-20 22:44:23,197 [INFO] Extracting patches (malignant=data/TIFF Images/Malignant, healthy=data/TIFF Images/Normal, annotations=data/TIFF Images/malignantAnnotation)
+2026-02-21 01:50:48,622 [INFO] Saved patches: inside=4880 outside=4900
+2026-02-21 01:50:51,369 [INFO] Loaded train split: Xin=2960 Xout=3000 resize=128 (patients in=74 out=290)
+2026-02-21 01:50:52,091 [INFO] Loaded val split: Xin=960 Xout=740 resize=128 (patients in=24 out=74)
+2026-02-21 01:50:52,849 [INFO] Loaded test split: Xin=960 Xout=790 resize=128 (patients in=24 out=71)
+2026-02-21 01:50:53,140 [INFO] Built kernel bank: 4500 kernels (sampling=random seed=None)
+2026-02-21 02:16:46,027 [INFO] Patient-level grouping enabled (305 unique ids)
+2026-02-21 02:26:51,934 [INFO] MMR selected kernels (bank idx): [763, 2362, 2377, 2309, 2082, 2422, 2439, 2291, 2131, 3352, 2125, 2334, 2115, 3140, 2437, 2497, 2174, 2824, 2652, 2281, 2156, 3509, 3536, 2850, 836, 2519, 2470, 988, 671, 2229, 555, 742, 501, 919, 623, 659, 709, 847, 887, 955, 911, 4039, 958, 695, 560, 731, 654, 864, 863, 976, 580, 891, 634, 679, 556, 934, 759, 715, 535, 607, 895, 91, 445, 627, 956, 155, 351, 417, 444, 322, 796, 171, 602, 99, 504, 809, 2099, 696, 611, 533, 998, 176, 153, 414, 548, 944, 745, 793, 390, 290]
+2026-02-21 02:26:57,643 [INFO] Classifier results: AUC=0.9263 ACC=0.8709
+2026-02-21 02:34:11,378 [INFO] Eval val: AUC=0.9329 ACC=0.8653
+2026-02-21 02:41:49,282 [INFO] Eval test: AUC=0.9195 ACC=0.8646
+2026-02-21 02:41:59,003 [INFO] Composite eval val: AUC=0.9083 ACC=0.8500
+2026-02-21 02:41:59,834 [INFO] Composite eval test: AUC=0.8855 ACC=0.8063
+2026-02-21 02:41:59,835 [INFO] Composite results: AUC=0.8986 ACC=0.8382 (groups=8 total kernels=90)
+2026-02-21 02:41:59,835 [INFO] No kernel pair met correlation threshold 0.200
+2026-02-21 02:41:59,905 [INFO] Saved artifacts to results/exp_023
