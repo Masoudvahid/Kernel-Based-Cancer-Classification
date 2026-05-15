@@ -159,6 +159,58 @@ def make_mrf_kernel(size: int, radius: int, beta: float = 1.0, neighborhood: str
     return K.astype(np.float32)
 
 
+def _normalize_signed_shape(mask: np.ndarray) -> np.ndarray:
+    inside = mask.astype(bool)
+    outside = ~inside
+    n_inside = int(inside.sum())
+    n_outside = int(outside.sum())
+    if n_inside == 0 or n_outside == 0:
+        raise ValueError("Shape mask must occupy part, but not all, of the kernel window.")
+    K = np.zeros(mask.shape, dtype=np.float32)
+    K[inside] = 1.0 / n_inside
+    K[outside] = -1.0 / n_outside
+    K = K - K.mean()
+    denom = np.abs(K).sum()
+    if denom > 0:
+        K = K / denom
+    return K.astype(np.float32)
+
+
+def make_square_kernel(size: int, side: float, theta: float = 0.0) -> np.ndarray:
+    assert size % 2 == 1, "size should be odd"
+    half = size // 2
+    xs = np.arange(-half, half + 1, 1, dtype=np.float32)
+    ys = np.arange(-half, half + 1, 1, dtype=np.float32)
+    X, Y = np.meshgrid(xs, ys)
+    ct = math.cos(theta)
+    st = math.sin(theta)
+    Xr = ct * X + st * Y
+    Yr = -st * X + ct * Y
+    half_side = max(0.5, min(float(side), float(size)) / 2.0)
+    mask = (np.abs(Xr) <= half_side) & (np.abs(Yr) <= half_side)
+    return _normalize_signed_shape(mask)
+
+
+def make_triangular_kernel(size: int, base: float, height: float, theta: float = 0.0) -> np.ndarray:
+    assert size % 2 == 1, "size should be odd"
+    half = size // 2
+    xs = np.arange(-half, half + 1, 1, dtype=np.float32)
+    ys = np.arange(-half, half + 1, 1, dtype=np.float32)
+    X, Y = np.meshgrid(xs, ys)
+    ct = math.cos(theta)
+    st = math.sin(theta)
+    Xr = ct * X + st * Y
+    Yr = -st * X + ct * Y
+
+    base = max(1.0, min(float(base), float(size)))
+    height = max(1.0, min(float(height), float(size)))
+    y_min = -height / 2.0
+    y_max = height / 2.0
+    width = ((Yr - y_min) / max(height, 1e-12)) * (base / 2.0)
+    inside = (Yr >= y_min) & (Yr <= y_max) & (np.abs(Xr) <= width)
+    return _normalize_signed_shape(inside)
+
+
 def _clip_unit_interval(u: float) -> float:
     # Keep values in [0, 1) so integer binning is stable even if samplers return edge values.
     return float(np.clip(u, 0.0, np.nextafter(1.0, 0.0)))
@@ -368,6 +420,31 @@ def sample_parameters(
             beta = _sample_uniform(ui[1], 0.5, 2.0)
             neighborhood = "cross" if _clip_unit_interval(ui[2]) < 0.5 else "full"
             params.append({"radius": radius, "beta": beta, "neighborhood": neighborhood, "size": size})
+    elif family == "square":
+        u = _unit_samples(
+            n_samples,
+            dim=2,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            side = _sample_uniform(ui[0], max(3.0, size * 0.2), max(4.0, size * 0.75))
+            theta = _sample_uniform(ui[1], 0.0, math.pi / 4.0)
+            params.append({"side": side, "theta": theta, "size": size})
+    elif family == "triangular":
+        u = _unit_samples(
+            n_samples,
+            dim=3,
+            sampling_method=sampling_method,
+            seed=sampling_seed,
+            qmc_scramble=qmc_scramble,
+        )
+        for ui in u:
+            base = _sample_uniform(ui[0], max(3.0, size * 0.25), max(4.0, size * 0.85))
+            height = _sample_uniform(ui[1], max(3.0, size * 0.25), max(4.0, size * 0.85))
+            theta = _sample_uniform(ui[2], 0.0, 2.0 * math.pi)
+            params.append({"base": base, "height": height, "theta": theta, "size": size})
     else:
         raise ValueError(f"Unknown family '{family}'")
     return params
@@ -415,6 +492,10 @@ def build_kernel_bank(
                 kernel = make_glcm_kernel(p["size"], p["radius"], p["theta"], p["offset_weight"])
             elif fam == "mrf":
                 kernel = make_mrf_kernel(p["size"], p["radius"], p["beta"], p["neighborhood"])
+            elif fam == "square":
+                kernel = make_square_kernel(p["size"], p["side"], p["theta"])
+            elif fam == "triangular":
+                kernel = make_triangular_kernel(p["size"], p["base"], p["height"], p["theta"])
             else:
                 continue
             bank.append({"family": fam, "params": p, "kernel": kernel})
@@ -470,5 +551,7 @@ __all__ = [
     "make_lbp_kernel",
     "make_log_kernel",
     "make_mrf_kernel",
+    "make_square_kernel",
+    "make_triangular_kernel",
     "sample_parameters",
 ]

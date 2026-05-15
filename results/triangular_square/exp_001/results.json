@@ -1,0 +1,4476 @@
+{
+  "selected_idxs": [
+    459,
+    453,
+    472,
+    297,
+    385,
+    464,
+    341,
+    312,
+    423,
+    395,
+    432,
+    259,
+    281,
+    304,
+    343,
+    338,
+    357,
+    373,
+    487,
+    375,
+    361,
+    378,
+    440,
+    475
+  ],
+  "bank_meta": [
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.883742176166415,
+        "height": 23.396783770762216,
+        "theta": 4.023334489835701,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.745902332474195,
+        "height": 9.770447741275666,
+        "theta": 4.85389780546373,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.292406301224094,
+        "height": 20.179407546869612,
+        "theta": 0.702192243933709,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.52594841532987,
+        "height": 16.892046423937693,
+        "theta": 2.2607004063956793,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.513899716092773,
+        "height": 18.190804931449946,
+        "theta": 1.8727623686245545,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.987637640122514,
+        "height": 24.259048351642473,
+        "theta": 0.3933558802837326,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.77140775437595,
+        "height": 9.865947335228592,
+        "theta": 2.981807939743429,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.148947753349887,
+        "height": 28.89820400972129,
+        "theta": 1.4697075664376142,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.074491078004584,
+        "height": 12.858030004872244,
+        "theta": 5.445269738866414,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.936665377860066,
+        "height": 16.182790220943033,
+        "theta": 0.9772442386727005,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.506402419711991,
+        "height": 17.474190018693623,
+        "theta": 2.1525865004016524,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.186297011383182,
+        "height": 10.898877543294358,
+        "theta": 2.631808084856704,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.866421910003037,
+        "height": 16.52145529572261,
+        "theta": 1.1065070567801631,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.284502681631565,
+        "height": 20.4025186626221,
+        "theta": 0.7689500905342281,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.797867898716397,
+        "height": 18.762463362226818,
+        "theta": 5.00765447530865,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.942086580249786,
+        "height": 15.785713823667304,
+        "theta": 1.6841680930743208,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.46615805364469,
+        "height": 10.322739611168455,
+        "theta": 5.051671002008708,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 22.225283828169268,
+        "height": 10.859573097691026,
+        "theta": 3.5589613800053073,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.692548309117406,
+        "height": 28.890854704558727,
+        "theta": 1.4804712057598086,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.527852402531202,
+        "height": 15.596806018029547,
+        "theta": 5.045574619383166,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.134957426403282,
+        "height": 10.385269860545986,
+        "theta": 5.509650155973256,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.83537869536825,
+        "height": 16.933613163603724,
+        "theta": 3.4677313138607038,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.679895708350596,
+        "height": 22.390139681332283,
+        "theta": 1.8293556004358449,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.189281116795158,
+        "height": 15.743971579334158,
+        "theta": 5.27224334546945,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.146025367275488,
+        "height": 29.100434435267502,
+        "theta": 0.03657342115147501,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.980756890545152,
+        "height": 9.373062306346803,
+        "theta": 0.08540149044105275,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.037047616515657,
+        "height": 19.78997426475217,
+        "theta": 5.823919555682292,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.508814678351165,
+        "height": 28.98549043955603,
+        "theta": 1.6082242974354004,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.940562385957406,
+        "height": 19.015170641885945,
+        "theta": 4.620654961373757,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.56916380035453,
+        "height": 9.8247399677552,
+        "theta": 4.846684071209905,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.093546353166907,
+        "height": 24.18146001471833,
+        "theta": 0.7103421534683935,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.986458299452316,
+        "height": 21.229388662814657,
+        "theta": 1.4956494029292846,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.255393757469719,
+        "height": 21.02735212646203,
+        "theta": 6.133906979798606,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.206154412931284,
+        "height": 23.18858902716995,
+        "theta": 4.802742516539274,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.426354133890547,
+        "height": 18.96698875104157,
+        "theta": 3.017002701336855,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.433994991565802,
+        "height": 15.414353169509914,
+        "theta": 5.225550479767841,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.06056736343203,
+        "height": 13.27698432763376,
+        "theta": 1.1388580813245415,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.94139136069591,
+        "height": 16.0091363768907,
+        "theta": 4.10382666579979,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.979374715530277,
+        "height": 11.538726905675702,
+        "theta": 0.369977032393886,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.995866198342803,
+        "height": 24.47756984778693,
+        "theta": 5.876355033038025,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.313782483337903,
+        "height": 27.17969890096584,
+        "theta": 0.15871970879464808,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.702693148486922,
+        "height": 28.536950093904785,
+        "theta": 0.010473580718186364,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.745435592485414,
+        "height": 16.70154758494084,
+        "theta": 4.401804147946742,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.835431194827976,
+        "height": 12.81340161688243,
+        "theta": 1.0647937689631597,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.204710778292988,
+        "height": 27.383141159486776,
+        "theta": 0.10879017246965318,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.526448560880702,
+        "height": 18.837417536963127,
+        "theta": 3.145720846396362,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.794678082209185,
+        "height": 18.484112429828002,
+        "theta": 4.831909373404123,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.237833708895751,
+        "height": 16.684453121780034,
+        "theta": 2.470341758696276,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.133047118459713,
+        "height": 10.706935518108391,
+        "theta": 2.0998536413198465,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.152986984600354,
+        "height": 17.77358410719414,
+        "theta": 4.695487448654836,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.2190584324382,
+        "height": 15.21433018371696,
+        "theta": 5.129854825949487,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.538727347240805,
+        "height": 13.263109431328225,
+        "theta": 1.9370529720488419,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.58341753075417,
+        "height": 29.591650460804964,
+        "theta": 2.1033763098571074,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.148007340889826,
+        "height": 26.448461806649476,
+        "theta": 2.206871126463598,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.756222613227175,
+        "height": 17.149784586349057,
+        "theta": 4.82147315823611,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.59260457048714,
+        "height": 11.623312394742976,
+        "theta": 0.9024518051495283,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.2429282439889,
+        "height": 15.283254379027554,
+        "theta": 1.179378956259749,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.34180889667923,
+        "height": 26.483819508336502,
+        "theta": 4.359126139804601,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.880241612967367,
+        "height": 24.63980422496422,
+        "theta": 4.526161461209353,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.127812559832734,
+        "height": 16.410464653055843,
+        "theta": 3.1722763728775605,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.630226800119388,
+        "height": 11.392593475240352,
+        "theta": 2.196476229737042,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.339800648819754,
+        "height": 22.467789662053775,
+        "theta": 0.7013306070634592,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.817144374837408,
+        "height": 11.39909254853892,
+        "theta": 6.252774204186539,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.971769363208088,
+        "height": 25.721853637035053,
+        "theta": 5.937166895874344,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.718011062857606,
+        "height": 22.669152094452286,
+        "theta": 6.213330849184397,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.046167527330002,
+        "height": 19.499653489437712,
+        "theta": 3.939995418118602,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.331649992406215,
+        "height": 15.275162337720232,
+        "theta": 1.4370880728486273,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.235218084258943,
+        "height": 16.562984683488985,
+        "theta": 1.8624491658943798,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.519366938300188,
+        "height": 12.935517833571145,
+        "theta": 2.4658605168693044,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.146630381678953,
+        "height": 14.279679455720908,
+        "theta": 3.874598909574195,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.94892798475432,
+        "height": 11.093153312939203,
+        "theta": 5.552032176976471,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 22.118927338656498,
+        "height": 25.341555377273252,
+        "theta": 4.551593185823537,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.132087084770998,
+        "height": 26.502118656963866,
+        "theta": 6.103087070981535,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.627861182180965,
+        "height": 27.07595165433507,
+        "theta": 0.7821484632855393,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.702501460675094,
+        "height": 20.84796065468717,
+        "theta": 4.730954875497085,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.065946921379458,
+        "height": 25.218456708421158,
+        "theta": 3.1211631324234617,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.989140710114455,
+        "height": 21.28267620011386,
+        "theta": 4.473646125561869,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.338905498665994,
+        "height": 22.719827562400468,
+        "theta": 2.357017182080033,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.482224685099855,
+        "height": 28.788853214392844,
+        "theta": 0.4319567688132925,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.840202318241293,
+        "height": 13.370350301951483,
+        "theta": 2.372819118447036,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.767080173306596,
+        "height": 27.895704065756597,
+        "theta": 3.502474393167529,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.011775537195902,
+        "height": 29.77264912219369,
+        "theta": 0.7321420025135046,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.233061938208586,
+        "height": 24.755841088820567,
+        "theta": 5.548768124817646,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.076401796306854,
+        "height": 18.424110079220142,
+        "theta": 2.7925126902376487,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.820725358276647,
+        "height": 24.14909877922477,
+        "theta": 5.251920802201569,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.001901779188714,
+        "height": 23.692220725833465,
+        "theta": 4.547932623280614,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.53207661626746,
+        "height": 23.925595899095313,
+        "theta": 2.2119928994602684,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.692150857017932,
+        "height": 30.57739946287507,
+        "theta": 2.006364228772252,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.551923197051998,
+        "height": 11.812213179870417,
+        "theta": 2.2228356249143837,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.559801212395652,
+        "height": 25.231851899218537,
+        "theta": 2.1787671062145635,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.359261959929775,
+        "height": 19.441798259059542,
+        "theta": 5.7841205671601745,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.00139723206366,
+        "height": 26.78084466837595,
+        "theta": 0.04766506835588649,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.96763601145711,
+        "height": 26.623875274714393,
+        "theta": 5.504188398248182,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.322063535627258,
+        "height": 16.828853606559477,
+        "theta": 2.289547647133322,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.397648035364497,
+        "height": 11.995608803275996,
+        "theta": 5.185229105013755,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.490530811409037,
+        "height": 17.879652361513365,
+        "theta": 5.213247566584853,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.637158580667485,
+        "height": 30.159564347840863,
+        "theta": 5.193896553702523,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.851390747833873,
+        "height": 17.210363445456473,
+        "theta": 0.41250717173671037,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.521228168294606,
+        "height": 17.891131180561146,
+        "theta": 3.0236212134084766,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.536277650016107,
+        "height": 16.445034364876353,
+        "theta": 6.278822923453519,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.023546120161,
+        "height": 14.246975563416708,
+        "theta": 4.78172728684262,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.091209785454781,
+        "height": 14.631729508140058,
+        "theta": 0.15726521503541158,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.381037578739907,
+        "height": 9.807543066690563,
+        "theta": 0.24509513774264854,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.095901136218895,
+        "height": 13.545267578127536,
+        "theta": 1.1532258354948446,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.86758859705846,
+        "height": 27.745413295169868,
+        "theta": 2.846113268036096,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 22.596831304819254,
+        "height": 15.476963542571774,
+        "theta": 2.866515386181829,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.105637668618712,
+        "height": 24.843486184001637,
+        "theta": 0.3807461867050729,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.38807366740688,
+        "height": 13.42650683603231,
+        "theta": 4.943490674488154,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.315680433163587,
+        "height": 17.787123460361812,
+        "theta": 1.30080597016586,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.286304160182723,
+        "height": 12.027305599097886,
+        "theta": 2.547421806891651,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.877853137832782,
+        "height": 22.174270003356867,
+        "theta": 3.1218806761276627,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.42480521197642,
+        "height": 9.60700608792223,
+        "theta": 2.3777662132475537,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.55928273056171,
+        "height": 9.42639381740279,
+        "theta": 4.34050070337217,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.960417098969224,
+        "height": 25.820782588094254,
+        "theta": 4.573267435918896,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.70984029476042,
+        "height": 11.64884488170885,
+        "theta": 5.312752488113664,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.551115642376454,
+        "height": 30.24417222973227,
+        "theta": 2.1120601243093566,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.785872052794232,
+        "height": 11.035074359611,
+        "theta": 6.193442948249409,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.613407087131137,
+        "height": 22.96696091006524,
+        "theta": 4.9105303302716745,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.13493701976732,
+        "height": 29.749119425964025,
+        "theta": 3.1316176136619607,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.755794576606114,
+        "height": 25.968715953655042,
+        "theta": 3.1579121211028673,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.1104879497989,
+        "height": 11.309860818801369,
+        "theta": 5.238705336762834,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.125546307228918,
+        "height": 29.26560199872418,
+        "theta": 2.8838095138088944,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.978331138277678,
+        "height": 19.13674212757001,
+        "theta": 1.8522945501954096,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.48396141064302,
+        "height": 16.389803167568182,
+        "theta": 0.6580319596114439,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.968031234552807,
+        "height": 21.860046818805287,
+        "theta": 1.4552077989036494,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.598304014541933,
+        "height": 11.16292633885696,
+        "theta": 5.854240057254758,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.01690872409131,
+        "height": 26.351704488476116,
+        "theta": 0.3869141267987778,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.501664049502583,
+        "height": 17.97859534425956,
+        "theta": 3.767920748946599,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.373030032602095,
+        "height": 29.554822084590036,
+        "theta": 5.511150632804776,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.200191408082924,
+        "height": 30.680568329979764,
+        "theta": 4.152977621041392,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.96008363740048,
+        "height": 13.411674763719034,
+        "theta": 5.723866062854044,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.454425694928375,
+        "height": 29.27487347240782,
+        "theta": 5.396352055463404,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.774812003241093,
+        "height": 24.192946865790148,
+        "theta": 4.01799981245687,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.239578729931932,
+        "height": 20.215815097175415,
+        "theta": 1.0932634121317648,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.696024599329064,
+        "height": 12.863174520585499,
+        "theta": 1.6785868225720024,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.480197538210167,
+        "height": 22.01919477263194,
+        "theta": 0.03918078869306502,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.04507831071828,
+        "height": 21.45318600491911,
+        "theta": 5.478271981795772,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.30257496106784,
+        "height": 22.212952153647112,
+        "theta": 3.1808860427828187,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.21932394484272,
+        "height": 24.340970260801853,
+        "theta": 0.5410314402245693,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.857211133875627,
+        "height": 16.541738908274205,
+        "theta": 4.775098488632508,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.48683521341365,
+        "height": 26.639579963046508,
+        "theta": 1.3674264657593387,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.96005759909536,
+        "height": 29.089939371066713,
+        "theta": 0.5436396664571505,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.590565307491755,
+        "height": 14.415209874839082,
+        "theta": 0.17097286375113557,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.67554956659268,
+        "height": 19.663325068133524,
+        "theta": 3.523030297946357,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.14636110652328,
+        "height": 18.0468236220054,
+        "theta": 5.112429750851945,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.46421834309065,
+        "height": 25.359847773137787,
+        "theta": 5.66935467183272,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.030720647080795,
+        "height": 14.114895495136327,
+        "theta": 5.849568403429375,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.00416265431727,
+        "height": 11.137512340052591,
+        "theta": 3.5227404589454743,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.50595532429059,
+        "height": 22.20644107428926,
+        "theta": 3.214783983649405,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 28.557836005071287,
+        "height": 17.4696843188211,
+        "theta": 4.937049902855462,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.021596778009474,
+        "height": 21.18299637885233,
+        "theta": 2.8619123563981925,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.579282368045885,
+        "height": 16.280420272870874,
+        "theta": 2.5176860867031645,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.092004838071226,
+        "height": 15.966881305417711,
+        "theta": 2.027029077386615,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.32026979889331,
+        "height": 17.553779565667,
+        "theta": 1.2573722461542578,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.081055803252076,
+        "height": 22.664991465580794,
+        "theta": 1.179992835985771,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.28772084346369,
+        "height": 9.411303069785978,
+        "theta": 1.2601683102436114,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.10592311985581,
+        "height": 12.97883905638835,
+        "theta": 4.866140832042348,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.656760621592944,
+        "height": 20.874474709531324,
+        "theta": 5.3624171443622854,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.73058753581457,
+        "height": 18.05856754673713,
+        "theta": 5.052220120915635,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.744230994066207,
+        "height": 20.987321084638694,
+        "theta": 0.8994960054109967,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.23964462740434,
+        "height": 28.569085333323457,
+        "theta": 0.40696067177317435,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.235579238975888,
+        "height": 19.21796086645585,
+        "theta": 0.23911990748061776,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.19335137314102,
+        "height": 24.905913611956038,
+        "theta": 0.7608743191141536,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 22.509626157684316,
+        "height": 19.762805296072727,
+        "theta": 1.3311517973306084,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.498970438817206,
+        "height": 16.53595103347508,
+        "theta": 2.9978134635075397,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.245826871631603,
+        "height": 24.251077942838304,
+        "theta": 6.117838200780189,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.719453387367402,
+        "height": 16.575048797860557,
+        "theta": 1.358888403199827,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.195663878855733,
+        "height": 24.27462650691059,
+        "theta": 2.3818782069167357,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.619545033897865,
+        "height": 16.878914513221282,
+        "theta": 1.2799301885061323,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.659924993444413,
+        "height": 25.02389161399564,
+        "theta": 0.014666952907355726,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.945481620082798,
+        "height": 13.956500329281637,
+        "theta": 4.124038172024896,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.935010876286654,
+        "height": 18.484220534941542,
+        "theta": 0.2227023406002315,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.33986622996484,
+        "height": 26.485395554874337,
+        "theta": 2.0985132653497005,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.26576887099474,
+        "height": 29.608025315856366,
+        "theta": 2.256522927746807,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.480254302987532,
+        "height": 12.917872851612271,
+        "theta": 5.677936229609976,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.37599984358465,
+        "height": 30.94139372639551,
+        "theta": 3.4599711546114498,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.928386230829814,
+        "height": 16.109132841578496,
+        "theta": 2.829739867142524,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.219524536321344,
+        "height": 22.934219259779383,
+        "theta": 0.7913301047639902,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.887180489117483,
+        "height": 23.318661922107907,
+        "theta": 3.427847958129963,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.07127239271997,
+        "height": 23.828024529691206,
+        "theta": 3.2016921318403972,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.89531357961684,
+        "height": 13.915675510811429,
+        "theta": 2.600537497709482,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.326653963676595,
+        "height": 28.649058336407762,
+        "theta": 6.154215652765568,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.253321679941592,
+        "height": 12.216983451624621,
+        "theta": 4.397059133810546,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.361519312409609,
+        "height": 26.84539255816945,
+        "theta": 0.6964018586495611,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.381428407698712,
+        "height": 16.414181757722567,
+        "theta": 3.1350927040808654,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 21.23651692082663,
+        "height": 28.963085175352248,
+        "theta": 1.6069588393063636,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.717044288304038,
+        "height": 12.042556873145037,
+        "theta": 2.2877223921003575,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.105692159186288,
+        "height": 16.956899936351487,
+        "theta": 3.3000491298705197,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.849426464554732,
+        "height": 14.167097010880124,
+        "theta": 5.410420600651371,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.766497813342049,
+        "height": 26.25269692876767,
+        "theta": 1.6842670214032118,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.802891511169285,
+        "height": 10.214527400943588,
+        "theta": 2.7281160879507884,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.04569620865927,
+        "height": 30.093774197973786,
+        "theta": 4.662525910439514,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.725079666595816,
+        "height": 27.61624640582233,
+        "theta": 5.422122625558616,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.131529248958273,
+        "height": 27.68331165188451,
+        "theta": 5.721954790086498,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.58780321104639,
+        "height": 28.458667467899268,
+        "theta": 3.308115887280315,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.604535696650903,
+        "height": 18.026446035568245,
+        "theta": 1.6413469583479656,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.546932875713857,
+        "height": 28.816012123886097,
+        "theta": 4.541219788465352,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.540693903564648,
+        "height": 28.54303026142241,
+        "theta": 1.3104190333356323,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 24.47124120931857,
+        "height": 20.39321379408708,
+        "theta": 0.24898798550211804,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.167090432962164,
+        "height": 24.860279671747186,
+        "theta": 4.320297376776146,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.562891313993894,
+        "height": 14.255915359436532,
+        "theta": 4.112338538195364,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.718832506838666,
+        "height": 25.047837090436985,
+        "theta": 6.08214176428993,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.6283043236065,
+        "height": 27.903920032583443,
+        "theta": 2.7536220940312854,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.03449214275892,
+        "height": 20.993066578008502,
+        "theta": 4.3282554073815485,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.54233103761502,
+        "height": 10.244099385535325,
+        "theta": 5.985643713164631,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.07166212524603,
+        "height": 21.655987688952106,
+        "theta": 0.2346540781240693,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.82215785258345,
+        "height": 24.666544196754945,
+        "theta": 5.349390645132417,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.17711284189315,
+        "height": 22.006754232174536,
+        "theta": 1.6142144619743106,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.11995842718422,
+        "height": 26.750018479573207,
+        "theta": 1.0784902611704565,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.69288103152489,
+        "height": 14.858430329069646,
+        "theta": 4.801343230100681,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 22.319815412154952,
+        "height": 17.824398747708514,
+        "theta": 4.0030206728011315,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.41170867648389,
+        "height": 13.944303567320086,
+        "theta": 0.7406469365873027,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.781163223296897,
+        "height": 16.31271007186841,
+        "theta": 2.8301494998806414,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.35555733949068,
+        "height": 16.776564021919935,
+        "theta": 3.5762553615229646,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.052540497683587,
+        "height": 14.041939443542814,
+        "theta": 4.674924208245061,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 26.266701368132786,
+        "height": 24.782120231924473,
+        "theta": 0.5933345215774587,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.507503734747328,
+        "height": 20.430124822386475,
+        "theta": 5.762369999091786,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.303554470624505,
+        "height": 17.1561185029406,
+        "theta": 1.6232587096186721,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.370030412857155,
+        "height": 29.781075369177074,
+        "theta": 3.1299679637214757,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 10.833800557608573,
+        "height": 12.665869909017141,
+        "theta": 3.897514818500569,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.314555326776777,
+        "height": 29.280801178349336,
+        "theta": 1.994580461709715,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.825259255144866,
+        "height": 29.090171105258356,
+        "theta": 4.446812010095764,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.734367724723896,
+        "height": 17.5731508984736,
+        "theta": 4.278333008056703,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.51060158235591,
+        "height": 11.916295354523072,
+        "theta": 4.531605336874299,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.281824021376366,
+        "height": 15.222741902157718,
+        "theta": 3.0391945420017707,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.60569363571667,
+        "height": 29.962591461129506,
+        "theta": 6.0433261911142955,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.2475550684245,
+        "height": 13.482503159237849,
+        "theta": 4.03450203968349,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.812597956533423,
+        "height": 10.590121178020665,
+        "theta": 2.827093152485551,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.322042365310132,
+        "height": 27.668248263973034,
+        "theta": 2.6959940838799894,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 18.149293101368492,
+        "height": 30.4086876351678,
+        "theta": 0.3799892415706143,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 13.149020727425185,
+        "height": 16.027386161304456,
+        "theta": 3.634685330760583,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.469800996000124,
+        "height": 16.834879496432308,
+        "theta": 4.632590774687665,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.709538844782536,
+        "height": 26.831497595075263,
+        "theta": 5.652503921630143,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 23.887360577086532,
+        "height": 13.464485548112041,
+        "theta": 3.1720963751063183,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.060138631153364,
+        "height": 30.71741854131902,
+        "theta": 1.2845961717359882,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 29.857143511946454,
+        "height": 26.483714052093596,
+        "theta": 2.706600683235633,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 11.844457385961462,
+        "height": 10.427872465723308,
+        "theta": 4.686751017655545,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 30.310888636620746,
+        "height": 25.578358141153565,
+        "theta": 1.127464118482443,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 12.22737311566376,
+        "height": 22.308167991775804,
+        "theta": 1.7276592259080847,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.47303412461596,
+        "height": 30.792670406849453,
+        "theta": 1.982849816554221,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.28040752167483,
+        "height": 22.588940596949815,
+        "theta": 5.5150719628865525,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 25.214958677414604,
+        "height": 11.896820636648167,
+        "theta": 5.769751763120197,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 20.65618237573664,
+        "height": 20.10614888281104,
+        "theta": 3.3386945149462703,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 17.497126802821004,
+        "height": 28.22999911334528,
+        "theta": 1.8843909225583833,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 16.822043962586655,
+        "height": 11.927463520068102,
+        "theta": 1.2024469712742945,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 15.026383372712775,
+        "height": 18.18612017192128,
+        "theta": 1.1565017132782676,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 9.539033870168227,
+        "height": 30.891842898222905,
+        "theta": 2.6888162854760176,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 14.835169243051732,
+        "height": 24.97902431100817,
+        "theta": 1.7931291545057328,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 19.198555911332917,
+        "height": 17.81138558874104,
+        "theta": 0.22798011929989018,
+        "size": 31
+      }
+    },
+    {
+      "family": "triangular",
+      "params": {
+        "base": 27.414906003596563,
+        "height": 26.579219507478143,
+        "theta": 4.975500555779767,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.019938597012054,
+        "theta": 0.8379057649992878,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.124529320751677,
+        "theta": 0.18500280898650615,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.084491002621974,
+        "theta": 0.5690791991995368,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.236270638106653,
+        "theta": 0.4428450821850991,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.29360179077836,
+        "theta": 0.9794997796898732,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.423790392646282,
+        "theta": 1.536266478154037,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.927545602485932,
+        "theta": 1.1730224286692172,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.132025441470795,
+        "theta": 0.7642069566908893,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.365142038428488,
+        "theta": 0.5518539776348482,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.278961802583098,
+        "theta": 1.4731992121436288,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.493830691013386,
+        "theta": 0.6264183591067835,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.20961205169914,
+        "theta": 0.6979817625817801,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.48649077895118,
+        "theta": 0.0737384920291668,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.74052327827382,
+        "theta": 0.7292956733890641,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.738586250473896,
+        "theta": 1.5320691273706497,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.699185670107273,
+        "theta": 1.2330595219807994,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.896006829932183,
+        "theta": 1.0274216258993525,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.632790288490874,
+        "theta": 0.33520702433865424,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.893836933785497,
+        "theta": 1.2409871896376878,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.277037448577993,
+        "theta": 1.0357763547072514,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.560874177149635,
+        "theta": 1.386164680515341,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.353788006241935,
+        "theta": 0.13625782914447515,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.811755996429154,
+        "theta": 0.3853844821417837,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.360390804272576,
+        "theta": 0.6198711159406798,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.799986596252452,
+        "theta": 0.23053883944968076,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.307041704891594,
+        "theta": 0.7834059439123201,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.400849872256625,
+        "theta": 0.3857343542115552,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.713287673824603,
+        "theta": 1.2498525011291515,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.56387730435705,
+        "theta": 1.4906295508913288,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.193041062919358,
+        "theta": 0.7145080760205176,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.55544368016701,
+        "theta": 0.5478200279157213,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.581506500248175,
+        "theta": 0.45869354517829986,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.05385123509196,
+        "theta": 0.061077254778261925,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.128256713000532,
+        "theta": 1.4011148456011788,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.58944734073987,
+        "theta": 0.7562251915048137,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.40396307999972,
+        "theta": 0.9327336898182473,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.483765405937216,
+        "theta": 0.4739996598256467,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.30623210553018,
+        "theta": 1.4247735308098028,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.883912974942586,
+        "theta": 0.3988680189482538,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.47224239835907,
+        "theta": 0.9104985037736075,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.50150069396793,
+        "theta": 0.5684548329369797,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.046343862776045,
+        "theta": 1.3469356335343605,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.19868876014152,
+        "theta": 0.07849386463167941,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.002573570111785,
+        "theta": 0.8382105083118904,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.290656137938548,
+        "theta": 1.383115763865681,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.49504119530333,
+        "theta": 0.917347862767511,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.003369627368599,
+        "theta": 1.362620234309108,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.95714120418309,
+        "theta": 1.3320241664440422,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.947438124742817,
+        "theta": 1.124629716092032,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.850912843288999,
+        "theta": 0.54814962991569,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.317607131616995,
+        "theta": 0.6318954406751275,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.94323575348082,
+        "theta": 1.341820945613588,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.53864016166338,
+        "theta": 0.025290620683504447,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.354111876529565,
+        "theta": 1.0733536939707364,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.01538229982401,
+        "theta": 0.35795994529038366,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.616775209418059,
+        "theta": 1.4137534173090174,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.178461908082127,
+        "theta": 1.1650855553978268,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.895091660306003,
+        "theta": 1.356035808231382,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.868286622011478,
+        "theta": 0.8866943883014188,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.511869984837872,
+        "theta": 0.7090195185510924,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 18.636805524184492,
+        "theta": 0.29438339059729396,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.650051467250698,
+        "theta": 0.965371672792601,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.817004247829722,
+        "theta": 0.1916690153000174,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.149966049201073,
+        "theta": 0.06431684258158572,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.45631438387376,
+        "theta": 0.14448895009619317,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.323987906492732,
+        "theta": 0.6804190727130275,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.529335329772078,
+        "theta": 0.13574207535671537,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.72820444349809,
+        "theta": 0.7132746499080796,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.86434093005122,
+        "theta": 0.7920076951084266,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.558233189395438,
+        "theta": 0.7823786395291553,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.96060636636531,
+        "theta": 1.3896019478518138,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.766653405058868,
+        "theta": 0.024391998225947814,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 9.651577491904709,
+        "theta": 1.075343237755738,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.173213909402364,
+        "theta": 0.40482749601395107,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.847413660906538,
+        "theta": 1.1577641518564792,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.35240442214724,
+        "theta": 1.1403806390487115,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.492030371637235,
+        "theta": 0.2459064905058537,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.304421300655626,
+        "theta": 1.2588037226380124,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.344680195815805,
+        "theta": 1.3573092929400155,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.119500836431236,
+        "theta": 1.166217454725639,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.535395806580066,
+        "theta": 0.7658259221224217,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.01515569136025,
+        "theta": 0.9479914747698637,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.390788664844283,
+        "theta": 1.3070403412128258,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.628798939830252,
+        "theta": 1.4534617077442284,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.979095693583332,
+        "theta": 1.4423419508362,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.327893743586195,
+        "theta": 0.4751639855920874,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.560033979862787,
+        "theta": 0.20035191090451338,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.508523751410046,
+        "theta": 0.0171258644660798,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.16574683676196,
+        "theta": 1.2212445307499447,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.663231333290767,
+        "theta": 1.4911330788262587,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.276963949989813,
+        "theta": 0.8182979857297756,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.69863361151959,
+        "theta": 1.4663779804257697,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.69370320928738,
+        "theta": 0.6091915467748031,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.873808568469457,
+        "theta": 1.4079733715127305,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.009982643117777,
+        "theta": 0.7032712795266141,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 9.639380211390044,
+        "theta": 0.5985286448167693,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.412407422381165,
+        "theta": 0.2920404364788301,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.788558286780635,
+        "theta": 0.07171332222777972,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.270553384096903,
+        "theta": 0.9951176613690844,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.236553410694214,
+        "theta": 0.18609987047674756,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.08941773686353,
+        "theta": 0.9763449588156071,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.738618909352077,
+        "theta": 1.4180979009845525,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.947418259726724,
+        "theta": 0.29214403458399857,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.86827700092393,
+        "theta": 0.5184047011614039,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.35576260269125,
+        "theta": 1.0013333516443037,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.544041626670996,
+        "theta": 0.33051867196529444,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.440757367086967,
+        "theta": 0.633843210107539,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.35513067326182,
+        "theta": 1.2915023632995988,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.047446720271445,
+        "theta": 0.5147077624749844,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.00765765013988,
+        "theta": 0.35479196339459956,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.288590484873794,
+        "theta": 0.8681069260955772,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.27652894275421,
+        "theta": 1.282293429632744,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.176864124155863,
+        "theta": 1.2934521941098964,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.196541908667115,
+        "theta": 1.179936215452353,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.19829294206626,
+        "theta": 1.192192620800003,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.483898686748567,
+        "theta": 1.0594819385406744,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.072265285472874,
+        "theta": 1.2890726312809127,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.36540993359138,
+        "theta": 0.6288620848029143,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 18.497501803354986,
+        "theta": 0.8871330539268495,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 9.846596276504217,
+        "theta": 1.127722056352792,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.411828855256417,
+        "theta": 0.14785753870633686,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.039280963129492,
+        "theta": 1.2341112686347595,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.96858916317801,
+        "theta": 0.19472357372100962,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.98029506159972,
+        "theta": 0.07751051950896223,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 18.451497871460504,
+        "theta": 1.3049151604525762,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.567061374497328,
+        "theta": 0.2530085824789357,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.78048698587036,
+        "theta": 1.131881163467915,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.190581779255337,
+        "theta": 0.4675494687044265,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.60078757028142,
+        "theta": 0.2811117452016742,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.685974588598045,
+        "theta": 1.1155098518939495,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.181549996160365,
+        "theta": 0.2505472255744434,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.070669318767894,
+        "theta": 1.205657547895905,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 9.852678372795047,
+        "theta": 0.7986399720779231,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.94286467048226,
+        "theta": 1.5705798918837803,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.3411508615183,
+        "theta": 0.885220579692413,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.41416398999082,
+        "theta": 0.16101029044636614,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.361083916985464,
+        "theta": 0.4388547057138134,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.028526727534434,
+        "theta": 0.6211400133796744,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.83915623527841,
+        "theta": 1.2408935396382577,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.562855643899212,
+        "theta": 0.9841166822711167,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.69359433723063,
+        "theta": 0.9229918582058185,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.751702615227433,
+        "theta": 1.3871807544688934,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.59490648940921,
+        "theta": 0.15272620025681338,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.039697406183592,
+        "theta": 0.4612038124973955,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.955013357078542,
+        "theta": 1.1548484305516302,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.581959548936872,
+        "theta": 0.015190436394598453,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.822151106163673,
+        "theta": 0.550131913769202,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.271346437846347,
+        "theta": 1.433628177443989,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 9.896399746189996,
+        "theta": 1.3821593273207469,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.112609649680387,
+        "theta": 0.34799086321965356,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.00717855784547,
+        "theta": 1.1323389660128644,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.049225044153918,
+        "theta": 0.8402566285735971,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.488063434098358,
+        "theta": 0.6217725783267075,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.038145536707972,
+        "theta": 0.871721369286375,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.96839217395778,
+        "theta": 1.3117020674158781,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.595436341376896,
+        "theta": 0.4908050350662838,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.722330502164485,
+        "theta": 1.103091480166891,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.176241148396848,
+        "theta": 1.5393536030927952,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.227652025577854,
+        "theta": 0.12440714634028976,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.53338632683478,
+        "theta": 1.3216741260438924,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.836050214041713,
+        "theta": 1.5582128973985878,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.741125453541223,
+        "theta": 0.2101627523104527,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.685014782580389,
+        "theta": 0.5342202491832457,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 24.780128944588032,
+        "theta": 0.3888612602910756,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.309636220254577,
+        "theta": 1.4764779085943238,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.889208958983463,
+        "theta": 1.0444463433724966,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.592693977559726,
+        "theta": 0.7372975856106143,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.708484040521228,
+        "theta": 1.054950083511159,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.65471833533896,
+        "theta": 0.6066013141695233,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.96221549967253,
+        "theta": 0.5315134950950028,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.339994844550993,
+        "theta": 0.8643287352815522,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.800082016786213,
+        "theta": 0.6865977768562789,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.032201804657674,
+        "theta": 1.2618278680786614,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.159725539559403,
+        "theta": 1.3191955648070208,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.83316920216641,
+        "theta": 0.76511794522097,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.739618439150966,
+        "theta": 1.3233285576842764,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.657889379437833,
+        "theta": 0.4481200462992017,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.21573831711403,
+        "theta": 1.1394602256981958,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.107904187972828,
+        "theta": 0.951682763545751,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.688508187634348,
+        "theta": 0.6883212272591791,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.715361900323366,
+        "theta": 0.334572513239513,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 9.414649043139432,
+        "theta": 0.5809303355903047,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.46353881430739,
+        "theta": 0.2937266497556493,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.99011772548294,
+        "theta": 0.9936381458755845,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.803503934591134,
+        "theta": 0.26442103068496453,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.6272526967713,
+        "theta": 0.23667116767308605,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 18.33807884541735,
+        "theta": 0.9242418386158628,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.09218045001502,
+        "theta": 0.9681720271559414,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.29800495264457,
+        "theta": 1.208069737921722,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.147192358891822,
+        "theta": 0.06337537988628295,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.051186873904264,
+        "theta": 0.12487230124833192,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.180192711701345,
+        "theta": 0.3097628845005516,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.78375615336195,
+        "theta": 0.5145028969702022,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.88527755050178,
+        "theta": 0.9498499870904177,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.925326622936083,
+        "theta": 0.2949921686453064,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.754540077883643,
+        "theta": 0.891147089778928,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.990149962847866,
+        "theta": 1.5018465689792544,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 18.36073078463536,
+        "theta": 1.2296863910508709,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.15689655168797,
+        "theta": 0.26988036944909805,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.35918231688443,
+        "theta": 1.1291583194439199,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.211313204908777,
+        "theta": 0.7570007819978575,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.827631430969728,
+        "theta": 0.719566074566802,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.271764141767548,
+        "theta": 0.3644693468241463,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.495839589257763,
+        "theta": 1.5105526129891012,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.160657900696535,
+        "theta": 1.4819305796913156,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 10.992317761476047,
+        "theta": 1.2880513465818155,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.56732783277881,
+        "theta": 0.5743103500638574,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.676599477341952,
+        "theta": 0.5344010419435895,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.090037410000143,
+        "theta": 0.12441597557002708,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 30.36414472514688,
+        "theta": 0.02568206233145564,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.835285488964992,
+        "theta": 0.056043830611543326,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.122484553756735,
+        "theta": 0.04489439343462421,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 11.542252223057256,
+        "theta": 0.6697207375790604,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 9.311645171123702,
+        "theta": 0.7019973537803895,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.454813414338403,
+        "theta": 0.1385077504346883,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.983698005762626,
+        "theta": 0.5601341977256916,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.435486969262469,
+        "theta": 0.9070443345206629,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.526118144690553,
+        "theta": 0.7879547266572605,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.138614659257605,
+        "theta": 0.4333555572008765,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.708759746210085,
+        "theta": 0.6671835462777007,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.471996600923305,
+        "theta": 1.0019972829530188,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.351074462278783,
+        "theta": 1.3454007440783569,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 29.412751918341797,
+        "theta": 1.5305443084288866,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.582681593408276,
+        "theta": 1.0258265609838624,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.654243279880284,
+        "theta": 0.9787215326200127,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.498714023811658,
+        "theta": 1.5059906288893268,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.721521924256944,
+        "theta": 0.25152975935459504,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.104181218288808,
+        "theta": 0.15466463279326995,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 21.547557831500985,
+        "theta": 0.24276651597240104,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.577846683389698,
+        "theta": 0.9524529284980227,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.334733729709107,
+        "theta": 0.4424189179649905,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.592101936496121,
+        "theta": 0.5009313051697435,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.222240836910537,
+        "theta": 0.504918865262048,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 23.87967573774194,
+        "theta": 0.683578793096138,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.48471825952634,
+        "theta": 0.06343786711025283,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 27.689629720594397,
+        "theta": 0.9482051359830299,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 19.089616807858874,
+        "theta": 0.13160508934795162,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 28.862443472766365,
+        "theta": 0.2895899062532493,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 16.757287845767415,
+        "theta": 0.6175090071713478,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 25.345886670129126,
+        "theta": 1.4972793038020673,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.851636685334071,
+        "theta": 1.1765859827117648,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 12.134124259970413,
+        "theta": 1.0699007487710694,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 22.233486171083936,
+        "theta": 0.7464133638473501,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 20.971477508223757,
+        "theta": 0.22552218806563215,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 26.374618834009887,
+        "theta": 0.9136247637380241,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 17.858687591580942,
+        "theta": 0.6794890340193779,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 14.997316960748824,
+        "theta": 0.6469615979223967,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.657685572330536,
+        "theta": 0.5305972429195551,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 13.200828683325241,
+        "theta": 1.229870109989852,
+        "size": 31
+      }
+    },
+    {
+      "family": "square",
+      "params": {
+        "side": 15.017216456098202,
+        "theta": 1.36797922817061,
+        "size": 31
+      }
+    }
+  ],
+  "clf_auc": 0.9439506531204644,
+  "clf_acc": 0.8745762711864407,
+  "selection_candidate_idxs": [
+    459,
+    453,
+    472,
+    297,
+    385,
+    464,
+    341,
+    312,
+    423,
+    432,
+    259,
+    395,
+    281,
+    304,
+    343,
+    338,
+    357,
+    373,
+    487,
+    375,
+    361,
+    378,
+    440,
+    475,
+    422,
+    340,
+    405,
+    335,
+    397,
+    326,
+    309,
+    429,
+    306,
+    452,
+    321,
+    337,
+    302,
+    323,
+    468,
+    489,
+    461,
+    376,
+    371,
+    294,
+    251,
+    349,
+    292,
+    358,
+    329,
+    390,
+    457,
+    257,
+    370,
+    485,
+    280,
+    470,
+    267,
+    347,
+    346,
+    424,
+    285,
+    283,
+    360,
+    351,
+    396,
+    354,
+    494,
+    416,
+    274,
+    404,
+    350,
+    437,
+    438,
+    465,
+    328,
+    442,
+    421,
+    313,
+    277,
+    388,
+    293,
+    480,
+    253,
+    260,
+    482,
+    413,
+    450,
+    252,
+    392,
+    353,
+    372,
+    262,
+    448,
+    408,
+    407,
+    410,
+    367,
+    352,
+    435,
+    419,
+    320,
+    225,
+    478,
+    417,
+    469,
+    308,
+    483,
+    446,
+    427,
+    301,
+    295,
+    409,
+    175,
+    128,
+    430,
+    493,
+    298,
+    411,
+    449,
+    444
+  ],
+  "plot_candidate_idxs": [
+    459,
+    453,
+    472,
+    297,
+    385,
+    464,
+    341,
+    312,
+    423,
+    432,
+    259,
+    395
+  ],
+  "subset_results": {
+    "2": {
+      "subset": [
+        0,
+        11
+      ],
+      "auc": 0.945477503628447,
+      "acc": 0.8838983050847458,
+      "max_abs_corr": 0.9991055130958557,
+      "threshold_met": false
+    },
+    "3": {
+      "subset": [
+        0,
+        10,
+        11
+      ],
+      "auc": 0.9442380261248186,
+      "acc": 0.85,
+      "max_abs_corr": 0.9997454285621643,
+      "threshold_met": false
+    }
+  },
+  "low_corr_pair": {
+    "subset": [
+      0,
+      11
+    ],
+    "kernel_idxs": [
+      459,
+      395
+    ],
+    "auc": 0.9458606676342525,
+    "acc": 0.8313559322033899,
+    "corr": 0.9991055130958557,
+    "abs_corr": 0.9991055130958557,
+    "threshold_met": false
+  },
+  "selection_method": "mmr",
+  "train_subset_frac": null,
+  "train_subset_size": null,
+  "eval_results": {
+    "val": {
+      "auc": 0.9108591186122832,
+      "acc": 0.8481283422459893,
+      "n": 1870,
+      "n_pos": 1080,
+      "n_neg": 790
+    },
+    "test": {
+      "auc": 0.9221420296570898,
+      "acc": 0.846524064171123,
+      "n": 1870,
+      "n_pos": 1040,
+      "n_neg": 830
+    }
+  },
+  "composite": {}
+}

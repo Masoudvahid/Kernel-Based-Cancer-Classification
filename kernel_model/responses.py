@@ -21,6 +21,10 @@ def compute_responses(
 ) -> List[Dict[str, np.ndarray]]:
     """
     Convolve every kernel in the bank over the input patches and aggregate responses.
+    Supported response_fn values:
+    - "abs_max": largest absolute activation magnitude
+    - "signed_max": signed activation at the largest absolute-magnitude location
+    - "mean_abs": average absolute activation
     """
     device = torch.device(device)
     Xin_t = to_tensor_batch(X_in, device)
@@ -60,6 +64,15 @@ def compute_responses(
         return out
     responses: List[Dict[str, np.ndarray]] = []
 
+    def _reduce_response(out: torch.Tensor) -> np.ndarray:
+        if response_fn == "mean_abs":
+            return out.abs().mean(dim=[1, 2, 3]).cpu().numpy()
+        if response_fn == "signed_max":
+            flat = out.view(out.shape[0], -1)
+            idx = flat.abs().argmax(dim=1, keepdim=True)
+            return flat.gather(1, idx).squeeze(1).cpu().numpy()
+        return out.abs().amax(dim=[1, 2, 3]).cpu().numpy()
+
     filters = [
         torch.from_numpy(entry["kernel"]).unsqueeze(0).unsqueeze(0).to(device) for entry in bank
     ]
@@ -71,10 +84,7 @@ def compute_responses(
             batch = _maybe_rotate_batch(batch)
             with torch.no_grad():
                 out = F.conv2d(batch, k_t, padding=k_t.shape[-1] // 2)
-                if response_fn == "mean_abs":
-                    val = out.abs().mean(dim=[1, 2, 3]).cpu().numpy()
-                else:
-                    val = out.abs().amax(dim=[1, 2, 3]).cpu().numpy()
+                val = _reduce_response(out)
                 r_in_batches.append(val)
         r_in = np.concatenate(r_in_batches, axis=0) if r_in_batches else np.zeros((0,))
 
@@ -84,10 +94,7 @@ def compute_responses(
             batch = _maybe_rotate_batch(batch)
             with torch.no_grad():
                 out = F.conv2d(batch, k_t, padding=k_t.shape[-1] // 2)
-                if response_fn == "mean_abs":
-                    val = out.abs().mean(dim=[1, 2, 3]).cpu().numpy()
-                else:
-                    val = out.abs().amax(dim=[1, 2, 3]).cpu().numpy()
+                val = _reduce_response(out)
                 r_out_batches.append(val)
         r_out = np.concatenate(r_out_batches, axis=0) if r_out_batches else np.zeros((0,))
 

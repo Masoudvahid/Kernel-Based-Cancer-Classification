@@ -2,3 +2,9 @@
 Kernel Based Cancer Classification.code-workspace
 .venv
 __pycache__
+
+data2/
+*.out
+*.aux
+*.fls
+*.dfdb_latexmk

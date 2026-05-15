@@ -1,0 +1,89 @@
+\begin{thebibliography}{10}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Cohen and Welling(2016)]{cohen2016gcnn}
+Taco Cohen and Max Welling.
+\newblock Group equivariant convolutional networks.
+\newblock In \emph{Proceedings of the 33rd International Conference on Machine
+  Learning}, volume~48 of \emph{Proceedings of Machine Learning Research},
+  pages 2990--2999. PMLR, 2016.
+\newblock URL \url{https://proceedings.mlr.press/v48/cohenc16.html}.
+
+\bibitem[Gardezi et~al.(2019)Gardezi, Elazab, Lei, and
+  Wang]{gardezi2019mammographic}
+Syed Jamal~Safdar Gardezi, Ahmed Elazab, Baiying Lei, and Tianfu Wang.
+\newblock Breast cancer detection and diagnosis using mammographic data:
+  Systematic review.
+\newblock \emph{Journal of Medical Internet Research}, 21\penalty0
+  (7):\penalty0 e14464, 2019.
+\newblock \doi{10.2196/14464}.
+
+\bibitem[Goldstein and Carbonell(1998)]{goldstein1998mmr}
+Jade Goldstein and Jaime Carbonell.
+\newblock Summarization: (1) using {MMR} for diversity-based reranking and (2)
+  evaluating summaries.
+\newblock In \emph{TIPSTER Text Program Phase III: Proceedings of a Workshop
+  Held at Baltimore, Maryland, October 13--15, 1998}, pages 181--195.
+  Association for Computational Linguistics, 1998.
+\newblock \doi{10.3115/1119089.1119120}.
+\newblock URL \url{https://aclanthology.org/X98-1025/}.
+
+\bibitem[Haralick et~al.(1973)Haralick, Shanmugam, and
+  Dinstein]{haralick1973texture}
+Robert~M. Haralick, K.~Shanmugam, and Its'hak Dinstein.
+\newblock Textural features for image classification.
+\newblock \emph{IEEE Transactions on Systems, Man, and Cybernetics},
+  SMC-3\penalty0 (6):\penalty0 610--621, 1973.
+\newblock \doi{10.1109/TSMC.1973.4309314}.
+
+\bibitem[Litjens et~al.(2017)Litjens, Kooi, Bejnordi, Setio, Ciompi,
+  Ghafoorian, van~der Laak, van Ginneken, and Sanchez]{litjens2017survey}
+Geert Litjens, Thijs Kooi, Babak~Ehteshami Bejnordi, Arnaud Arindra~Adiyoso
+  Setio, Francesco Ciompi, Mohsen Ghafoorian, Jeroen A. W.~M. van~der Laak,
+  Bram van Ginneken, and Clara~I. Sanchez.
+\newblock A survey on deep learning in medical image analysis.
+\newblock \emph{Medical Image Analysis}, 42:\penalty0 60--88, 2017.
+\newblock \doi{10.1016/j.media.2017.07.005}.
+
+\bibitem[Ojala et~al.(2002)Ojala, Pietikainen, and Maenpaa]{ojala2002lbp}
+Timo Ojala, Matti Pietikainen, and Topi Maenpaa.
+\newblock Multiresolution gray-scale and rotation invariant texture
+  classification with local binary patterns.
+\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
+  Intelligence}, 24\penalty0 (7):\penalty0 971--987, 2002.
+\newblock \doi{10.1109/TPAMI.2002.1017623}.
+
+\bibitem[Pachetti and Colantonio(2024)]{pachetti2024fewshot}
+Eva Pachetti and Sara Colantonio.
+\newblock A systematic review of few-shot learning in medical imaging.
+\newblock \emph{arXiv}, arXiv:2309.11433, 2024.
+\newblock \doi{10.48550/arXiv.2309.11433}.
+
+\bibitem[Rudin(2019)]{rudin2019blackbox}
+Cynthia Rudin.
+\newblock Stop explaining black box machine learning models for high stakes
+  decisions and use interpretable models instead.
+\newblock \emph{Nature Machine Intelligence}, 1:\penalty0 206--215, 2019.
+\newblock \doi{10.1038/s42256-019-0048-x}.
+
+\bibitem[Salahuddin et~al.(2022)Salahuddin, Woodruff, Chatterjee, and
+  Lambin]{salahuddin2022transparency}
+Zohaib Salahuddin, Henry~C. Woodruff, Avishek Chatterjee, and Philippe Lambin.
+\newblock Transparency of deep neural networks for medical image analysis: A
+  review of interpretability methods.
+\newblock \emph{Computers in Biology and Medicine}, 140:\penalty0 105111, 2022.
+\newblock \doi{10.1016/j.compbiomed.2021.105111}.
+
+\bibitem[Sobol'(1967)]{sobol1967cube}
+I.~M. Sobol'.
+\newblock On the distribution of points in a cube and the approximate
+  evaluation of integrals.
+\newblock \emph{USSR Computational Mathematics and Mathematical Physics},
+  7\penalty0 (4):\penalty0 86--112, 1967.
+\newblock \doi{10.1016/0041-5553(67)90144-9}.
+
+\end{thebibliography}

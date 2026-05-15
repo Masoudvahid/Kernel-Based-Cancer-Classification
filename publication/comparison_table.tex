@@ -1,0 +1,109 @@
+\documentclass[9pt]{article}
+
+\usepackage[landscape,margin=0.55in]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\renewcommand{\arraystretch}{1.16}
+
+\title{\textbf{Comparison with Kernel-Based, Texture-Based, and Small-Data Cancer Classification Studies}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% This table is kept separate from the main manuscript. It focuses on cancer classification studies that are relevant to the current project because they use small datasets, support-vector machines, fixed texture descriptors, Gabor/GLCM/LBP/MRF-style features, or hybrid deep-plus-texture representations. The IEEE Xplore item supplied by URL could not be loaded from the current environment; it is therefore included as a pending metadata row rather than inferred.
+
+\scriptsize
+\begin{longtable}{p{0.13\linewidth}p{0.13\linewidth}p{0.10\linewidth}p{0.13\linewidth}p{0.10\linewidth}p{0.10\linewidth}p{0.20\linewidth}}
+\toprule
+Work & Cancer / modality & Dataset scale reported & Representation & Classifier / model & Reported result & Comparison to our project \\
+\midrule
+\endfirsthead
+\toprule
+Work & Cancer / modality & Dataset scale reported & Representation & Classifier / model & Reported result & Comparison to our project \\
+\midrule
+\endhead
+
+Doyle et al. \cite{doyle2008} & Breast histopathology & 48 breast biopsy tissue studies & Gabor texture plus architectural features; spectral clustering for dimensionality reduction & SVM & 95.8\% cancer vs. non-cancer accuracy with Gabor texture features & Closest small-data breast histopathology precedent. Our work uses a broader analytic kernel bank, patient-level patch splits, MMR/QMC selection, heatmaps, and held-out patch AUC/accuracy. \\
+
+Ojansivu et al. \cite{ojansivu2013} & Breast cancer morphology in histopathology & 1,092 TMA images & LBP and LPQ texture histograms & RBF-kernel SVM with chi-square distance metric & 62.0\% three-class accuracy; 0.95 AUC and 90\% accuracy for extreme class 1 vs. 3 & Uses classic texture descriptors and SVM. Our task is binary tumor/background patch classification from annotation masks, with explicit kernel families and selected filter responses. \\
+
+Gopinath and Shanthi \cite{gopinath2013} & Thyroid FNAC cytology & 80 training images and 30 test images & Gabor-filter-bank statistical texture after ROI segmentation & SVM & 96.7\% accuracy, 95\% sensitivity, 100\% specificity & Strong example of a very small dataset and Gabor/SVM pipeline. Our method generalizes this idea by combining many analytic filter families and selecting compact discriminative subsets. \\
+
+Zheng \cite{zheng2010} & Breast mammography & DDSM subset & Circular Gaussian filtering for alarm generation plus Gabor features for false-alarm reduction & CAD classification pipeline & Validated by ROC/AUC on DDSM subset & Related through circular/Gabor filtering and breast cancer detection. Our method uses patch-level annotation-derived labels and reports kernel-bank/CNN held-out results. \\
+
+Kadhim and Kamil \cite{kadhim2023} & Breast invasive ductal carcinoma histology & Random subsets of 100, 200, 400, 1000, and 2000 images & Gabor statistical features & Multiple classical classifiers including SVM & Best results reported at 100 images and wavenumber 0.2 & Directly relevant to the requested 100-image regime. Our project uses more images/patches and studies interpretable kernel selection rather than one Gabor feature family. \\
+
+He et al. \cite{he2023} & Cervical histopathology & 20 patients, 135 WSIs, 3,000 patches & First-order histogram, K-means clustering, GLCM, nucleus morphology & SVM & 96.8\% accuracy when combining four feature groups & Very close in spirit: patch extraction, small patient count, texture/morphological handcrafted features, and SVM. Our work differs by using convolutional kernel responses, MMR diversity selection, QMC sampling, and radial/composite kernel studies. \\
+
+Cai et al. \cite{cai2022} & Renal cancer histopathology & Histopathology dataset; paper emphasizes small/medium dataset robustness & Deep AlexNet features fused with HoG, GLCM, LBP, Gabor, and MRF texture descriptors & Hybrid deep-plus-texture classifier & Fusion outperformed AlexNet alone and single texture descriptors & Highly relevant feature-family overlap: GLCM, LBP, Gabor, MRF. Our project avoids large deep feature dependence in the main interpretable model and directly selects analytic kernels. \\
+
+Karuppasamy et al. \cite{karuppasamy2024} & Breast histopathology & Two small breast cancer datasets, including SQUH and BreaKHis experiments & Feed-forward filters learned outside back-propagation by logistic regression or SVM modules & CLR / CSVM-H & Faster training and stronger performance than VGGNet-16/ResNet-50 on SQUH in reported experiments & Closest modern small-data alternative to back-propagation CNNs. Our method is more explicitly analytic and interpretable because filter families and selected kernels are inspectable. \\
+
+% IEEE Xplore document 10440888 \cite{ieee10440888} & Not accessible from current sources & Not accessible & Not accessible & Not accessible & Not accessible & User-provided comparison target. IEEE returned HTTP 418 and public search did not expose the title/abstract, so no technical claims are made until metadata is available. \\
+
+Ours & Breast medical image patches & 10,070 extracted patches from local malignant/normal TIFF images and annotations & Multi-family analytic kernel responses; MMR selection; Sobol QMC sampling; radial, composite, and invariant variants & Logistic classifier / shallow MLP; CNN baseline for reference & Best selected-kernel model: 0.9387 test AUC and 0.8866 test accuracy; CNN baseline: 0.9626 test AUC and 0.9021 test accuracy & Combines classical interpretability with systematic kernel-bank generation, patient-level splitting, compact ablations, heatmap visualization, and comparison against a learned CNN baseline. \\
+
+\bottomrule
+\end{longtable}
+
+\normalsize
+\section*{Short Interpretation}
+
+The most directly comparable small-data/kernel papers are Doyle et al., Gopinath and Shanthi, Kadhim and Kamil, and He et al. They show that fixed texture descriptors and SVMs remain competitive when image counts are limited. Cai et al. is especially relevant because it uses the same broad texture families as our implementation, including GLCM, LBP, Gabor, and MRF, but it fuses them with deep AlexNet features. Our contribution is different: we build a broad analytic convolutional kernel bank, score and select kernels by discrimination and response diversity, and evaluate compact interpretable response sets against a CNN baseline.
+
+\section*{Strict Small-Data Kernel Screening}
+
+The following screening table applies the stricter criterion requested for this project: small data with at most about 200 original samples, a non-CNN classifier, and classification based on one to three trained or selected kernels. None of the reviewed prior papers satisfies all three criteria exactly.
+
+\scriptsize
+\begin{longtable}{p{0.17\linewidth}p{0.18\linewidth}p{0.22\linewidth}p{0.16\linewidth}p{0.20\linewidth}}
+\toprule
+Paper & Small data $\leq$ 200? & 1--3 kernels? & Not CNN? & Match quality \\
+\midrule
+\endfirsthead
+\toprule
+Paper & Small data $\leq$ 200? & 1--3 kernels? & Not CNN? & Match quality \\
+\midrule
+\endhead
+
+Doyle et al. \cite{doyle2008} & Yes, 48 biopsy studies & No, many Gabor/textural features & Yes, SVM & Small-data and non-CNN, but not 1--3 kernels \\
+
+Gopinath and Shanthi \cite{gopinath2013} & Yes, 110 FNAC images total & Close, evaluates individual Gabor wavelength/angle settings & Yes, SVM & Closest match \\
+
+Kadhim and Kamil \cite{kadhim2023} & Yes, includes 100-image subset & No, Gabor statistical feature extraction & Yes, classical ML including SVM & Small-data and non-CNN, but not explicitly 1--3 kernels \\
+
+He et al. \cite{he2023} & Original data: 20 patients / 135 WSIs, but 3,000 patches & No, four feature groups & Yes, SVM & Small patient count, but patch count $>$ 200 \\
+
+Ojansivu et al. \cite{ojansivu2013} & No, 1,092 images & No & Yes, SVM & Not small enough \\
+
+Cai et al. \cite{cai2022} & Not clearly $\leq$ 200 & No & Hybrid with AlexNet & Not a match \\
+
+Karuppasamy et al. \cite{karuppasamy2024} & Small datasets, exact count not in accessible abstract & No & Not standard CNN backpropagation, but convolutional/feed-forward & Partial only \\
+
+\bottomrule
+\end{longtable}
+
+\normalsize
+This makes the compact-kernel part of our project comparatively distinctive: the repository explicitly reports one-kernel, three-kernel, and five-kernel MMR-selected classifiers, e.g. one selected kernel reaching 0.9157 test AUC and three selected kernels reaching up to 0.9239 test AUC, while still comparing against larger kernel banks and a CNN baseline.
+
+\begin{thebibliography}{99}
+\bibitem{doyle2008} S. Doyle, S. Agner, A. Madabhushi, M. Feldman, and J. Tomaszewski. Automated grading of breast cancer histopathology using spectral clustering with textural and architectural image features. \emph{IEEE ISBI}, 2008. doi:10.1109/ISBI.2008.4541041.
+\bibitem{ojansivu2013} V. Ojansivu, N. Linder, E. Rahtu, M. Pietikainen, M. Lundin, H. Joensuu, and J. Lundin. Automated classification of breast cancer morphology in histopathological images. \emph{Diagnostic Pathology}, 8(Suppl 1):S29, 2013. doi:10.1186/1746-1596-8-S1-S29.
+\bibitem{gopinath2013} B. Gopinath and N. Shanthi. Support Vector Machine Based Diagnostic System for Thyroid Cancer using Statistical Texture Features. \emph{Asian Pacific Journal of Cancer Prevention}, 14(1):97--102, 2013. doi:10.7314/APJCP.2013.14.1.97.
+\bibitem{zheng2010} Y. Zheng. Breast cancer detection with Gabor features from digital mammograms. \emph{Algorithms}, 3(1):44--62, 2010. doi:10.3390/a3010044.
+\bibitem{kadhim2023} R. R. Kadhim and M. Y. Kamil. Breast invasive ductal carcinoma diagnosis using machine learning models and Gabor filter method of histology images. \emph{International Journal of Reconfigurable and Embedded Systems}, 12(1):9--18, 2023. doi:10.11591/ijres.v12.i1.pp9-18.
+\bibitem{he2023} S. He, B. Xiao, H. Wei, S. Huang, and T. Chen. SVM classifier of cervical histopathology images based on texture and morphological features. \emph{Technology and Health Care}, 31(1):69--80, 2023. doi:10.3233/THC-220031.
+\bibitem{cai2022} J. Cai, M. Liu, Q. Zhang, Z. Shao, J. Zhou, Y. Guo, J. Liu, X. Wang, B. Zhang, and X. Li. Renal Cancer Detection: Fusing Deep and Texture Features from Histopathology Images. \emph{BioMed Research International}, 2022:9821773, 2022. doi:10.1155/2022/9821773.
+\bibitem{karuppasamy2024} A. Karuppasamy, A. Abdesselam, R. Hedjam, H. Zidoum, and M. Al-Bahri. Feed-forward networks using logistic regression and support vector machine for whole-slide breast cancer histopathology image classification. \emph{Intelligence-Based Medicine}, 9:100126, 2024. doi:10.1016/j.ibmed.2023.100126.
+\bibitem{ieee10440888} IEEE Xplore document 10440888. User-provided URL: \url{https://ieeexplore.ieee.org/document/10440888}. Metadata was not accessible from the current environment.
+\end{thebibliography}
+
+\end{document}

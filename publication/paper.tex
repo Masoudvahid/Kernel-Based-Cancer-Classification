@@ -1,0 +1,378 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper,margin=0.68in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\graphicspath{{../}{./}}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\setlist[itemize]{leftmargin=1.35em,itemsep=0.15em,topsep=0.15em}
+\setlist[enumerate]{leftmargin=1.5em,itemsep=0.15em,topsep=0.15em}
+\renewcommand{\arraystretch}{1.12}
+
+\title{\vspace{-1.2em}\textbf{Optimal Classification of Low-volume Medical Data with Adaptive Kernel Design}}
+\author{
+Masoud Vahid Dastgerdi\\
+\textit{Higher School of Economics}\\
+\texttt{masoud.vahid10@gmail.com}
+\and
+Oleg Stanislavovich Pianykh\\
+\textit{Affiliation Placeholder}\\
+\texttt{email.placeholder@example.com}
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Accurate cancer localization in medical images is often approached with high-capacity convolutional neural networks, but their opacity and data requirements can limit their utility in settings where interpretability and constrained supervision are important. We present an interpretable kernel-learning framework for patch-level cancer classification from pixel-level annotations, with primary emphasis on a learned single radial kernel. The method converts red-contour annotations into lesion masks, samples positive tumor patches and negative background patches with patient-level train/validation/test separation, and represents each patch using an explicit convolutional response. The focused radial model learns a circularly symmetric profile rather than a full unconstrained convolutional filter, yielding a compact and inspectable one-kernel classifier. We also evaluate larger analytic kernel banks spanning Gaussian, anisotropic Gaussian, difference-of-Gaussians, Laplacian-of-Gaussian, Gabor, HOG-inspired, GLCM-inspired, LBP-inspired, and MRF-inspired filters. On the repository dataset, comprising 10,070 extracted patches from malignant and normal TIFF images, the learned single radial kernel achieves 0.9286 test ROC-AUC and 0.8668 test accuracy. Larger selected kernel banks reach up to 0.9387 test ROC-AUC and 0.8866 test accuracy, while a fully learned patch CNN baseline achieves 0.9626 test ROC-AUC and 0.9021 test accuracy. These results show that a single interpretable radial kernel captures substantial discriminative signal while remaining far more transparent than a learned CNN.
+\end{abstract}
+
+\section{Introduction}
+
+Medical image classification systems are increasingly used to support cancer diagnosis, lesion triage, and downstream localization. Deep convolutional models can achieve strong predictive performance, but they typically require substantial data and their learned internal representations are difficult to interpret directly. This tension is especially relevant for clinical workflows in which models should not only provide accurate decisions but also expose evidence that can be inspected by researchers or clinicians.
+
+This work studies a complementary approach: instead of learning all visual primitives end-to-end, we construct a large bank of interpretable convolutional kernels and learn a classifier over their patch-level responses. The central hypothesis is that a diverse bank of biologically and radiologically meaningful texture, edge, blob, and local-contrast filters can capture discriminative differences between lesion and non-lesion tissue while preserving explicit filter semantics.
+
+The repository implements an end-to-end patch-level cancer classification pipeline. Pixel-level red-contour annotations are converted to binary malignant masks; positive patches are sampled from lesion regions and negative patches are sampled from background regions. Each patch is convolved with kernels from multiple analytic families, and each kernel response is summarized by a scalar activation statistic. Candidate kernels are ranked using ROC-AUC and Fisher score, then selected with maximal marginal relevance (MMR) to reduce redundancy. A logistic or shallow multilayer perceptron classifier is trained on the selected kernel-response features.
+
+The main contributions are:
+\begin{itemize}
+    \item We formulate an interpretable learned radial-kernel framework for cancer patch classification, using a single circularly symmetric convolutional profile as the primary compact model.
+    \item We implement a reproducible patient-level experimental pipeline with annotation-derived patch extraction, train/validation/test splits, feature caching, model checkpoints, ROC/PR curves, confusion matrices, and heatmap visualization.
+    \item We empirically compare the learned single radial kernel with compact selected-kernel models, larger selected-kernel banks, abess-based sparse selection, composite kernels, triangular/square shape-sensitive kernels, and a fully learned patch CNN baseline.
+    \item We incorporate report-level analyses of Sobol QMC kernel sampling, radial-kernel variants, and rotation-invariant kernel averaging.
+    \item We show that a selected analytic kernel bank achieves strong performance, up to 0.9387 test ROC-AUC, approaching a CNN baseline while remaining substantially more interpretable.
+\end{itemize}
+
+\section{Related Work}
+
+Classical medical image analysis has long used engineered features, including edges, blobs, texture descriptors, and co-occurrence statistics, to characterize tissue appearance \cite{haralick1973,kass1988}. Gaussian derivatives, Laplacian-of-Gaussian filters, and difference-of-Gaussians filters are standard tools for multiscale smoothing, edge detection, and blob detection \cite{lowe2004}. Gabor filters represent oriented frequency-selective texture patterns and have been widely used in biomedical imaging \cite{daugman1985}. Histogram-of-oriented-gradients descriptors capture local edge-orientation distributions \cite{dalal2005}, while local binary patterns and gray-level co-occurrence matrices model local texture and spatial intensity relationships \cite{ojala2002,haralick1979}.
+
+Several cancer-classification studies have shown that handcrafted texture representations can remain useful when training sets are small. Doyle et al. used Gabor and architectural descriptors with an SVM for breast histopathology grading \cite{doyle2008}. Ojansivu et al. combined LBP/LPQ texture descriptors with kernel SVMs for breast cancer morphology classification \cite{ojansivu2013}. Gopinath and Shanthi reported a small-data thyroid cytology pipeline based on Gabor statistical features and SVM classification \cite{gopinath2013}. Related breast and cervical cancer studies have also used Gabor, co-occurrence, morphological, or other handcrafted descriptors with classical classifiers \cite{zheng2010,kadhim2023,he2023}. These works motivate the present focus on explicit filter responses, but they generally rely on fixed descriptor families rather than systematic generation, ranking, and diversity-aware selection of a broad analytic kernel bank.
+
+Deep convolutional neural networks learn such filters automatically and have become dominant in medical image classification \cite{krizhevsky2012,litjens2017}. However, end-to-end learning often trades interpretability for performance, and learned filters may be difficult to map to known visual structures. Hybrid approaches that combine fixed or constrained feature banks with learned classifiers provide an intermediate point in this design space: the low-level representation remains inspectable, while the classifier can still learn task-specific decision boundaries. Recent examples include fusing deep features with texture descriptors for renal cancer detection \cite{cai2022} and feed-forward breast histopathology models that use logistic-regression or SVM modules rather than standard back-propagation through a large CNN \cite{karuppasamy2024}.
+
+Feature selection is another relevant line of work. Sparse model selection and L0-regularized methods aim to identify compact predictive subsets \cite{zhu2020}. Maximal marginal relevance, originally introduced for information retrieval, selects items by balancing relevance and diversity \cite{carbonell1998}. In the present setting, relevance corresponds to cancer-versus-background discriminative strength, while diversity corresponds to low redundancy among kernel response vectors.
+
+\section{Methodology}
+
+\subsection{Problem Formulation}
+
+Let an image patch be denoted by \(x \in \mathbb{R}^{H \times W}\), with binary label \(y \in \{0,1\}\), where \(y=1\) indicates a patch sampled from a malignant annotation mask and \(y=0\) indicates background or normal tissue. Given a training set \(\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{N}\), the goal is to learn a classifier \(f(x)\) that estimates \(p(y=1 \mid x)\).
+
+Instead of feeding raw pixels directly into a deep model, we define a bank of analytic kernels
+\[
+\mathcal{K} = \{k_j\}_{j=1}^{M}, \quad k_j \in \mathbb{R}^{s \times s},
+\]
+and map each patch to a response vector
+\[
+\phi(x) = [r_1(x), r_2(x), \ldots, r_K(x)] \in \mathbb{R}^{K},
+\]
+where \(K \le M\) is the number of selected kernels. The default response statistic is the maximum absolute convolutional activation:
+\[
+r_j(x)=\max_{u,v}|(x * k_j)_{u,v}|.
+\]
+The repository also supports signed maximum and mean absolute response functions.
+
+\subsection{Patch Extraction from Annotations}
+
+Annotation images contain red malignant contours. The implementation thresholds the red channel while suppressing green and blue channels, applies morphological dilation, erosion, closing, and hole filling, and obtains a binary lesion mask. Positive patches are sampled from regions whose mask coverage exceeds a configured threshold. Negative patches are sampled outside the lesion, with support for near-lesion and far-lesion sampling. In the main experiments, the patch size is 128 x 128 pixels, positives require at least 0.8 lesion-mask coverage, negatives allow at most 0.02 lesion-mask coverage, and patches with low nonzero intensity fraction are filtered.
+
+Patient or study identifiers are inferred from filenames, and splits are assigned at the image/patient level using a 70/15/15 train/validation/test ratio. This prevents patches from the same source image from appearing simultaneously in training and held-out evaluation splits.
+
+\subsection{Kernel Families}
+
+The main kernel bank contains nine analytic families: Gaussian filters for local smoothing; anisotropic Gaussian filters for elongated structures; difference-of-Gaussians filters for multiscale contrast; Laplacian-of-Gaussian filters for blob-like structures; Gabor filters for oriented texture; HOG-inspired derivative filters for local gradient orientation; GLCM-inspired two-point offset filters for spatial co-occurrence; LBP-inspired center-neighbor contrast filters; and MRF-inspired discrete Laplacian filters for local smoothness.
+
+Each family is sampled over a family-specific parameter space. The implementation supports random sampling, Sobol quasi-Monte Carlo sampling, and Latin hypercube sampling. Unless otherwise noted, experiments use kernels of size 31 x 31.
+
+\subsection{Learned Single Radial Kernel}
+
+The primary compact model in this paper constrains the convolutional filter to be circularly symmetric and learns a radial profile \(f(r)\). Instead of learning an unconstrained \(s \times s\) kernel, every pixel at the same distance from the kernel center shares a parameter. This reduces the number of degrees of freedom, makes the learned structure easier to inspect, and enforces an isotropic inductive bias that is appropriate for local blob-like and halo-like tissue patterns. The main radial variant uses an absolute-maximum response and learns a free radial profile. Additional signed compact variants use a signed response, hard radial cutoff, monotonicity/decay regularization, and scale normalization to improve interpretability at some cost in AUC.
+
+\subsection{Kernel Ranking and Selection}
+
+For each candidate kernel, the method computes response distributions for positive and negative patches. Two univariate scores are used:
+\[
+\mathrm{AUC}(k_j) = \mathrm{ROC\text{-}AUC}(\{r_j(x_i)\}, \{y_i\}),
+\]
+and the Fisher score
+\[
+F(k_j)=\frac{(\mu_j^+ - \mu_j^-)^2}{(\sigma_j^+)^2 + (\sigma_j^-)^2 + \epsilon}.
+\]
+The top \(M'\) candidates are ranked by AUC and Fisher score. MMR then selects a subset iteratively:
+\[
+k^*=\arg\max_{k_j \notin S}
+\lambda \mathrm{AUC}(k_j) - (1-\lambda)\max_{k_\ell \in S}
+|\rho(r_j,r_\ell)|,
+\]
+where \(S\) is the selected set, \(\rho\) is Pearson correlation between response vectors, and \(\lambda=0.75\) in the main experiments.
+
+\subsection{Classifier}
+
+The selected response vector \(\phi(x)\) is passed to either a logistic classifier or a shallow MLP. The primary reported kernel-bank experiments use a logistic classifier trained with binary cross-entropy using Adam. Feature standardization is enabled in several later experiments. The CNN baseline uses a four-block convolutional network with batch normalization, ReLU, max pooling, dropout, adaptive average pooling, and a two-layer linear head trained with cross-entropy and AdamW.
+
+\subsection{Algorithm}
+
+\begin{enumerate}
+    \item Convert annotation contours into binary lesion masks.
+    \item Sample positive patches from lesion regions and negative patches from background/normal tissue.
+    \item Split images at patient/study level into train, validation, and test sets.
+    \item Generate analytic kernel bank from the chosen families.
+    \item For every kernel, compute scalar responses on all training patches.
+    \item Rank kernels by ROC-AUC and Fisher score.
+    \item Select kernels with MMR to balance discrimination and response diversity.
+    \item Train a logistic or shallow neural classifier on selected responses.
+    \item Evaluate ROC-AUC, accuracy, precision, recall, F1, and confusion matrices on held-out splits.
+\end{enumerate}
+
+\section{Experimental Setup}
+
+\subsection{Dataset}
+
+The repository contains TIFF images under \texttt{data/TIFF Images/}, with 127 malignant images, 365 normal images, and 125 malignant annotation files available locally. The extracted patch dataset under \texttt{data/patches/} contains 10,070 patches.
+
+\begin{table}[!t]
+\centering
+\caption{Patch counts used in the local experiments.}
+\footnotesize
+\begin{tabular}{lrrr}
+\toprule
+Split & Pos. & Neg. & Total \\
+\midrule
+Train & 2,900 & 3,430 & 6,330 \\
+Validation & 1,080 & 790 & 1,870 \\
+Test & 1,040 & 830 & 1,870 \\
+Total & 5,020 & 5,050 & 10,070 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The slight split imbalance follows from patient-level assignment and patch extraction success rates. In the kernel-bank experiments, patches are loaded in grayscale and resized according to the experiment configuration, typically 128 x 128 pixels.
+
+\subsection{Evaluation Metrics}
+
+The primary metric is ROC-AUC because it is threshold-independent and robust to moderate class imbalance. Accuracy is reported for all kernel-bank experiments. For the CNN baseline, precision, recall, F1, ROC-AUC, accuracy, loss, and confusion matrices are available.
+
+\subsection{Baselines and Variants}
+
+We evaluate MMR-selected analytic kernel banks, abess sparse selection, composite kernels, triangular/square shape-sensitive kernels, learned radial kernels, rotation-invariant averaged kernels, and a learned patch CNN baseline.
+
+\subsection{Implementation Details}
+
+The principal MMR configurations use nine kernel families, 31 x 31 kernels, an absolute-maximum response statistic, 60 training epochs, batch size 64, learning rate \(5 \times 10^{-4}\), and patient-level train/validation/test evaluation. The MMR parameter is \(\lambda=0.75\). The strongest reported interpretable configurations use larger selected banks, such as 90 selected kernels from a broader candidate pool. Compact models with \(K=1\), \(K=3\), and \(K=5\) are also included.
+
+The CNN baseline uses 128 x 128 RGB inputs, batch size 64, AdamW with learning rate \(3 \times 10^{-4}\), weight decay \(10^{-4}\), patience 6, and a maximum of 25 epochs. The recorded best model occurs by epoch 6 based on validation ROC-AUC. The March and April reports include additional single-radial-kernel experiments; these are treated as separate ablations because they optimize kernel parameters directly rather than selecting from the fixed multikernel bank.
+
+\section{Results}
+
+\subsection{Main Quantitative Results}
+
+Table~\ref{tab:main-results} summarizes representative held-out results. The table is organized around the learned single radial kernel, which is the central model of this paper, followed by the CNN reference and the remaining interpretable baselines sorted by test ROC-AUC. The radial model uses only one learned kernel response yet reaches 0.9286 test ROC-AUC and 0.8668 test accuracy. The strongest larger selected kernel bank reaches 0.9387 test ROC-AUC and 0.8866 test accuracy, while the CNN baseline remains the strongest absolute performer with 0.9626 test ROC-AUC and 0.9021 test accuracy.
+
+\begin{table*}[!t]
+\centering
+\caption{Held-out performance of representative models. The primary model of interest is bolded; the strongest reference and selected-bank results are also emphasized.}
+\label{tab:main-results}
+\small
+\begin{tabular}{p{0.40\linewidth}ccccc}
+\toprule
+Model / configuration & Features & Val AUC & Val Acc. & Test AUC & Test Acc. \\
+\midrule
+\textbf{Learned single radial kernel (primary focus)} & \textbf{1} & \textbf{0.9189} & \textbf{0.8545} & \textbf{0.9286} & \textbf{0.8668} \\
+Patch CNN reference & learned & \textbf{0.9445} & \textbf{0.8818} & \textbf{0.9626} & \textbf{0.9021} \\
+Selected kernel bank with QMC sampling & 90 & 0.9270 & 0.8603 & \textbf{0.9387} & \textbf{0.8866} \\
+Selected kernel bank, variant A & 90 & 0.9271 & 0.8636 & 0.9377 & 0.8882 \\
+Selected kernel bank, variant B & 90 & 0.9273 & 0.8620 & 0.9376 & 0.8888 \\
+Larger selected kernel bank & 200 & 0.9159 & 0.8514 & 0.9313 & 0.8578 \\
+Sparse ABESS-selected bank & 200 & 0.9095 & 0.7849 & 0.9236 & 0.7690 \\
+Shape-sensitive triangular/square bank & 24 & 0.9109 & 0.8481 & 0.9221 & 0.8465 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+These results support three observations. First, the learned radial kernel is a strong one-feature classifier, outperforming several larger sparse or shape-sensitive alternatives despite using only a single interpretable response. Second, learned CNN features provide the best absolute accuracy and AUC in the available experiments. Third, the gap between the radial model, larger selected kernel banks, and the CNN is modest in ROC-AUC, suggesting that explicit radial texture and morphology cues capture a substantial fraction of the discriminative signal.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/selected_kernel_roc_pr.png}
+\caption{Held-out ROC and precision-recall curves for the selected-kernel classifier.}
+\label{fig:selected-roc}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/cnn_roc_curve.png}
+\caption{Held-out ROC curve for the patch CNN reference model.}
+\label{fig:cnn-roc}
+\end{figure}
+
+\subsection{Compact Kernel Ablations}
+
+Table~\ref{tab:compact} reports compact MMR models. Even a single selected kernel reaches 0.9157 test ROC-AUC, and the best three-kernel configuration reaches 0.9239 test ROC-AUC. This is notable because the classifier operates on only one to three scalar responses per patch.
+
+\begin{table*}[!t]
+\centering
+\caption{Compact-kernel MMR ablations.}
+\label{tab:compact}
+\begin{tabular}{p{0.43\linewidth}rrrrr}
+\toprule
+Compact configuration & Kernels & Val AUC & Val Acc. & Test AUC & Test Acc. \\
+\midrule
+Single-kernel selected model & 1 & 0.8994 & 0.8307 & 0.9157 & 0.8449 \\
+Single-kernel model from a larger candidate shortlist & 1 & 0.9010 & 0.8330 & 0.9179 & 0.8428 \\
+Three-kernel selected model with stronger validation accuracy & 3 & 0.9085 & 0.8497 & 0.9101 & 0.8417 \\
+Three-kernel selected model with stronger test AUC & 3 & 0.9085 & 0.8011 & 0.9239 & 0.7914 \\
+Five-kernel selected model & 5 & 0.9071 & 0.7765 & 0.9234 & 0.7594 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The compact runs show that individual kernels can be strongly discriminative, but thresholded accuracy varies substantially. This indicates that the raw ranking objective is aligned with AUC but not necessarily with calibration or the default 0.5 decision threshold. The learned radial-kernel reports reinforce this point. A directly optimized unconstrained radial kernel reaches 0.9286 test AUC and 0.8668 test accuracy, outperforming several compact selected-kernel variants. A more constrained signed compact radial kernel improves interpretability by enforcing signed response, limited support, and smoother radial decay, but its reported test AUC drops to 0.8808. An independently initialized smooth signed radial model reports 0.9187 test AUC and 0.848 test accuracy. These results suggest a performance-interpretability tradeoff inside the single-kernel design space.
+
+\subsection{Sampling Strategy: Random versus QMC}
+
+The QMC report compares a random-sampling baseline against Sobol low-discrepancy sampling under matched high-capacity MMR/composite settings: 4,500 total kernels, \(K=90\) selected base kernels, and eight composite kernels. QMC improves all reported test metrics in that comparison.
+
+\begin{table}[!t]
+\centering
+\caption{Random versus Sobol QMC kernel sampling.}
+\footnotesize
+\begin{tabular}{p{0.46\linewidth}rrr}
+\toprule
+Evaluation & Random & QMC & Gain \\
+\midrule
+Base model test AUC & 0.9195 & 0.9387 & +0.0192 \\
+Base model test accuracy & 0.8646 & 0.8866 & +0.0221 \\
+Composite test AUC & 0.8855 & 0.8934 & +0.0080 \\
+Composite test accuracy & 0.8063 & 0.8176 & +0.0114 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This supports Sobol sampling as a useful design choice for covering heterogeneous kernel-parameter spaces more evenly than independent random sampling.
+
+\subsection{Composite Kernel Analysis}
+
+Composite kernels are constructed by grouping selected kernels and summing them with normalization. In the available experiments, composite models are consistently weaker than their non-composite counterparts. For example, one 90-kernel selected-bank model obtains 0.9376 test AUC, whereas its eight-composite representation obtains 0.9026 test AUC. The strongest 90-kernel selected bank obtains 0.9387 test AUC before composition and 0.8934 after composition.
+
+\begin{table*}[!t]
+\centering
+\caption{Composite kernel results.}
+\begin{tabular}{lrrrrr}
+\toprule
+Configuration & Base kernels & Comp. & Base AUC & Comp. AUC & Comp. Acc. \\
+\midrule
+Selected-bank variant B & 90 & 8 & 0.9376 & 0.9026 & 0.8299 \\
+QMC selected-bank model & 90 & 8 & 0.9387 & 0.8934 & 0.8176 \\
+Single-composite compression model & 90 & 1 & 0.9377 & 0.8635 & 0.7797 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+This suggests that naive weighted summation destroys useful complementary response information. Composite filters may still be useful for visualization or deployment simplicity, but the current uniform grouping strategy is not a substitute for retaining multiple selected response channels.
+
+\subsection{Rotation-Invariant Kernels}
+
+The rotation-invariance reports construct circularly symmetric kernels by averaging rotated versions of a composite kernel. On a newly generated patch split, a right-angle averaged invariant kernel obtains 0.8755 test AUC and 0.8006 test accuracy, compared with 0.8933 AUC and 0.8150 accuracy for the original non-invariant composite kernel. The invariant kernel gives identical metrics under 0, 90, 180, and 270 degree rotations, confirming exact right-angle stability. Averaging over every 10 degrees produces slightly lower performance in the reported run. Thus, rotation averaging offers predictable invariance but introduces a measurable performance cost.
+
+\subsection{Comparison with abess Selection}
+
+ABESS-based sparse selection provides competitive AUC but lower thresholded accuracy in several held-out runs. For example, the 200-feature ABESS-selected model reaches 0.9236 test ROC-AUC, but its test accuracy is 0.7690. Compact ABESS models with three to five selected features reach approximately 0.9216 to 0.9225 test AUC but lower accuracy. These results suggest that sparse selection finds informative features, but the downstream model may require calibration, regularization adjustment, or threshold tuning to improve operating-point performance.
+
+\subsection{Qualitative Outputs}
+
+The repository includes ROC/PR curves, confusion matrices, kernel visualizations, scatter plots, and heatmaps for multiple held-out examples. These qualitative outputs are useful for inspecting whether high-response regions align with lesion-like regions. The current repository does not include expert qualitative scoring of heatmap localization, so we treat these visualizations as diagnostic rather than as formal localization metrics.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\linewidth}
+\includegraphics[width=\linewidth]{figures/selected_kernel_confusion.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\linewidth}
+\includegraphics[width=\linewidth]{figures/cnn_confusion.png}
+\end{minipage}
+\caption{Confusion matrices for the selected-kernel classifier (left) and the patch CNN baseline (right).}
+\label{fig:confusion}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/learned_radial_heatmap_example.png}
+\caption{Example heatmap overlay for the learned single radial kernel on a held-out test image. This is the primary qualitative visualization for the proposed compact model.}
+\label{fig:radial-heatmap}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\linewidth}
+\includegraphics[width=\linewidth]{figures/selected_kernel_heatmap_example.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\linewidth}
+\includegraphics[width=\linewidth]{figures/cnn_heatmap_example.png}
+\end{minipage}
+\caption{Additional heatmap overlays for the selected multi-kernel bank (left) and patch CNN (right) on a held-out test image. These visualizations are diagnostic only; no pixel-level localization metric is claimed.}
+\label{fig:heatmaps}
+\end{figure}
+
+\section{Discussion}
+
+The empirical results show that a learned single radial kernel can provide strong patch-level cancer discrimination. Its performance is below the best multi-kernel bank and CNN baseline, but it uses only one explicit convolutional profile and therefore offers a much simpler object for inspection. This is useful in research settings where model behavior should be audited beyond aggregate performance.
+
+The compact-kernel experiments are especially informative. A one-kernel model achieving greater than 0.91 test AUC implies that certain simple local structures are strongly associated with annotated tumor patches in the current dataset. However, the lower and more variable accuracy of compact models shows that AUC alone is insufficient for deployment. Larger selected banks improve accuracy and provide more stable operating points.
+
+The composite-kernel experiments reveal a limitation of simple feature compression. Summing selected filters into composite kernels reduces dimensionality but loses the identity of individual response channels. Since different filters may activate on distinct lesion characteristics, collapsing them before classification can remove discriminative structure that a classifier would otherwise combine nonlinearly or with separate weights.
+
+The CNN baseline achieves the best performance. This is expected because it learns hierarchical features directly from RGB image patches and can adapt all convolutional filters jointly. However, the CNN is less transparent: its internal filters and high-level activations are harder to interpret than the analytic kernel families. The proposed kernel-bank model therefore occupies a practical middle ground between classical handcrafted features and fully learned deep representations.
+
+\subsection{Limitations}
+
+Several limitations should be noted. First, the experiments are patch-level rather than patient-level diagnostic evaluations. Patch classification performance does not directly imply whole-image or patient-level clinical utility. Second, the dataset appears to be local to the repository; external validation on independent cohorts is not provided. Third, patch labels are derived from annotation-mask coverage and may include boundary ambiguity. Fourth, the results are based on available experiment artifacts rather than a single locked benchmark script with repeated seeds and confidence intervals. Fifth, qualitative heatmap outputs are not accompanied by quantitative localization metrics such as Dice, IoU, or free-response ROC.
+
+\subsection{Failure Cases}
+
+Likely failure modes include tumor patches with weak texture contrast, negative patches near lesion boundaries, normal tissue with tumor-like local texture, and images with annotation or staining variability. Compact models may also fail when a single discriminative texture cue is absent, motivating larger selected banks or hybrid models.
+
+\section{Conclusion}
+
+We presented an interpretable learned radial-kernel framework for patch-level cancer classification from annotated medical images. The method extracts annotation-derived patches, learns a compact circularly symmetric convolutional profile, and classifies patches using an explicit response from this single kernel. Across available repository experiments, the learned single radial kernel achieves 0.9286 test ROC-AUC and 0.8668 test accuracy. Larger selected kernel banks improve performance to 0.9387 test ROC-AUC and 0.8866 test accuracy, while a learned patch CNN reaches 0.9626 test ROC-AUC and 0.9021 test accuracy. These results indicate that a single interpretable radial filter retains substantial predictive power and provides a meaningful alternative or complement to black-box CNNs.
+
+Future work should evaluate the method on external datasets, add repeated-seed confidence intervals, optimize calibration and thresholds, quantify heatmap localization, explore learned weighting for composite kernels, and combine analytic kernel banks with shallow learned adapters or attention mechanisms.
+
+\begin{thebibliography}{99}
+\bibitem{haralick1973} R. M. Haralick, K. Shanmugam, and I. Dinstein. Textural features for image classification. \emph{IEEE Transactions on Systems, Man, and Cybernetics}, 1973.
+\bibitem{kass1988} M. Kass, A. Witkin, and D. Terzopoulos. Snakes: Active contour models. \emph{International Journal of Computer Vision}, 1988.
+\bibitem{lowe2004} D. G. Lowe. Distinctive image features from scale-invariant keypoints. \emph{International Journal of Computer Vision}, 2004.
+\bibitem{daugman1985} J. G. Daugman. Uncertainty relation for resolution in space, spatial frequency, and orientation optimized by two-dimensional visual cortical filters. \emph{Journal of the Optical Society of America A}, 1985.
+\bibitem{dalal2005} N. Dalal and B. Triggs. Histograms of oriented gradients for human detection. \emph{CVPR}, 2005.
+\bibitem{ojala2002} T. Ojala, M. Pietikainen, and T. Maenpaa. Multiresolution gray-scale and rotation invariant texture classification with local binary patterns. \emph{IEEE TPAMI}, 2002.
+\bibitem{haralick1979} R. M. Haralick. Statistical and structural approaches to texture. \emph{Proceedings of the IEEE}, 1979.
+\bibitem{krizhevsky2012} A. Krizhevsky, I. Sutskever, and G. E. Hinton. ImageNet classification with deep convolutional neural networks. \emph{NeurIPS}, 2012.
+\bibitem{litjens2017} G. Litjens et al. A survey on deep learning in medical image analysis. \emph{Medical Image Analysis}, 2017.
+\bibitem{zhu2020} J. Zhu, B. Wen, J. Zhu, X. Zhang, and C. Wang. A polynomial algorithm for best-subset selection problem. \emph{PNAS}, 2020.
+\bibitem{carbonell1998} J. Carbonell and J. Goldstein. The use of MMR, diversity-based reranking for reordering documents and producing summaries. \emph{SIGIR}, 1998.
+\bibitem{kingma2015} D. P. Kingma and J. Ba. Adam: A method for stochastic optimization. \emph{ICLR}, 2015.
+\bibitem{doyle2008} S. Doyle, S. Agner, A. Madabhushi, M. Feldman, and J. Tomaszewski. Automated grading of breast cancer histopathology using spectral clustering with textural and architectural image features. \emph{IEEE International Symposium on Biomedical Imaging}, 2008.
+\bibitem{ojansivu2013} V. Ojansivu, N. Linder, E. Rahtu, M. Pietikainen, M. Lundin, H. Joensuu, and J. Lundin. Automated classification of breast cancer morphology in histopathological images. \emph{Diagnostic Pathology}, 8(Suppl. 1):S29, 2013.
+\bibitem{gopinath2013} B. Gopinath and N. Shanthi. Support Vector Machine Based Diagnostic System for Thyroid Cancer using Statistical Texture Features. \emph{Asian Pacific Journal of Cancer Prevention}, 14(1):97--102, 2013.
+\bibitem{zheng2010} Y. Zheng. Breast cancer detection with Gabor features from digital mammograms. \emph{Algorithms}, 3(1):44--62, 2010.
+\bibitem{kadhim2023} R. R. Kadhim and M. Y. Kamil. Breast invasive ductal carcinoma diagnosis using machine learning models and Gabor filter method of histology images. \emph{International Journal of Reconfigurable and Embedded Systems}, 12(1):9--18, 2023.
+\bibitem{he2023} S. He, B. Xiao, H. Wei, S. Huang, and T. Chen. SVM classifier of cervical histopathology images based on texture and morphological features. \emph{Technology and Health Care}, 31(1):69--80, 2023.
+\bibitem{cai2022} J. Cai, M. Liu, Q. Zhang, Z. Shao, J. Zhou, Y. Guo, J. Liu, X. Wang, B. Zhang, and X. Li. Renal Cancer Detection: Fusing Deep and Texture Features from Histopathology Images. \emph{BioMed Research International}, 2022:9821773, 2022.
+\bibitem{karuppasamy2024} A. Karuppasamy, A. Abdesselam, R. Hedjam, H. Zidoum, and M. Al-Bahri. Feed-forward networks using logistic regression and support vector machine for whole-slide breast cancer histopathology image classification. \emph{Intelligence-Based Medicine}, 9:100126, 2024.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,40 @@
+2026-04-02 16:24:33,438 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_002 Device: cuda Selection: mmr
+2026-04-02 16:24:36,274 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 16:24:37,087 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 16:24:37,817 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 16:25:19,018 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_003 Device: cuda Selection: mmr
+2026-04-02 16:25:21,678 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 16:25:22,382 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 16:25:23,121 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 16:25:23,192 [INFO] Built kernel bank: 500 kernels (sampling=random seed=42)
+2026-04-02 16:25:36,688 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_004 Device: cuda Selection: mmr
+2026-04-02 16:25:39,222 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 16:25:39,929 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 16:25:40,665 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 16:25:51,073 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_005 Device: cuda Selection: mmr
+2026-04-02 16:25:54,038 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 16:25:54,856 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 16:25:55,647 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 16:26:25,258 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_006 Device: cuda Selection: mmr
+2026-04-02 16:26:27,986 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 16:26:28,904 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 16:26:29,741 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 16:26:29,827 [INFO] Built kernel bank: 500 kernels (sampling=random seed=42)
+2026-04-02 16:26:41,438 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_007 Device: cuda Selection: mmr
+2026-04-02 16:26:43,985 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 16:26:44,681 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 16:26:45,383 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 16:26:55,928 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_008 Device: cuda Selection: mmr
+2026-04-02 16:26:58,552 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 16:26:59,286 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 16:26:59,974 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 16:26:59,999 [INFO] Built kernel bank: 250 kernels (sampling=random seed=42)
+2026-04-02 16:28:15,441 [INFO] Patient-level grouping enabled (257 unique ids)
+2026-04-02 16:28:16,328 [INFO] MMR selected kernels (bank idx): [99, 97, 9, 34, 220, 237, 173, 244, 138, 109, 44, 208]
+2026-04-02 16:28:21,494 [INFO] Classifier results: AUC=0.7584 ACC=0.6890
+2026-04-02 16:28:50,799 [INFO] Eval val: AUC=0.7399 ACC=0.6631
+2026-04-02 16:29:19,933 [INFO] Eval test: AUC=0.7995 ACC=0.7353
+2026-04-02 16:42:26,636 [INFO] No pair met |corr|<=0.200; best available (min corr=0.9612) kernels [99, 44] (cols (0, 11)) AUC=0.7296 ACC=0.6568 Corr=0.9612
+2026-04-02 16:42:26,637 [INFO] Best pair (plot candidate idx): (0, 11) AUC=0.7151
+2026-04-02 16:42:30,181 [INFO] Best triple (plot candidate idx): (0, 10, 11) AUC=0.7310
+2026-04-02 16:42:30,615 [INFO] Saved artifacts to results/triangular_square_shape_sensitive/exp_008

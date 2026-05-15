@@ -1,0 +1,89 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=0.55in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.28em}
+\setlist[itemize]{leftmargin=1.2em, itemsep=0.15em, topsep=0.15em}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.08}
+
+\begin{document}
+
+\small
+
+\begin{center}
+{\Large \textbf{Project Publication Plan}}\\
+\textbf{Optimal Classification of Low-volume Medical Data with Adaptive Kernel Design}\\
+20 April 2026
+\end{center}
+
+\textbf{Goal.} The goal of this project is to turn the current thesis work on adaptive kernel design into a publishable medical-imaging paper for low-volume mammographic classification.
+
+\textbf{Current position.} The current work includes kernel-bank selection, kernel composition, rotation-aware kernels, and a final signed radial kernel with learnable radius for low-volume mammographic patch classification. The main missing parts for publication are unified evaluation, stronger baselines, better statistics, and more validation.
+
+\textbf{Target journals and what is still missing}
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.56\linewidth}}
+\toprule
+\textbf{Journal} & \textbf{Deadline} & \textbf{Missing parts before submission} \\
+\midrule
+Medical Image Analysis (MedIA) & Rolling & External or patient-level validation, serious deep-learning and radiomics baselines, confidence intervals, stronger clinical framing. \\
+IEEE Transactions on Medical Imaging (TMI) & Rolling & Clearer methodological novelty, stricter ablations, stronger statistical comparisons, and a fully unified leakage-safe protocol. \\
+Artificial Intelligence in Medicine & Rolling & Strong baselines, repeated evaluation, better discussion of clinical relevance and interpretability. \\
+Computerized Medical Imaging and Graphics (CMIG) & Rolling & Unified final experiments, cleaner heatmap/localization evidence, stronger manuscript organization. \\
+Computer Methods and Programs in Biomedicine (CMPB) & Rolling & Complete benchmark table, reproducible scripts, and polished practical presentation of the method. \\
+\bottomrule
+\end{tabular}
+
+\textbf{Plan and goal.}
+\begin{itemize}
+    \item Publish the project as a medical-imaging journal paper in 2026.
+    \item Use the signed learnable-radius radial kernel as the main method.
+    \item Finish the missing evaluation, baselines, statistics, and final manuscript packaging before submission.
+\end{itemize}
+
+\textbf{Main tasks that must be completed}
+
+\begin{itemize}
+    \item Freeze one final train/validation/test protocol with no patient or image leakage.
+    \item Re-run the strongest bank-based, composition, and radial models on exactly the same split.
+    \item Add at least two strong baselines: one classical radiomics baseline and one compact deep-learning baseline.
+    \item Add confidence intervals and statistical comparison for AUC and accuracy.
+    \item Keep the signed learnable-radius radial model as the main proposed method and treat unconstrained radial results only as ablations.
+    \item Strengthen localization and interpretability evidence with cleaner heatmaps and explanation of why the radial prior matches lesion morphology.
+    \item Convert the final experiments into clean reproducible scripts and final publication-quality tables and figures.
+\end{itemize}
+
+\textbf{Timeline}
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.72\linewidth}}
+\toprule
+\textbf{Date} & \textbf{Task} \\
+\midrule
+1 May 2026 & Finish the deep-learning baseline. \\
+8 May 2026 & Finalize the evaluation protocol and the exact main claim of the paper. \\
+15 May 2026 & Align the baseline and all metrics with the final benchmark setup. \\
+22 May 2026 & Re-run the strongest bank-based, composition, and radial models on one common split. \\
+29 May 2026 & Freeze the final benchmark setup and main comparison table. \\
+5 June 2026 & Compute confidence intervals for the main metrics. \\
+12 June 2026 & Finish the key ablation experiments. \\
+19 June 2026 & Complete seed-stability checks and error analysis. \\
+26 June 2026 & Finalize localization figures and interpretability outputs. \\
+3 July 2026 & Finalize reproducible scripts and publication-ready tables. \\
+10 July 2026 & Write the methods and results sections in near-final form. \\
+17 July 2026 & Complete the full manuscript draft. \\
+24 July 2026 & Finish internal revision and figure polishing. \\
+31 July 2026 & Final journal formatting, references, and submission package. \\
+7 August 2026 & Submit to MedIA/TMI if the evidence is strong enough; otherwise submit to AI in Medicine or CMIG. \\
+\bottomrule
+\end{tabular}
+
+\end{document}

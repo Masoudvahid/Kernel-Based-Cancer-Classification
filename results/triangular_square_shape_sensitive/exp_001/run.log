@@ -1,0 +1,14 @@
+2026-04-02 13:32:39,329 [INFO] Starting pipeline. Output: results/triangular_square_shape_sensitive/exp_001 Device: cuda Selection: mmr
+2026-04-02 13:32:42,380 [INFO] Loaded train split: Xin=2500 Xout=2500 resize=128 (patients in=61 out=236)
+2026-04-02 13:32:43,112 [INFO] Loaded val split: Xin=1080 Xout=790 resize=128 (patients in=26 out=73)
+2026-04-02 13:32:43,846 [INFO] Loaded test split: Xin=1040 Xout=830 resize=128 (patients in=26 out=73)
+2026-04-02 13:32:43,893 [INFO] Built kernel bank: 500 kernels (sampling=random seed=42)
+2026-04-02 13:36:44,744 [INFO] Patient-level grouping enabled (257 unique ids)
+2026-04-02 13:36:46,419 [INFO] MMR selected kernels (bank idx): [175, 81, 225, 196, 52, 125, 218, 131, 234, 340, 221, 235]
+2026-04-02 13:36:52,129 [INFO] Classifier results: AUC=0.7610 ACC=0.6915
+2026-04-02 13:37:51,050 [INFO] Eval val: AUC=0.7407 ACC=0.6631
+2026-04-02 13:38:50,019 [INFO] Eval test: AUC=0.8109 ACC=0.7358
+2026-04-02 13:52:20,138 [INFO] No pair met |corr|<=0.200; best available (min corr=0.4286) kernels [175, 81] (cols (0, 5)) AUC=0.7322 ACC=0.6644 Corr=0.4286
+2026-04-02 13:52:20,139 [INFO] Best pair (plot candidate idx): (0, 5) AUC=0.4361
+2026-04-02 13:52:22,654 [INFO] Best triple (plot candidate idx): (1, 4, 5) AUC=0.7378
+2026-04-02 13:52:23,057 [INFO] Saved artifacts to results/triangular_square_shape_sensitive/exp_001
