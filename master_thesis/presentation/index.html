@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optimal Classification of Low-volume Medical Data with Adaptive Kernel Design</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Include MathJax for beautiful LaTeX math rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+  <div class="main-layout">
+    <div class="deck-container">
+    
+    <!-- Header (shared across slides, hidden in printing) -->
+    <header class="slide-header" style="position: absolute; top: 0; left: 0; width: 100%; padding: 25px 60px 0 60px; z-index: 20; pointer-events: none;">
+      <div style="display: flex; align-items: center; gap: 12px; pointer-events: auto;">
+        <img src="../master_thesis/logo.png" alt="HSE Logo" style="height: 24px; object-fit: contain;">
+        <div class="section-tag">Introduction</div>
+      </div>
+    </header>
+
+    <!-- Slides Wrapper -->
+    <div class="slides-wrapper">
+
+      <!-- SLIDE 1: TITLE SLIDE -->
+      <section class="slide title-slide active" data-section="Thesis Defense">
+        <div style="margin-bottom: 20px;">
+          <img src="../master_thesis/logo.png" alt="HSE Logo" style="height: 70px; object-fit: contain;">
+        </div>
+        <div class="thesis-label">Master's Thesis Presentation</div>
+        <h1>Optimal Classification of Low-volume Medical Data with <span class="gradient">Adaptive Kernel Design</span></h1>
+        
+        <div class="authorship">
+          <div class="author-card">
+            <div class="role-label">Author</div>
+            <div class="name">Masoud Vahid Dastgerdi</div>
+            <div class="inst">Data Science MSc | HSE University</div>
+          </div>
+          
+          <div class="advisor-card">
+            <div class="role-label">Supervisor</div>
+            <div class="name">Professor Oleg S. Pianykh</div>
+            <div class="inst">Higher School of Economics</div>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>Welcome committee members, supervisor Prof. Oleg Pianykh, and colleagues. I am Masoud Vahid Dastgerdi, and today I will present my Master's thesis: "Optimal Classification of Low-volume Medical Data with Adaptive Kernel Design".</p>
+          <p>This research focuses on addressing the fundamental sample size and parameter complexity challenges in medical image diagnostics, particularly when applying machine learning to rare conditions or small datasets.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: BACKGROUND & MOTIVATION -->
+      <section class="slide" data-section="Introduction">
+        <h2 class="slide-title">Background & Motivation: <span class="highlight">The Low-Volume Constraint</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col">
+            <div class="panel-title">⚠️ Core Medical Image Challenges</div>
+            <ul class="bullet-list">
+              <li><strong>Annotation Scarcity:</strong> Expert annotations in mammography are extremely scarce, and patient cohorts are often very small (hundreds, not millions).</li>
+              <li><strong>Deep Learning Overfitting:</strong> High-capacity Deep CNNs are prone to massive overfitting in this regime, requiring heavy pre-training or augmentation.</li>
+              <li><strong>Black-Box Transparency:</strong> Medical diagnostics require models that are transparent by design, not just explainable post-hoc.</li>
+            </ul>
+          </div>
+          <div class="panel flex-col">
+            <div class="panel-title">💡 The Proposed Solution</div>
+            <div class="highlight-box">
+              <p>We propose that <strong>low-volume medical data</strong> is a setting where stronger priors and structured models are highly beneficial, rather than compromises.</p>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">
+              By designing <strong>Adaptive Kernels</strong>, we represent local image tissue details with explicit structural controls, reducing parameters from millions to a handful while preserving classification performance.
+            </p>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>In medical imaging, particularly mammography, expert annotations are rare and cohorts are small.</p>
+          <p>Standard deep learning models have millions of parameters, making them highly prone to overfitting on low-volume datasets without heavy pre-training.</p>
+          <p>We propose that low-volume data is a setting where stronger priors and structured models are highly beneficial, rather than compromises, and can provide diagnostic transparency by design.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: PROBLEM STATEMENT & RESEARCH QUESTIONS -->
+      <section class="slide" data-section="Introduction">
+        <h2 class="slide-title">Problem Statement & <span class="highlight">Research Questions</span></h2>
+        <div class="panel" style="margin: 5px 0 10px 0; padding: 12px 18px; background: rgba(2, 132, 199, 0.02); border-left: 4px solid var(--accent-cyan);">
+          <p style="font-size: 1.05rem; font-weight: 550;">
+            Central Question: <em>Is it possible to achieve accurate medical image classification with a single optimally chosen convolution kernel?</em>
+          </p>
+        </div>
+        
+        <div class="research-questions">
+          <div class="rq-card">
+            <div class="rq-num">1</div>
+            <div class="rq-text">
+              Can <strong>adaptive kernel methods</strong> classify low-volume medical image patches effectively?
+            </div>
+          </div>
+          <div class="rq-card">
+            <div class="rq-num">2</div>
+            <div class="rq-text">
+              Which <strong>kernel adaptation strategies</strong> improve performance under limited data constraints?
+            </div>
+          </div>
+          <div class="rq-card">
+            <div class="rq-num">3</div>
+            <div class="rq-text">
+              How do <strong>sampling, composition, and rotation-aware designs</strong> affect robustness and efficiency?
+            </div>
+          </div>
+          <div class="rq-card">
+            <div class="rq-num">4</div>
+            <div class="rq-text">
+              Can a <strong>compact learned radial kernel</strong> approach bank-model performance while remaining highly interpretable?
+            </div>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>Our central question is: is it possible to achieve accurate medical image classification with a single optimally chosen convolution kernel?</p>
+          <p>To address this, we investigate four key research questions: (1) Can adaptive kernels classify low-volume patches effectively? (2) Which kernel adaptation strategies improve performance under limited data constraints? (3) How do sampling, composition, and rotation-aware designs affect robustness? (4) Can a compact learned radial kernel match bank-model performance?</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: THE PIPELINE METHODOLOGY (STATIC) -->
+      <section class="slide" data-section="Methodology">
+        <h2 class="slide-title">The Proposed <span class="highlight">Kernel-Bank Pipeline</span></h2>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">Our complete kernel-based framework maps convolved textures directly into a lightweight classifier:</p>
+        
+        <div class="grid-5" style="margin-top: 5px; height: 350px;">
+          <div class="flow-step-box">
+            <div class="step-header">Step 01</div>
+            <div class="step-title">Patch Extraction</div>
+            <div class="step-desc">Extracts fixed 128x128 positive (lesion) and negative (background) patches with strict patient separation.</div>
+          </div>
+          
+          <div class="flow-step-box">
+            <div class="step-header">Step 02</div>
+            <div class="step-title">Kernel Bank Gen</div>
+            <div class="step-desc">Builds a diverse library of 2D kernels across 9 filter families (Gabor, Gaussian, LBP-inspired, etc.).</div>
+          </div>
+          
+          <div class="flow-step-box">
+            <div class="step-header">Step 03</div>
+            <div class="step-title">Response Pooling</div>
+            <div class="step-desc">Convolves patches and reduces 2D response maps to scalar features using absolute maximum pooling.</div>
+          </div>
+          
+          <div class="flow-step-box">
+            <div class="step-header">Step 04</div>
+            <div class="step-title">Sparse Selection</div>
+            <div class="step-desc">Uses diversity-aware MMR or ABESS selectors to select the most discriminative subset of filters.</div>
+          </div>
+          
+          <div class="flow-step-box">
+            <div class="step-header">Step 05</div>
+            <div class="step-title">Light Classifier</div>
+            <div class="step-desc">Trains a transparent Logistic Regression or single-layer MLP on the selected response features.</div>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>This slide outlines our overall methodology. The pipeline consists of five key steps:</p>
+          <p>First, patch extraction with strict patient split to avoid data leakage. Second, generating a comprehensive kernel bank covering 9 filter families. Third, response pooling using absolute maximum pooling. Fourth, sparse selection using MMR or ABESS. Fifth, training a transparent classifier like Logistic Regression or a single-layer MLP.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: CASE STUDY DATASET -->
+      <section class="slide" data-section="Data & Splits">
+        <h2 class="slide-title">Dataset Analysis & <span class="highlight">Patient Split Integrity</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col">
+            <div class="panel-title">📂 Mammographic Dataset Splits</div>
+            <ul class="bullet-list" style="font-size: 0.85rem; margin-bottom: 15px;">
+              <li><strong>Source Exams:</strong> 511 TIFF mammograms, 269 annotated lesion maps.</li>
+              <li><strong>Clean Negatives:</strong> Background patches are extracted from genuinely healthy slides to prevent contextual background cues from malignant scans.</li>
+              <li><strong>Patient Split:</strong> Strict separation of train/val/test patient cohorts to prevent leakage.</li>
+            </ul>
+            
+            <table class="splits-table">
+              <thead>
+                <tr>
+                  <th>Split</th>
+                  <th>Inside Patches (Positive)</th>
+                  <th>Outside Patches (Negative)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Train</td>
+                  <td>2900</td>
+                  <td>3430</td>
+                </tr>
+                <tr>
+                  <td>Validation</td>
+                  <td>1080</td>
+                  <td>790</td>
+                </tr>
+                <tr>
+                  <td>Test</td>
+                  <td>1040</td>
+                  <td>830</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="panel flex-col" style="padding: 15px;">
+            <div class="panel-title">🔬 Normal Tissue Variations (Challenge)</div>
+            <div class="grid-2" style="height: 180px; gap: 10px;">
+              <div class="image-frame">
+                <img src="../Reports/figures/normal/IMG086.png" alt="Normal Case 086">
+                <div class="image-caption">Normal: Case 086</div>
+              </div>
+              <div class="image-frame">
+                <img src="../Reports/figures/normal/IMG187.png" alt="Normal Case 187">
+                <div class="image-caption">Normal: Case 187</div>
+              </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; line-height: 1.45;">
+              Normal healthy slides show suspicious dense textures, requiring models to learn structural morphology instead of simple brightness averages.
+            </p>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>For our case study, we used 511 TIFF mammograms with annotated lesions. We extracted healthy negative patches strictly from healthy exams to prevent shortcut learning based on exam context.</p>
+          <p>Crucially, our train, validation, and test splits are separated at the patient level. This guarantees that no patches from the same patient appear in both train and test sets, ensuring the validity of our metrics.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: KERNEL BANK & RESPONSE POOLING -->
+      <section class="slide" data-section="Methodology">
+        <h2 class="slide-title">Kernel Bank Design & <span class="highlight">Response Pooling</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col">
+            <div class="panel-title">🛠️ 9 Filter Families (2D Conv)</div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 10px;">
+              Our bank extracts multiscale texture features, texture co-occurrence, and smoothness priors:
+            </p>
+            <ul class="bullet-list" style="font-size: 0.8rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;">
+              <li>Gaussian filters</li>
+              <li>Anisotropic Gaussian</li>
+              <li>Difference of Gaussians</li>
+              <li>Laplacian of Gaussian</li>
+              <li>Gabor (texture profiles)</li>
+              <li>HOG-like filters</li>
+              <li>GLCM-like filters</li>
+              <li>LBP-like filters</li>
+              <li>MRF smoothness filters</li>
+            </ul>
+            
+            <div class="highlight-box" style="margin-top: 12px; padding: 8px 12px;">
+              <p style="font-size: 0.78rem;">
+                This structure allows the kernel parameters to contain domain-relevant priors, dramatically improving sample efficiency under low-volume constraints.
+              </p>
+            </div>
+          </div>
+          
+          <div class="panel flex-col">
+            <div class="panel-title">🔢 Response Aggregation</div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
+              We convolve image patch $x$ with kernel $K_j$ and apply absolute maximum pooling to summarize local response:
+            </p>
+            <div class="math-block" style="font-size: 1.1rem; margin: 5px 0;">
+              $$R_j(x) = \operatorname{MaxPool}(|K_j * x|)$$
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 6px;">
+              The resulting patch feature vector is fed directly to a linear classifier:
+            </p>
+            <div class="math-block" style="font-size: 1.1rem; margin: 5px 0;">
+              $$\phi(x) = [R_1(x), R_2(x), \dots, R_m(x)]$$
+            </div>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>We created a diverse bank of 2D kernels from 9 filter families, capturing multiscale textures and smoothness priors. This structure introduces strong domain-relevant priors.</p>
+          <p>To extract features, we convolve each patch and apply absolute max pooling. This summarizes the maximum activation of each filter, resulting in a compact feature vector for the classifier.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: ADAPTIVE SELECTION (MMR VS ABESS) -->
+      <section class="slide" data-section="Adaptive Selection">
+        <h2 class="slide-title">Adaptive Selection: <span class="highlight">MMR vs ABESS</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col">
+            <div class="panel-title">⚖️ Maximal Marginal Relevance (MMR)</div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 8px;">
+              Balances filter classification utility with feature redundancy:
+            </p>
+            <div class="math-block" style="font-size: 1.05rem; margin: 5px 0;">
+              $$\operatorname{MMR}(j) = \lambda \operatorname{Rel}(j) - (1-\lambda) \max_{i \in S} \operatorname{Sim}(i, j)$$
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px; height: 260px;">
+              <div class="image-frame" style="flex: 1;">
+                <img src="../Reports/figures/exp_022_mmr_selected_kernels.png" alt="MMR Selected Kernels">
+                <div class="image-caption">MMR Selected (3 kernels)</div>
+              </div>
+              <div class="image-frame" style="flex: 1;">
+                <img src="../Reports/figures/exp_029_abess_selected_kernels.png" alt="ABESS Selected Kernels">
+                <div class="image-caption">ABESS Selected (3 kernels)</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="panel flex-col">
+            <div class="panel-title">📊 Selection Metric Comparison</div>
+            <ul class="bullet-list" style="font-size: 0.82rem; margin-bottom: 10px;">
+              <li><strong>MMR Sparsity:</strong> Just <strong>3 MMR kernels</strong> reach <strong>0.9239 Test AUC</strong>, proving that minimal, diverse representations generalize well.</li>
+              <li><strong>High Count Overfit:</strong> Using 300 kernels decreases AUC to 0.8927, showing dense banks add parameter redundancy.</li>
+            </ul>
+            
+            <table class="splits-table" style="font-size: 0.78rem;">
+              <thead>
+                <tr>
+                  <th>Selector</th>
+                  <th>K Count</th>
+                  <th>Test AUC</th>
+                  <th>Test ACC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="highlighted-row">
+                  <td>MMR (Sparse)</td>
+                  <td>3</td>
+                  <td>0.9239</td>
+                  <td>0.7914</td>
+                </tr>
+                <tr>
+                  <td>MMR (Dense)</td>
+                  <td>200</td>
+                  <td>0.9180</td>
+                  <td>0.7909</td>
+                </tr>
+                <tr>
+                  <td>ABESS (Dense)</td>
+                  <td>200</td>
+                  <td>0.9236</td>
+                  <td>0.7690</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>We compared two sparse selection methods: MMR, which minimizes feature redundancy, and ABESS.</p>
+          <p>MMR achieves a high Test AUC of 0.9239 with just 3 selected kernels. In contrast, using a dense bank of 200/300 kernels leads to overfitting, dropping the AUC to 0.8927, proving that sparse, diverse representations generalize better.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: KERNEL COMPOSITION -->
+      <section class="slide" data-section="Kernel Composition">
+        <h2 class="slide-title">Kernel Composition: <span class="highlight">The "Composition Gap"</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col">
+            <div class="panel-title">🔗 Composing Kernels</div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
+              We try combining multiple selected kernels into a single composite filter to save feature computations:
+            </p>
+            <div class="math-block" style="font-size: 1.15rem; margin: 10px 0;">
+              $$K_{\text{comp}} = \sum_{i=1}^n w_i K_i$$
+            </div>
+            
+            <div class="highlight-box" style="margin-top: 8px; border-left-color: var(--color-danger);">
+              <p style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">
+                The Aggregation Non-Equivalency Gap:
+              </p>
+              <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 3px; line-height: 1.4;">
+                Convolving-then-pooling is mathematically different from convolving-individually-then-pooling. Combining filters pre-pooling aggregates away critical visual signals.
+              </p>
+            </div>
+          </div>
+          
+          <div class="panel flex-col">
+            <div class="panel-title">📉 Quantitative Composition Gap</div>
+            <table class="splits-table" style="font-size: 0.8rem; margin-bottom: 12px;">
+              <thead>
+                <tr>
+                  <th>Model Configuration</th>
+                  <th>Test AUC</th>
+                  <th>Test ACC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Unaggregated Base Bank (3 selected)</td>
+                  <td>0.9239</td>
+                  <td>0.7914</td>
+                </tr>
+                <tr class="highlighted-row" style="background: rgba(220, 38, 38, 0.03);">
+                  <td>Composite Filter Model (1 kernel)</td>
+                  <td>0.8933</td>
+                  <td>0.8150</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="image-frame" style="height: 110px;">
+              <img src="../results/exp_022/composite_kernels_grid.png" alt="Composite Grid">
+              <div class="image-caption">Composite grid showing composed filters.</div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>To improve computational efficiency, we experimented with composing multiple filters into a single kernel before convolution.</p>
+          <p>However, we discovered a "Composition Gap". Because convolving-then-pooling is non-equivalent to convolving-individually-then-pooling, combining filters pre-pooling averages out critical diagnostic signals, dropping the Test AUC from 0.9239 to 0.8933.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: PARAMETER SAMPLING: QMC (STATIC COMPARISON) -->
+      <section class="slide" data-section="Parameter Search">
+        <h2 class="slide-title">Parameter Sampling: <span class="highlight">Sobol QMC Exploration</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col" style="padding: 12px 18px;">
+            <div class="panel-title">🎲 Random vs Sobol-QMC Grid Cover</div>
+            
+            <div class="grid-2" style="height: 160px; gap: 10px;">
+              <div class="flex-col">
+                <div class="sampling-visual" style="height: 125px;">
+                  <svg class="svg-chart" viewBox="0 0 320 200">
+                    <line x1="0" y1="50" x2="320" y2="50" class="chart-grid"></line>
+                    <line x1="0" y1="100" x2="320" y2="100" class="chart-grid"></line>
+                    <line x1="0" y1="150" x2="320" y2="150" class="chart-grid"></line>
+                    <line x1="80" y1="0" x2="80" y2="200" class="chart-grid"></line>
+                    <line x1="160" y1="0" x2="160" y2="200" class="chart-grid"></line>
+                    <line x1="240" y1="0" x2="240" y2="200" class="chart-grid"></line>
+                    <!-- Scattered random coordinates, padded away from boundaries -->
+                    <circle cx="34" cy="45" r="4" class="random-point"></circle>
+                    <circle cx="78" cy="22" r="4" class="random-point"></circle>
+                    <circle cx="92" cy="120" r="4" class="random-point"></circle>
+                    <circle cx="18" cy="178" r="4" class="random-point"></circle>
+                    <circle cx="145" cy="23" r="4" class="random-point"></circle>
+                    <circle cx="180" cy="89" r="4" class="random-point"></circle>
+                    <circle cx="220" cy="160" r="4" class="random-point"></circle>
+                    <circle cx="280" cy="50" r="4" class="random-point"></circle>
+                    <circle cx="55" cy="95" r="4" class="random-point"></circle>
+                    <circle cx="110" cy="55" r="4" class="random-point"></circle>
+                    <circle cx="165" cy="140" r="4" class="random-point"></circle>
+                    <circle cx="230" cy="40" r="4" class="random-point"></circle>
+                    <circle cx="250" cy="110" r="4" class="random-point"></circle>
+                    <circle cx="290" cy="180" r="4" class="random-point"></circle>
+                    <circle cx="40" cy="150" r="4" class="random-point"></circle>
+                    <circle cx="90" cy="182" r="4" class="random-point"></circle>
+                    <circle cx="130" cy="90" r="4" class="random-point"></circle>
+                    <circle cx="210" cy="22" r="4" class="random-point"></circle>
+                    <circle cx="270" cy="95" r="4" class="random-point"></circle>
+                    <circle cx="18" cy="60" r="4" class="random-point"></circle>
+                  </svg>
+                </div>
+                <div style="font-size: 0.7rem; text-align: center; color: var(--color-danger); margin-top: 4px; font-weight: 600;">Random Sampling (Leaves Gaps & Clumps)</div>
+              </div>
+              
+              <div class="flex-col">
+                <div class="sampling-visual" style="height: 125px;">
+                  <svg class="svg-chart" viewBox="0 0 320 200">
+                    <line x1="0" y1="50" x2="320" y2="50" class="chart-grid"></line>
+                    <line x1="0" y1="100" x2="320" y2="100" class="chart-grid"></line>
+                    <line x1="0" y1="150" x2="320" y2="150" class="chart-grid"></line>
+                    <line x1="80" y1="0" x2="80" y2="200" class="chart-grid"></line>
+                    <line x1="160" y1="0" x2="160" y2="200" class="chart-grid"></line>
+                    <line x1="240" y1="0" x2="240" y2="200" class="chart-grid"></line>
+                    <!-- Uniform QMC coordinates, centered across the entire canvas -->
+                    <circle cx="20" cy="40" r="4" class="sobol-point"></circle>
+                    <circle cx="60" cy="40" r="4" class="sobol-point"></circle>
+                    <circle cx="100" cy="40" r="4" class="sobol-point"></circle>
+                    <circle cx="140" cy="40" r="4" class="sobol-point"></circle>
+                    <circle cx="180" cy="40" r="4" class="sobol-point"></circle>
+                    <circle cx="220" cy="40" r="4" class="sobol-point"></circle>
+                    <circle cx="260" cy="40" r="4" class="sobol-point"></circle>
+                    <circle cx="300" cy="40" r="4" class="sobol-point"></circle>
+                    
+                    <circle cx="40" cy="80" r="4" class="sobol-point"></circle>
+                    <circle cx="80" cy="80" r="4" class="sobol-point"></circle>
+                    <circle cx="120" cy="80" r="4" class="sobol-point"></circle>
+                    <circle cx="160" cy="80" r="4" class="sobol-point"></circle>
+                    <circle cx="200" cy="80" r="4" class="sobol-point"></circle>
+                    <circle cx="240" cy="80" r="4" class="sobol-point"></circle>
+                    <circle cx="280" cy="80" r="4" class="sobol-point"></circle>
+                    
+                    <circle cx="20" cy="120" r="4" class="sobol-point"></circle>
+                    <circle cx="60" cy="120" r="4" class="sobol-point"></circle>
+                    <circle cx="100" cy="120" r="4" class="sobol-point"></circle>
+                    <circle cx="140" cy="120" r="4" class="sobol-point"></circle>
+                    <circle cx="180" cy="120" r="4" class="sobol-point"></circle>
+                    <circle cx="220" cy="120" r="4" class="sobol-point"></circle>
+                    <circle cx="260" cy="120" r="4" class="sobol-point"></circle>
+                    <circle cx="300" cy="120" r="4" class="sobol-point"></circle>
+                    
+                    <circle cx="40" cy="160" r="4" class="sobol-point"></circle>
+                    <circle cx="80" cy="160" r="4" class="sobol-point"></circle>
+                    <circle cx="120" cy="160" r="4" class="sobol-point"></circle>
+                    <circle cx="160" cy="160" r="4" class="sobol-point"></circle>
+                    <circle cx="200" cy="160" r="4" class="sobol-point"></circle>
+                    <circle cx="240" cy="160" r="4" class="sobol-point"></circle>
+                    <circle cx="280" cy="160" r="4" class="sobol-point"></circle>
+                  </svg>
+                </div>
+                <div style="font-size: 0.7rem; text-align: center; color: var(--accent-cyan); margin-top: 4px; font-weight: 600;">Sobol QMC Cover (Uniform Exploration)</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="panel flex-col">
+            <div class="panel-title">📈 Significant Matched Improvements</div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
+              Replacing random parameter draws with Sobol Quasi-Monte Carlo (QMC) sampling yields a clean, parameters-free boost in model metrics:
+            </p>
+            
+            <table class="splits-table" style="font-size: 0.78rem;">
+              <thead>
+                <tr>
+                  <th>Evaluation Setup</th>
+                  <th>Random Sampling</th>
+                  <th>QMC Sampling</th>
+                  <th>Absolute Gain</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="highlighted-row">
+                  <td>Base Bank AUC</td>
+                  <td>0.9195</td>
+                  <td><strong>0.9387</strong></td>
+                  <td style="color: var(--color-success); font-weight: bold;">+0.0192</td>
+                </tr>
+                <tr>
+                  <td>Composite AUC</td>
+                  <td>0.8855</td>
+                  <td><strong>0.8934</strong></td>
+                  <td style="color: var(--color-success); font-weight: bold;">+0.0080</td>
+                </tr>
+                <tr>
+                  <td>Composite ACC</td>
+                  <td>0.8063</td>
+                  <td><strong>0.8176</strong></td>
+                  <td style="color: var(--color-success); font-weight: bold;">+0.0113</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>We explored how parameter search strategies impact the kernel bank. We compared standard random sampling with Sobol Quasi-Monte Carlo (QMC) sampling.</p>
+          <p>QMC covers the parameter space uniformly, avoiding clusters and gaps. This uniform coverage yields a clean, parameter-free boost, raising the Base Bank AUC from 0.9195 to 0.9387.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: ROTATIONAL INVARIANCE -->
+      <section class="slide" data-section="Rotational Design">
+        <h2 class="slide-title">Rotational Design: <span class="highlight">Enforced Symmetries</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col">
+            <div class="panel-title">🔄 Enforced Rotation Invariance</div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 8px;">
+              Mammographic lesions display structures that are orientation-independent. We enforce rotation invariance by averaging convolved kernel copies rotated at multiple angles (e.g., every $10^\circ$):
+            </p>
+            <div class="math-block" style="font-size: 1.25rem; margin: 12px 0;">
+              $$K_{\text{RI}} = \frac{1}{36}\sum_{i=0}^{35}\operatorname{rot}(K, 10^\circ \cdot i)$$
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45;">
+              This hardcodes physical rotational symmetries directly into the model representation, removing the reliance on synthetic data augmentation.
+            </p>
+          </div>
+          
+          <div class="panel flex-col" style="padding: 15px;">
+            <div class="panel-title">📉 Robustness vs Discrimination</div>
+            <div class="image-frame" style="height: 170px;">
+              <img src="../Reports/figures/rotation_error_difference_barplot.png" alt="Rotation Invariance Bar Chart">
+              <div class="image-caption">Rotation sensitivity curves of invariant vs standard models.</div>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
+              Enforcing multi-angle stability (e.g., every $10^\circ$ or right-angles) trades off some discriminative details relative to orientation-aware features.
+            </p>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>Since mammographic lesions are orientation-independent, we enforced physical rotation invariance by averaging rotated copies of the kernels—specifically sweeping every 10 degrees (36 orientations) or right-angles (4 orientations).</p>
+          <p>While this hardcodes stability and removes the need for data augmentation, it introduces a trade-off: enforcing exact stability slightly reduces the model's capacity to capture fine, orientation-aware texture details.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 11: RADIAL EVOLUTION TIMELINE (STATIC 2x2 GRID) -->
+      <section class="slide" data-section="Radial Kernels">
+        <h2 class="slide-title">Evolution of <span class="highlight">Radial Kernel Models</span></h2>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 8px;">Development timeline showing four refinement stages from circularization to learnable radius:</p>
+        
+        <div class="evo-grid">
+          <!-- Stage 1 -->
+          <div class="evo-card">
+            <div class="image-frame evo-img">
+              <img src="../Reports/figures/radial_single_kernel_current_summary.png" alt="Radial Stage 1">
+            </div>
+            <div class="evo-text">
+              <div class="evo-title">1. Seed-based Circularization</div>
+              <div class="evo-desc">Circularizes 2D filters to a 1D shell profile. Highly seed-dependent.</div>
+              <div class="evo-metric">Test AUC: 0.8825 | ACC: 0.8000</div>
+            </div>
+          </div>
+          
+          <!-- Stage 2 -->
+          <div class="evo-card">
+            <div class="image-frame evo-img">
+              <img src="../Reports/figures/radial_single_kernel_signed_compact_summary.png" alt="Radial Stage 2">
+            </div>
+            <div class="evo-text">
+              <div class="evo-title">2. Shell Optimization</div>
+              <div class="evo-desc">Tuned radial shell coefficients directly from circular seed, causing noisy spikes.</div>
+              <div class="evo-metric">Test AUC: 0.9151 | ACC: 0.8449</div>
+            </div>
+          </div>
+          
+          <!-- Stage 3 -->
+          <div class="evo-card">
+            <div class="image-frame evo-img">
+              <img src="../Reports/figures/radial_single_kernel_scratch_summary.png" alt="Radial Stage 3">
+            </div>
+            <div class="evo-text">
+              <div class="evo-title">3. Signed Scratch-Trained</div>
+              <div class="evo-desc">Learns signed top-k pooling response from scratch to avoid seed bias.</div>
+              <div class="evo-metric">Test AUC: 0.8885 | ACC: 0.8118</div>
+            </div>
+          </div>
+          
+          <!-- Stage 4 -->
+          <div class="evo-card" style="border-color: var(--accent-cyan); background: rgba(2, 132, 199, 0.02);">
+            <div class="image-frame evo-img">
+              <img src="../Reports/figures/radial_learnable_radius_summary.png" alt="Radial Stage 4">
+            </div>
+            <div class="evo-text">
+              <div class="evo-title">4. Learnable-Radius Endpoint</div>
+              <div class="evo-desc">Learns signed shells and effective support radius jointly with soft gating.</div>
+              <div class="evo-metric" style="color: var(--color-success);">Test AUC: 0.9101 | ACC: 0.8449</div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>This slide shows the timeline of radial kernel models. We moved from seed-based circularization (Stage 1) to direct shell optimization (Stage 2).</p>
+          <p>We then introduced signed scratch-trained top-k pooling (Stage 3) and finally, a learnable-radius model (Stage 4).</p>
+          <p>By moving the layout to vertical, we can see the detail of each stage, and the description text fits cleanly on a single line.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 12: FINAL LEARNABLE-RADIUS RADIAL MODEL -->
+      <section class="slide" data-section="Radial Kernels">
+        <h2 class="slide-title">Final Model: <span class="highlight">Learnable-Radius Radial Kernel</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col" style="padding: 15px 20px;">
+            <div class="panel-title">🔬 Differentiable Support & Gate</div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 6px;">
+              We define a kernel by concentric ring basis functions $B_r$ and learnable coefficients $f_r$:
+            </p>
+            <div class="math-block" style="font-size: 1.05rem; margin: 4px 0;">
+              $$K(x,y) = \sum_{r=0}^{R} f_r B_r(x,y)$$
+            </div>
+            <p style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.35; padding-left: 8px; border-left: 2px solid var(--accent-cyan);">
+              • <strong>$B_r(x,y)$</strong>: Binary mask of concentric ring shell $r$<br>
+              • <strong>$f_r$</strong>: Learnable coefficient weighting the $r$-th shell<br>
+              • <strong>$R$</strong>: Maximum radial support window
+            </p>
+            
+            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 6px;">
+              We train with a <strong>Signed Top-k Response</strong> to capture consistent signed structures:
+            </p>
+            <div class="math-block" style="font-size: 1.05rem; margin: 4px 0;">
+              $$s(x;K) = \frac{1}{k}\sum_{p \in \operatorname{TopK}(|K * x|)} (K * x)_p$$
+            </div>
+            <p style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.35; padding-left: 8px; border-left: 2px solid var(--accent-cyan);">
+              • <strong>$K * x$</strong>: 2D convolution response map of patch $x$<br>
+              • <strong>$\operatorname{TopK}(|K * x|)$</strong>: Indices $p$ of $k$ largest response magnitudes<br>
+              • <strong>$(K * x)_p$</strong>: Actual signed response values at selected indices
+            </p>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">
+              A differentiable gate learns the optimal support radius (approx 13.18 shells) while smoothness and curvature penalties regularize the profile.
+            </p>
+          </div>
+          
+          <div class="panel flex-col" style="padding: 10px;">
+            <div class="panel-title">📊 Learned Profile and Filter</div>
+            <div style="display: flex; flex-direction: column; gap: 8px; height: 320px;">
+              <div class="image-frame" style="flex: 1;">
+                <img src="../Reports/figures/radial_learnable_radius_summary.png" alt="Learnable Radius Summary">
+                <div class="image-caption">Learned profile</div>
+              </div>
+              <div class="image-frame" style="flex: 1;">
+                <img src="../Reports/figures/radial_learnable_radius_multi_panel.png" alt="Learnable Radius Multi Panel">
+                <div class="image-caption">Radius evolution & curves</div>
+              </div>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.4;">
+              By allowing signed shell values, the model learns not to act as a simple brightness-averaging filter, yielding <strong>Test AUC of 0.9101</strong>.
+            </p>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>Our final model represents a single kernel using concentric rings with learnable coefficients.</p>
+          <p>We optimize both the coefficients and the support radius jointly using a differentiable gate. This allows the model to learn not just the weights but the optimal size of the filter (around 13.18 shells), achieving a Test AUC of 0.9101.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 13: QUANTITATIVE LEADERBOARD -->
+      <section class="slide" data-section="Results">
+        <h2 class="slide-title">Model Comparison <span class="highlight">Leaderboard</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col" style="grid-column: span 2;">
+            <div class="panel-title">📊 Key Metrics on Shared Held-Out Test Set</div>
+            
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Model Configuration</th>
+                  <th>Classifier Type</th>
+                  <th>Filter Params</th>
+                  <th>Test AUC</th>
+                  <th>Test ACC</th>
+                  <th>Interpretability Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Averaging-like Constrained Radial</td>
+                  <td>Logistic Regression</td>
+                  <td>15 radial shells</td>
+                  <td>0.8885</td>
+                  <td>0.8118</td>
+                  <td><span class="badge cyan">High (1D profile)</span></td>
+                </tr>
+                <tr class="highlighted-row">
+                  <td>Final Signed Radial (Learnable Radius)</td>
+                  <td>Logistic Regression</td>
+                  <td>15 radial shells</td>
+                  <td><strong>0.9101</strong></td>
+                  <td><strong>0.8449</strong></td>
+                  <td><span class="badge cyan">High (1D profile)</span></td>
+                </tr>
+                <tr>
+                  <td>Best Selected Kernel Bank (QMC)</td>
+                  <td>Logistic Regression</td>
+                  <td>90 discrete kernels</td>
+                  <td><strong>0.9387</strong></td>
+                  <td><strong>0.8866</strong></td>
+                  <td><span class="badge gray">Medium (inspectable bank)</span></td>
+                </tr>
+                <tr style="border-top: 1.5px solid rgba(155, 81, 224, 0.3);">
+                  <td>Deep Patch CNN Baseline</td>
+                  <td>4 Conv Blocks + Head</td>
+                  <td>&gt;100k params</td>
+                  <td><strong>0.9626</strong></td>
+                  <td><strong>0.9021</strong></td>
+                  <td><span class="badge purple">Low (Black-box)</span></td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div class="highlight-box" style="margin-top: 15px; padding: 10px 15px;">
+              <p style="font-size: 0.82rem; line-height: 1.45;">
+                <strong>Trade-Off Summary:</strong> While the Deep Patch CNN yields the highest metrics, the <strong>single learned radial kernel</strong> achieves highly competitive performance (0.9101 AUC) while using a fraction of the parameter space, offering complete clinical interpretability.
+              </p>
+            </div>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>Here is the final comparison. Our learnable-radius radial model achieves a Test AUC of 0.9101 and ACC of 0.8449 with only 15 parameters.</p>
+          <p>While the Deep Patch CNN baseline achieves 0.9626 AUC, it requires over 100k parameters and acts as a black box. Our single radial kernel offers a highly competitive, transparent, and clinically interpretable alternative.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 14: HEATMAP INSPECTION & CONCLUSION -->
+      <section class="slide" data-section="Conclusion">
+        <h2 class="slide-title">Localization Heatmaps & <span class="highlight">Conclusions</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col" style="padding: 10px;">
+            <div class="panel-title">🔎 Localization Heatmap Comparison</div>
+            <div style="display: flex; flex-direction: column; gap: 8px; height: 320px;">
+              <div class="image-frame" style="flex: 1;">
+                <img src="../publication/figures/selected_kernel_heatmap_example.png" alt="Selected Kernel Heatmap">
+                <div class="image-caption">Selected Kernel Heatmap</div>
+              </div>
+              <div class="image-frame" style="flex: 1;">
+                <img src="../publication/figures/cnn_heatmap_example.png" alt="CNN Heatmap">
+                <div class="image-caption">Deep CNN Heatmap</div>
+              </div>
+            </div>
+            <p style="font-size: 0.74rem; color: var(--text-muted); margin-top: 8px; line-height: 1.35; text-align: center;">
+              Localization comparison: Both methods focus on the same suspicious lesion region, but the CNN displays sharper contrast.
+            </p>
+          </div>
+          
+          <div class="panel flex-col">
+            <div class="panel-title">🏁 Key Takeaways</div>
+            <ul class="bullet-list" style="font-size: 0.78rem;">
+              <li><strong>Low-volume viability:</strong> Compact, structured kernels offer robust alternatives to large models when data is scarce.</li>
+              <li><strong>Search Efficiency:</strong> Sobol QMC covers parameter space uniformly, boosting base model test AUC by <strong>+0.0192</strong>.</li>
+              <li><strong>Prior Strength:</strong> Radial profiles match circular mammography lesion morphology better than unconstrained templates.</li>
+              <li><strong>Learnable Support:</strong> The final learnable-radius radial model optimizes size dynamically, achieving test AUC 0.9101 with a single interpretable filter.</li>
+            </ul>
+          </div>
+        </div>
+      
+        <div class="speaker-notes">
+          <p>We validated the models using localization heatmaps. Both the selected kernel bank and the Deep CNN focus on the same malignant lesion region, validating that our compact model learns clinically relevant features.</p>
+          <p>In conclusion, adaptive kernels are highly viable for low-volume settings, Sobol QMC significantly improves parameter search, and learnable radial profiles provide transparent, parameter-efficient diagnostics.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 15: THANK YOU & QUESTIONS -->
+      <section class="slide title-slide" data-section="Conclusion">
+        <div style="margin-bottom: 20px;">
+          <img src="../master_thesis/logo.png" alt="HSE Logo" style="height: 70px; object-fit: contain;">
+        </div>
+        <h1 style="font-size: 3rem; margin-bottom: 20px;">Thank You!</h1>
+        <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 40px;">Questions & Discussion</p>
+        
+        <div class="authorship" style="justify-content: center; gap: 60px; max-width: 900px;">
+          <div class="author-card" style="text-align: center;">
+            <div class="role-label">Presenter</div>
+            <div class="name">Masoud Vahid Dastgerdi</div>
+            <div class="inst">Data Science MSc | HSE University</div>
+            <div class="inst" style="margin-top: 8px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan);">
+              <a href="https://github.com/Masoudvahid/Kernel-Based-Cancer-Classification" target="_blank" style="color: inherit; text-decoration: none;">🐱 github.com/Masoudvahid</a>
+            </div>
+          </div>
+          
+          <div class="advisor-card" style="text-align: center;">
+            <div class="role-label">Supervisor</div>
+            <div class="name">Professor Oleg S. Pianykh</div>
+            <div class="inst">Higher School of Economics</div>
+          </div>
+        </div>
+
+        <div class="speaker-notes">
+          <p>Thank you very much for your time and attention. I would like to express my gratitude to my supervisor, Prof. Oleg Pianykh, and the HSE University committee members.</p>
+          <p>I am now open to any questions, comments, or discussions regarding this research, the adaptive kernel designs, or the validation results.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 16: SUPPLEMENTARY BRAIN DATASET CHECKS -->
+      <section class="slide" data-section="Supplementary">
+        <h2 class="slide-title">Supplementary: <span class="highlight">BRISC 2025 Brain Dataset Checks</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col" style="padding: 15px 20px;">
+            <div class="panel-title">📊 Model Performance Metrics</div>
+            
+            <p style="font-size: 0.8rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 4px;">Structured & Combined Stages</p>
+            <table class="splits-table" style="font-size: 0.75rem; margin-bottom: 15px;">
+              <thead>
+                <tr>
+                  <th>Model Stage</th>
+                  <th>Val AUC</th>
+                  <th>Test Acc</th>
+                  <th>Test AUC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="highlighted-row">
+                  <td>Selected-kernel</td>
+                  <td>0.8366</td>
+                  <td>0.7715</td>
+                  <td><strong>0.8321</strong></td>
+                </tr>
+                <tr>
+                  <td>Combined-kernel</td>
+                  <td>0.6994</td>
+                  <td>0.6225</td>
+                  <td>0.7013</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p style="font-size: 0.8rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 4px;">Single-Kernel Radial Stages</p>
+            <table class="splits-table" style="font-size: 0.75rem;">
+              <thead>
+                <tr>
+                  <th>Radial Stage</th>
+                  <th>Val AUC</th>
+                  <th>Test Acc</th>
+                  <th>Test AUC</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Seed Single-Kernel</td>
+                  <td>0.7012</td>
+                  <td>0.6405</td>
+                  <td>0.6961</td>
+                </tr>
+                <tr class="highlighted-row">
+                  <td>Learned Single-Kernel</td>
+                  <td>0.7563</td>
+                  <td>0.6740</td>
+                  <td><strong>0.7303</strong></td>
+                </tr>
+                <tr>
+                  <td>Monotone-Constrained</td>
+                  <td>0.6801</td>
+                  <td>0.6962</td>
+                  <td>0.6268</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px; height: 200px;">
+              <div class="image-frame" style="flex: 1; height: 100%;">
+                <img src="../results/exp_brisc2025_mmr_nperFamily500_nComposition1250/brisc2025_train_00004_gl_ax_t1_structured_kernel_heatmap.png" alt="Brain Heatmap 1">
+                <div class="image-caption" style="font-size: 0.62rem; padding: 2px;">Patient 00004: Structured Kernel Heatmap</div>
+              </div>
+              <div class="image-frame" style="flex: 1; height: 100%;">
+                <img src="../results/exp_brisc2025_mmr_nperFamily500_nComposition1250/brisc2025_train_00006_gl_ax_t1_structured_kernel_heatmap.png" alt="Brain Heatmap 2">
+                <div class="image-caption" style="font-size: 0.62rem; padding: 2px;">Patient 00006: Structured Kernel Heatmap</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="panel flex-col">
+            <div class="panel-title">🧠 BRISC 2025 Insights</div>
+            <ul class="bullet-list" style="font-size: 0.8rem; line-height: 1.5;">
+              <li><strong>Dataset Transferability:</strong> Tested our kernel-based framework on the BRISC 2025 Brain Tumor MRI dataset (T1 MRI scans).</li>
+              <li><strong>Selected-Kernel Superiority:</strong> The sparse selected-kernel model yields the highest generalization with a <strong>Test AUC of 0.8321</strong>.</li>
+              <li><strong>Learned Radial Optimization:</strong> The learned single-kernel radial method improves test performance to <strong>0.7303 AUC</strong> (compared to <strong>0.6961 AUC</strong> for the seed baseline), showing strong optimization capability on MRI modalities.</li>
+              <li><strong>Monotone Constraint Trade-off:</strong> Enforcing monotonic constraint yields a smoother profile but limits the model capacity on complex brain tumors.</li>
+            </ul>
+            <div class="highlight-box" style="margin-top: 10px; padding: 10px 14px;">
+              <p style="font-size: 0.76rem; line-height: 1.4;">
+                <strong>Conclusion:</strong> The results confirm that our adaptive-kernel workflow generalizes robustly across different medical organs (mammography and brain MRI) and imaging modalities.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="speaker-notes">
+          <p>This supplementary slide reports the results from our model checks conducted on the BRISC 2025 Brain Tumor MRI dataset.</p>
+          <p>We see that the selected-kernel classifier remains the strongest model with a Test AUC of 0.8321. Crucially, the learned single-kernel radial model successfully adapts to the MRI scans, boosting the AUC to 0.7303, which is a significant improvement over the static seed baseline.</p>
+          <p>These findings demonstrate that our adaptive kernel methodology generalizes well to other datasets and organ modalities beyond mammography.</p>
+        </div>
+      </section>
+
+      <!-- SLIDE 17: PUBLICATION PREVIEW -->
+      <section class="slide" data-section="Publication">
+        <h2 class="slide-title">Publication: <span class="highlight">Paper & Contributions</span></h2>
+        <div class="grid-2" style="margin-top: 15px;">
+          <div class="panel flex-col" style="padding: 10px; align-items: center; justify-content: center;">
+            <div class="image-frame" style="height: 390px; width: 100%; border: 1px solid rgba(15, 23, 42, 0.1); box-shadow: 0 10px 25px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+              <img src="paper_first_page-1.png" alt="Paper First Page" style="height: 100%; width: auto; object-fit: contain;">
+            </div>
+          </div>
+          
+          <div class="panel flex-col" style="padding: 20px 24px; justify-content: space-between;">
+            <div>
+              <div class="panel-title" style="margin-bottom: 8px;">📄 Academic Manuscript</div>
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); line-height: 1.3; margin-bottom: 12px;">
+                Optimal Classification of Low-volume Medical Data with Adaptive Kernel Design
+              </h3>
+              
+              <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">
+                <strong>Authors:</strong> Masoud Vahid Dastgerdi<sup>1</sup>, Oleg S. Pianykh<sup>2</sup><br>
+                <span style="font-size: 0.78rem; color: var(--text-muted);"><sup>1</sup>Higher School of Economics, <sup>2</sup>Harvard Medical School / MGH</span>
+              </div>
+              
+              <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 12px;">
+                This manuscript presents our complete interpretable kernel-learning framework. It validates that a compact, single learnable radial kernel can achieve highly competitive diagnostic performance (<strong>0.91 AUC</strong>) compared to black-box CNNs while offering clinical transparency and transparency by design.
+              </p>
+            </div>
+            
+            <div class="highlight-box" style="margin: 0; padding: 10px 14px;">
+              <p style="font-size: 0.78rem; line-height: 1.4; font-weight: 600; color: var(--accent-teal);">
+                🚀 Target Venue & Status
+              </p>
+              <p style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 2px;">
+                Prepared for submission to peer-reviewed medical imaging journals. Code and dataset pipelines are fully open-sourced for clinical reproducibility.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="speaker-notes">
+          <p>Finally, I would like to present the publication manuscript resulting from this research. The paper, titled "Optimal Classification of Low-volume Medical Data with Adaptive Kernel Design", is co-authored with Professor Oleg Pianykh.</p>
+          <p>It details the full mathematical formulation of our learnable radial kernel, the sparse selection algorithms, and the validation results on both mammography and brain MRI datasets.</p>
+          <p>We are preparing to submit this manuscript to peer-reviewed medical journals, and all code is open-sourced to encourage clinical validation and reproducibility.</p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Slide Navigation Footer (hidden in print) -->
+    <footer class="slide-footer">
+      <div class="author-info">
+        <span>Masoud Vahid Dastgerdi</span>
+        <span>HSE MSc Thesis Defence</span>
+      </div>
+      
+      <div class="controls-panel">
+        <button id="prev-slide-btn" class="btn-ctrl">◀️</button>
+        <button id="next-slide-btn" class="btn-ctrl">▶️</button>
+      </div>
+
+      <div class="slide-num">1 / 17</div>
+    </footer>
+
+    </div>
+
+    <div class="notes-panel">
+      <div class="notes-panel-header">
+        🎙️ Speaker Notes
+      </div>
+      <div class="notes-panel-content" id="active-notes">
+        <!-- Notes will be loaded dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

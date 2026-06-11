@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2026.1.22)  12 APR 2026 22:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2026.1.22)  22 MAY 2026 16:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -557,7 +557,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 50.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 50.
-<./logo.png, id=160, 310.15875pt x 310.15875pt>
+<./logo.png, id=164, 310.15875pt x 310.15875pt>
 File: ./logo.png Graphic file (type png)
 <use ./logo.png>
 Package pdftex.def Info: ./logo.png  used on input line 50.
@@ -579,8 +579,8 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.90     \item H
-                ow do sampling, composition, and rotation-aware design affec...
+l.90     \item W
+                hich kernel adaptation strategies improve performance under ...
 [1
 
 ]
@@ -588,187 +588,250 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.109 
+l.110 
        [2]
 pdfTeX warning (ext4): destination with the same identifier (name{page.3}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.120 T
-       he present thesis takes an intrinsically interpretable path. Rather t...
-[3] [4]
-<../Reports/figures/normal/IMG086.png, id=277, 4769.82pt x 6022.5pt>
+l.120 
+       [3] [4]
+<../Reports/figures/normal/IMG086.png, id=289, 4769.82pt x 6022.5pt>
 File: ../Reports/figures/normal/IMG086.png Graphic file (type png)
 <use ../Reports/figures/normal/IMG086.png>
 Package pdftex.def Info: ../Reports/figures/normal/IMG086.png  used on input li
-ne 140.
+ne 142.
 (pdftex.def)             Requested size: 225.34381pt x 284.50949pt.
-<../Reports/figures/normal/IMG187.png, id=278, 4767.8125pt x 6022.5pt>
+<../Reports/figures/normal/IMG187.png, id=290, 4767.8125pt x 6022.5pt>
 File: ../Reports/figures/normal/IMG187.png Graphic file (type png)
 <use ../Reports/figures/normal/IMG187.png>
 Package pdftex.def Info: ../Reports/figures/normal/IMG187.png  used on input li
-ne 141.
+ne 143.
 (pdftex.def)             Requested size: 225.34381pt x 284.6014pt.
-<../Reports/figures/normal/IMG440.png, id=279, 4761.79pt x 6022.5pt>
+<../Reports/figures/normal/IMG440.png, id=291, 4761.79pt x 6022.5pt>
 File: ../Reports/figures/normal/IMG440.png Graphic file (type png)
 <use ../Reports/figures/normal/IMG440.png>
 Package pdftex.def Info: ../Reports/figures/normal/IMG440.png  used on input li
-ne 142.
+ne 144.
 (pdftex.def)             Requested size: 225.34381pt x 284.96898pt.
-<../Reports/figures/normal/IMG459.png, id=280, 4753.76pt x 6022.5pt>
+<../Reports/figures/normal/IMG459.png, id=292, 4753.76pt x 6022.5pt>
 File: ../Reports/figures/normal/IMG459.png Graphic file (type png)
 <use ../Reports/figures/normal/IMG459.png>
 Package pdftex.def Info: ../Reports/figures/normal/IMG459.png  used on input li
-ne 143.
+ne 145.
 (pdftex.def)             Requested size: 225.34381pt x 285.42845pt.
  [5] [6 <../Reports/figures/normal/IMG086.png> <../Reports/figures/normal/IMG18
 7.png> <../Reports/figures/normal/IMG440.png> <../Reports/figures/normal/IMG459
 .png>] [7]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
-80.
+82.
  (/usr/share/texmf/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [8] [9] [10]
-[11] [12]
-<../Reports/figures/exp_022_mmr_selected_kernels.png, id=341, 433.62pt x 216.81
+) [8] [9]
+[10] [11] [12]
+<../Reports/figures/exp_022_mmr_selected_kernels.png, id=364, 433.62pt x 216.81
 pt>
 File: ../Reports/figures/exp_022_mmr_selected_kernels.png Graphic file (type pn
 g)
 <use ../Reports/figures/exp_022_mmr_selected_kernels.png>
 Package pdftex.def Info: ../Reports/figures/exp_022_mmr_selected_kernels.png  u
-sed on input line 313.
+sed on input line 315.
 (pdftex.def)             Requested size: 431.91196pt x 215.96585pt.
  [13 <../Reports/figures/exp_022_mmr_selected_kernels.png>]
-<../results/exp_019/heatmaps/IMG483.tif_heatmap.png, id=349, 1011.78pt x 505.89
+<../results/exp_019/heatmaps/IMG483.tif_heatmap.png, id=372, 1011.78pt x 505.89
 pt>
 File: ../results/exp_019/heatmaps/IMG483.tif_heatmap.png Graphic file (type png
 )
 <use ../results/exp_019/heatmaps/IMG483.tif_heatmap.png>
 Package pdftex.def Info: ../results/exp_019/heatmaps/IMG483.tif_heatmap.png  us
-ed on input line 325.
+ed on input line 327.
 (pdftex.def)             Requested size: 225.34381pt x 112.67017pt.
-<../results/exp_019/heatmaps/IMG033.tif_heatmap.png, id=350, 1011.78pt x 505.89
+<../results/exp_019/heatmaps/IMG033.tif_heatmap.png, id=373, 1011.78pt x 505.89
 pt>
 File: ../results/exp_019/heatmaps/IMG033.tif_heatmap.png Graphic file (type png
 )
 <use ../results/exp_019/heatmaps/IMG033.tif_heatmap.png>
 Package pdftex.def Info: ../results/exp_019/heatmaps/IMG033.tif_heatmap.png  us
-ed on input line 326.
+ed on input line 328.
 (pdftex.def)             Requested size: 225.34381pt x 112.67017pt.
-<../results/exp_019/heatmaps/IMG263.tif_heatmap.png, id=351, 1011.78pt x 505.89
+<../results/exp_019/heatmaps/IMG263.tif_heatmap.png, id=374, 1011.78pt x 505.89
 pt>
 File: ../results/exp_019/heatmaps/IMG263.tif_heatmap.png Graphic file (type png
 )
 <use ../results/exp_019/heatmaps/IMG263.tif_heatmap.png>
 Package pdftex.def Info: ../results/exp_019/heatmaps/IMG263.tif_heatmap.png  us
-ed on input line 327.
+ed on input line 329.
 (pdftex.def)             Requested size: 225.34381pt x 112.67017pt.
-<../results/exp_019/heatmaps/IMG351.tif_heatmap.png, id=352, 1011.78pt x 505.89
+<../results/exp_019/heatmaps/IMG351.tif_heatmap.png, id=375, 1011.78pt x 505.89
 pt>
 File: ../results/exp_019/heatmaps/IMG351.tif_heatmap.png Graphic file (type png
 )
 <use ../results/exp_019/heatmaps/IMG351.tif_heatmap.png>
 Package pdftex.def Info: ../results/exp_019/heatmaps/IMG351.tif_heatmap.png  us
-ed on input line 328.
+ed on input line 330.
 (pdftex.def)             Requested size: 225.34381pt x 112.67017pt.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 343.
- [14 <../results/exp_019/heatmaps/IMG483.tif_heatmap.png> <../results/exp_019/h
-eatmaps/IMG033.tif_heatmap.png> <../results/exp_019/heatmaps/IMG263.tif_heatmap
-.png> <../results/exp_019/heatmaps/IMG351.tif_heatmap.png>]
-<../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png, id=364, 1630.09pt x 10
+(Font)              <10.95> on input line 345.
+
+[14 <../results/exp_019/heatmaps/IMG483.tif_heatmap.png> <../results/exp_019/he
+atmaps/IMG033.tif_heatmap.png> <../results/exp_019/heatmaps/IMG263.tif_heatmap.
+png> <../results/exp_019/heatmaps/IMG351.tif_heatmap.png>]
+<../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png, id=388, 1630.09pt x 10
 27.84pt>
 File: ../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png Graphic file (type
  png)
 <use ../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png>
 Package pdftex.def Info: ../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png
-  used on input line 360.
+  used on input line 363.
 (pdftex.def)             Requested size: 225.34381pt x 142.07732pt.
-<../results/exp_022_mmr_n10_k3/heatmaps_side_by_side.png, id=365, 1630.09pt x 1
+<../results/exp_022_mmr_n10_k3/heatmaps_side_by_side.png, id=389, 1630.09pt x 1
 027.84pt>
 File: ../results/exp_022_mmr_n10_k3/heatmaps_side_by_side.png Graphic file (typ
 e png)
 <use ../results/exp_022_mmr_n10_k3/heatmaps_side_by_side.png>
 Package pdftex.def Info: ../results/exp_022_mmr_n10_k3/heatmaps_side_by_side.pn
-g  used on input line 361.
+g  used on input line 364.
 (pdftex.def)             Requested size: 225.34381pt x 142.07732pt.
-<../results/exp_022/composite_kernels_grid.png, id=367, 742.9356pt x 341.8371pt
+ [15 <../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png (PNG copy)> <../re
+sults/exp_022_mmr_n10_k3/heatmaps_side_by_side.png (PNG copy)>]
+<../results/exp_022/composite_kernels_grid.png, id=396, 742.9356pt x 341.8371pt
 >
 File: ../results/exp_022/composite_kernels_grid.png Graphic file (type png)
 <use ../results/exp_022/composite_kernels_grid.png>
 Package pdftex.def Info: ../results/exp_022/composite_kernels_grid.png  used on
- input line 375.
+ input line 378.
 (pdftex.def)             Requested size: 431.91196pt x 198.73508pt.
- [15 <../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png (PNG copy)> <../re
-sults/exp_022_mmr_n10_k3/heatmaps_side_by_side.png (PNG copy)>] [16 <../results
-/exp_022/composite_kernels_grid.png>]
-<../Reports/figures/rotation_error_difference_barplot.png, id=383, 1004.553pt x
+ [16 <../results/exp_022/composite_kernels_grid.png>]
+<../Reports/figures/rotation_error_difference_barplot.png, id=407, 1004.553pt x
  389.7762pt>
 File: ../Reports/figures/rotation_error_difference_barplot.png Graphic file (ty
 pe png)
 <use ../Reports/figures/rotation_error_difference_barplot.png>
 Package pdftex.def Info: ../Reports/figures/rotation_error_difference_barplot.p
-ng  used on input line 408.
+ng  used on input line 411.
 (pdftex.def)             Requested size: 422.52054pt x 163.94278pt.
  [17 <../Reports/figures/rotation_error_difference_barplot.png>]
 <../results/triangular_square_shape_sensitive/exp_001/heatmaps_pairs/IMG015_pai
-r.png, id=390, 2030.58624pt x 1164.35pt>
+r.png, id=414, 2030.58624pt x 1164.35pt>
 File: ../results/triangular_square_shape_sensitive/exp_001/heatmaps_pairs/IMG01
 5_pair.png Graphic file (type png)
 <use ../results/triangular_square_shape_sensitive/exp_001/heatmaps_pairs/IMG015
 _pair.png>
 Package pdftex.def Info: ../results/triangular_square_shape_sensitive/exp_001/h
-eatmaps_pairs/IMG015_pair.png  used on input line 434.
+eatmaps_pairs/IMG015_pair.png  used on input line 438.
 (pdftex.def)             Requested size: 225.34381pt x 129.19818pt.
-<../Reports/figures/radial_single_kernel_heatmap.png, id=391, 766.33997pt x 313
+<../Reports/figures/radial_single_kernel_heatmap.png, id=415, 766.33997pt x 313
 .54062pt>
 File: ../Reports/figures/radial_single_kernel_heatmap.png Graphic file (type pn
 g)
 <use ../Reports/figures/radial_single_kernel_heatmap.png>
 Package pdftex.def Info: ../Reports/figures/radial_single_kernel_heatmap.png  u
-sed on input line 435.
+sed on input line 439.
 (pdftex.def)             Requested size: 225.34381pt x 92.19705pt.
  [18]
-<../Reports/figures/radial_learnable_radius_summary.png, id=398, 967.104pt x 29
+<../Reports/figures/radial_learnable_radius_summary.png, id=422, 967.104pt x 29
 4.336pt>
 File: ../Reports/figures/radial_learnable_radius_summary.png Graphic file (type
  png)
 <use ../Reports/figures/radial_learnable_radius_summary.png>
 Package pdftex.def Info: ../Reports/figures/radial_learnable_radius_summary.png
-  used on input line 449.
+  used on input line 453.
 (pdftex.def)             Requested size: 450.69478pt x 137.16573pt.
-<../Reports/figures/radial_kernel_from_scratch_heatmap.png, id=399, 966.9726pt 
-x 329.5512pt>
-File: ../Reports/figures/radial_kernel_from_scratch_heatmap.png Graphic file (t
-ype png)
-<use ../Reports/figures/radial_kernel_from_scratch_heatmap.png>
-Package pdftex.def Info: ../Reports/figures/radial_kernel_from_scratch_heatmap.
-png  used on input line 456.
-(pdftex.def)             Requested size: 450.69478pt x 153.59674pt.
+ [19 <../results/triangular_square_shape_sensitive/exp_001/heatmaps_pairs/IMG01
+5_pair.png (PNG copy)> <../Reports/figures/radial_single_kernel_heatmap.png>]
+<../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG015_original_vs
+_heatmap.png, id=431, 587.05476pt x 334.6657pt>
+File: ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG015_origin
+al_vs_heatmap.png Graphic file (type png)
+<use ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG015_origina
+l_vs_heatmap.png>
+Package pdftex.def Info: ../Reports/figures/radial_single_kernel_original_vs_he
+atmap/IMG015_original_vs_heatmap.png  used on input line 460.
+(pdftex.def)             Requested size: 225.34381pt x 128.46114pt.
+<../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG033_original_vs
+_heatmap.png, id=432, 586.77681pt x 334.6657pt>
+File: ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG033_origin
+al_vs_heatmap.png Graphic file (type png)
+<use ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG033_origina
+l_vs_heatmap.png>
+Package pdftex.def Info: ../Reports/figures/radial_single_kernel_original_vs_he
+atmap/IMG033_original_vs_heatmap.png  used on input line 461.
+(pdftex.def)             Requested size: 225.34381pt x 128.52242pt.
+<../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG263_original_vs
+_heatmap.png, id=433, 586.77681pt x 334.6657pt>
+File: ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG263_origin
+al_vs_heatmap.png Graphic file (type png)
+<use ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG263_origina
+l_vs_heatmap.png>
+Package pdftex.def Info: ../Reports/figures/radial_single_kernel_original_vs_he
+atmap/IMG263_original_vs_heatmap.png  used on input line 462.
+(pdftex.def)             Requested size: 225.34381pt x 128.52242pt.
+<../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG351_original_vs
+_heatmap.png, id=434, 586.77681pt x 334.6657pt>
+File: ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG351_origin
+al_vs_heatmap.png Graphic file (type png)
+<use ../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG351_origina
+l_vs_heatmap.png>
+Package pdftex.def Info: ../Reports/figures/radial_single_kernel_original_vs_he
+atmap/IMG351_original_vs_heatmap.png  used on input line 463.
+(pdftex.def)             Requested size: 225.34381pt x 128.52242pt.
+ [20 <../Reports/figures/radial_learnable_radius_summary.png> <../Reports/figur
+es/radial_single_kernel_original_vs_heatmap/IMG015_original_vs_heatmap.png> <..
+/Reports/figures/radial_single_kernel_original_vs_heatmap/IMG033_original_vs_he
+atmap.png> <../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG263_
+original_vs_heatmap.png> <../Reports/figures/radial_single_kernel_original_vs_h
+eatmap/IMG351_original_vs_heatmap.png>]
+<../publication/figures/selected_kernel_roc_pr.png, id=452, 715.473pt x 280.768
+95pt>
+File: ../publication/figures/selected_kernel_roc_pr.png Graphic file (type png)
 
-[19 <../results/triangular_square_shape_sensitive/exp_001/heatmaps_pairs/IMG015
-_pair.png (PNG copy)> <../Reports/figures/radial_single_kernel_heatmap.png> <..
-/Reports/figures/radial_learnable_radius_summary.png>] [20 <../Reports/figures/
-radial_kernel_from_scratch_heatmap.png>]
-<../Reports/figures/radial_learnable_radius_multi_panel.png, id=418, 1443.2319p
+<use ../publication/figures/selected_kernel_roc_pr.png>
+Package pdftex.def Info: ../publication/figures/selected_kernel_roc_pr.png  use
+d on input line 526.
+(pdftex.def)             Requested size: 225.34381pt x 88.42982pt.
+<../publication/figures/cnn_roc_curve.png, id=453, 433.62pt x 361.35pt>
+File: ../publication/figures/cnn_roc_curve.png Graphic file (type png)
+<use ../publication/figures/cnn_roc_curve.png>
+Package pdftex.def Info: ../publication/figures/cnn_roc_curve.png  used on inpu
+t line 527.
+(pdftex.def)             Requested size: 225.34381pt x 187.7873pt.
+ [21]
+<../publication/figures/selected_kernel_heatmap_example.png, id=465, 2029.5825p
+t x 1164.35pt>
+File: ../publication/figures/selected_kernel_heatmap_example.png Graphic file (
+type png)
+<use ../publication/figures/selected_kernel_heatmap_example.png>
+Package pdftex.def Info: ../publication/figures/selected_kernel_heatmap_example
+.png  used on input line 534.
+(pdftex.def)             Requested size: 225.34381pt x 129.26924pt.
+<../publication/figures/cnn_heatmap_example.png, id=466, 972.86539pt x 289.3579
+6pt>
+File: ../publication/figures/cnn_heatmap_example.png Graphic file (type png)
+<use ../publication/figures/cnn_heatmap_example.png>
+Package pdftex.def Info: ../publication/figures/cnn_heatmap_example.png  used o
+n input line 535.
+(pdftex.def)             Requested size: 225.34381pt x 67.02335pt.
+ [22 <../publication/figures/selected_kernel_roc_pr.png> <../publication/figure
+s/cnn_roc_curve.png> <../publication/figures/selected_kernel_heatmap_example.pn
+g (PNG copy)> <../publication/figures/cnn_heatmap_example.png>] [23]
+<../Reports/figures/radial_learnable_radius_multi_panel.png, id=484, 1443.2319p
 t x 281.853pt>
 File: ../Reports/figures/radial_learnable_radius_multi_panel.png Graphic file (
 type png)
 <use ../Reports/figures/radial_learnable_radius_multi_panel.png>
 Package pdftex.def Info: ../Reports/figures/radial_learnable_radius_multi_panel
-.png  used on input line 487.
+.png  used on input line 566.
 (pdftex.def)             Requested size: 450.69478pt x 88.01433pt.
- [21] (./master_thesis.bbl [22 <../Reports/figures/radial_learnable_radius_mult
-i_panel.png>]) [23]
-(./master_thesis.aux)
+ (./master_thesis.bbl [24 <../Reports/figures/radial_learnable_radius_multi_pan
+el.png>] [25]) [26] (./master_thesis.aux)
 Package rerunfilecheck Info: File `master_thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 13A40B7B966D1F04831E142D05818B21;7678.
+(rerunfilecheck)             Checksum: 420705C26264AF825CDA67C2BFFD8DD1;7927.
  ) 
 Here is how much of TeX's memory you used:
- 13386 strings out of 477975
- 223384 string characters out of 5839281
- 1863330 words of memory out of 5000000
- 33181 multiletter control sequences out of 15000+600000
+ 13484 strings out of 477975
+ 227769 string characters out of 5839281
+ 1862330 words of memory out of 5000000
+ 33253 multiletter control sequences out of 15000+600000
  559886 words of font info for 59 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  90i,12n,90p,942b,597s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -783,10 +846,10 @@ sr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/pu
 blic/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri12.pfb></usr/share
 /texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm
 /lmsy8.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt12.pfb>
-Output written on master_thesis.pdf (26 pages, 39887332 bytes).
+Output written on master_thesis.pdf (29 pages, 44774667 bytes).
 PDF statistics:
- 523 PDF objects out of 1000 (max. 8388607)
- 430 compressed objects within 5 object streams
- 106 named destinations out of 1000 (max. 500000)
- 408 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 596 PDF objects out of 1000 (max. 8388607)
+ 487 compressed objects within 5 object streams
+ 123 named destinations out of 1000 (max. 500000)
+ 451 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,23 +1,30 @@
 # Fdb version 4
-["bibtex master_thesis"] 1776021771 "master_thesis.aux" "master_thesis.bbl" "master_thesis" 1776021801 0
-  "./master_thesis.bib" 1775838443 3778 950f2bd98267c8f250d07076b67bee09 ""
+["bibtex master_thesis"] 1779204704 "master_thesis.aux" "master_thesis.bbl" "master_thesis" 1779455976 0
+  "./master_thesis.bib" 1779204632 6722 deb985c3e9e1573eef4cbe8938d87307 ""
   "/usr/share/texlive/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "master_thesis.aux" 1776021801 14890 ce8cf23a251fc699e5c35be2681631cb "pdflatex"
+  "master_thesis.aux" 1779455975 18725 d26c54affcd36d36f651babc667a14de "pdflatex"
   (generated)
   "master_thesis.bbl"
   "master_thesis.blg"
   (rewritten before read)
-["pdflatex"] 1776021771 "master_thesis.tex" "master_thesis.pdf" "master_thesis" 1776021801 0
+["pdflatex"] 1779455943 "master_thesis.tex" "master_thesis.pdf" "master_thesis" 1779455976 0
   "../Reports/figures/exp_022_mmr_selected_kernels.png" 1769774005 27068 dc8413cb559f47fdf9ec30a2678aab4c ""
   "../Reports/figures/normal/IMG086.png" 1769081153 9684563 9203613656fc4ed54ab72e2ad942aeb4 ""
   "../Reports/figures/normal/IMG187.png" 1769081156 7572606 f1d1a880bb10a88331bf5a01c66b2251 ""
   "../Reports/figures/normal/IMG440.png" 1769081159 11961443 81ab8d5d929413febd04cfdccf701d9e ""
   "../Reports/figures/normal/IMG459.png" 1769081163 6585743 521b2ced4ac8807e8e8fdb4b72c46c7d ""
-  "../Reports/figures/radial_kernel_from_scratch_heatmap.png" 1775733115 180336 1728c441e5a7cbf82bd4a5790b5eca65 ""
   "../Reports/figures/radial_learnable_radius_multi_panel.png" 1776006029 85198 bad4cb2086052d0a5d68e78063d97e1e ""
   "../Reports/figures/radial_learnable_radius_summary.png" 1776004983 148681 687e1f9837b935eb663cedd4e9444aef ""
   "../Reports/figures/radial_single_kernel_heatmap.png" 1773926654 619098 29adecef9cdd8313d8770e36cfa47c79 ""
+  "../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG015_original_vs_heatmap.png" 1779200322 636879 a2cdb92b824c907e3cd90d3ea34cb4e9 ""
+  "../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG033_original_vs_heatmap.png" 1779200324 802419 c888a1b54cf7ac498dea52928a088710 ""
+  "../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG263_original_vs_heatmap.png" 1779200324 768034 7d0acb6cc47977ba8e370435e3ea889d ""
+  "../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG351_original_vs_heatmap.png" 1779200325 469155 e5bff76a87188760824a3d9551047643 ""
   "../Reports/figures/rotation_error_difference_barplot.png" 1771707983 63547 d2639f0089a54eb6d4ca811272cee8b2 ""
+  "../publication/figures/cnn_heatmap_example.png" 1778494019 808896 d51467f0f9f5197870a7ad4e499b3944 ""
+  "../publication/figures/cnn_roc_curve.png" 1778494019 66668 90153cd373321c4a42af52aac9bc1db7 ""
+  "../publication/figures/selected_kernel_heatmap_example.png" 1778494019 554904 e2d9a3c7ae91d0ec291e5da256c63ac6 ""
+  "../publication/figures/selected_kernel_roc_pr.png" 1778494019 76887 ad5d9b6787f25b8956cce815a3145e6f ""
   "../results/exp_019/heatmaps/IMG033.tif_heatmap.png" 1769069291 309528 59052260fd866cffe10dcf823745af6c ""
   "../results/exp_019/heatmaps/IMG263.tif_heatmap.png" 1769074247 271276 6b6dcaf06508f357865685fed949554f ""
   "../results/exp_019/heatmaps/IMG351.tif_heatmap.png" 1769071546 180351 5cca522803c168dabf0e32ae236ad733 ""
@@ -152,11 +159,11 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1769077790 6505200 8013f8d02d3caf63820188a3def5d920 ""
   "cernatsnote.cls" 1776021470 6965 38cb73635575990aad8748a3f467de29 ""
   "logo.png" 1775837069 14963 0d72d0df758caa9cccd49d930fcec5f3 ""
-  "master_thesis.aux" 1776021801 14890 ce8cf23a251fc699e5c35be2681631cb "pdflatex"
-  "master_thesis.bbl" 1776021771 4118 b6876671ce7cd2c9077fc536f865caa9 "bibtex master_thesis"
-  "master_thesis.out" 1776021801 7678 13a40b7b966d1f04831e142d05818b21 "pdflatex"
-  "master_thesis.tex" 1776021188 50567 2e201f8a37e91ef0b418b4b3af6ac8e5 ""
-  "master_thesis.toc" 1776021801 4158 cbe04ab1867a13eea82bea90acc95868 "pdflatex"
+  "master_thesis.aux" 1779455975 18725 d26c54affcd36d36f651babc667a14de "pdflatex"
+  "master_thesis.bbl" 1779204704 7052 252bef42a4e472706c58ec54aeb0d9a1 "bibtex master_thesis"
+  "master_thesis.out" 1779455975 7927 420705c26264af825cda67c2bffd8dd1 "pdflatex"
+  "master_thesis.tex" 1779455939 56227 c01e6dbd8b500c51882eded635ed9aa1 ""
+  "master_thesis.toc" 1779455975 4270 9b90510ec14d1ded11f9ce1a7c608bfd "pdflatex"
   (generated)
   "master_thesis.aux"
   "master_thesis.log"

@@ -1,4 +1,4 @@
-from typing import Dict, List, Sequence
+from typing import Dict, List, Optional, Sequence
 
 import numpy as np
 import torch
@@ -18,6 +18,7 @@ def compute_responses(
     standardize_patches: bool = True,
     rotation_aug: bool = False,
     rotation_aug_choices: Sequence[int] = (0, 1, 2, 3),
+    kernel_batch_size: Optional[int] = None,
 ) -> List[Dict[str, np.ndarray]]:
     """
     Convolve every kernel in the bank over the input patches and aggregate responses.
@@ -63,42 +64,50 @@ def compute_responses(
                 out[mask] = torch.rot90(out[mask], k=k, dims=(2, 3))
         return out
     responses: List[Dict[str, np.ndarray]] = []
+    if not bank:
+        return responses
 
-    def _reduce_response(out: torch.Tensor) -> np.ndarray:
+    def _reduce_response(out: torch.Tensor) -> torch.Tensor:
         if response_fn == "mean_abs":
-            return out.abs().mean(dim=[1, 2, 3]).cpu().numpy()
+            return out.abs().mean(dim=[2, 3])
         if response_fn == "signed_max":
-            flat = out.view(out.shape[0], -1)
-            idx = flat.abs().argmax(dim=1, keepdim=True)
-            return flat.gather(1, idx).squeeze(1).cpu().numpy()
-        return out.abs().amax(dim=[1, 2, 3]).cpu().numpy()
+            flat = out.flatten(start_dim=2)
+            idx = flat.abs().argmax(dim=2, keepdim=True)
+            return flat.gather(2, idx).squeeze(2)
+        return out.abs().amax(dim=[2, 3])
 
-    filters = [
-        torch.from_numpy(entry["kernel"]).unsqueeze(0).unsqueeze(0).to(device) for entry in bank
-    ]
+    if kernel_batch_size is None:
+        kernel_batch_size = 16 if device.type == "cuda" else 4
+    kernel_batch_size = max(1, int(kernel_batch_size))
 
-    for k_t in tqdm(filters, desc="Kernels"):
-        r_in_batches: List[np.ndarray] = []
-        for i in range(0, Xin_t.shape[0], batch_size):
-            batch = Xin_t[i : i + batch_size]
+    filters = torch.stack(
+        [torch.from_numpy(entry["kernel"]) for entry in bank],
+        dim=0,
+    ).unsqueeze(1).to(device)
+
+    def _run_dataset(X_t: torch.Tensor, k_t: torch.Tensor) -> np.ndarray:
+        vals_batches: List[torch.Tensor] = []
+        for i in range(0, X_t.shape[0], batch_size):
+            batch = X_t[i : i + batch_size]
             batch = _maybe_rotate_batch(batch)
             with torch.no_grad():
                 out = F.conv2d(batch, k_t, padding=k_t.shape[-1] // 2)
-                val = _reduce_response(out)
-                r_in_batches.append(val)
-        r_in = np.concatenate(r_in_batches, axis=0) if r_in_batches else np.zeros((0,))
+                vals_batches.append(_reduce_response(out).cpu())
+        if not vals_batches:
+            return np.zeros((0, k_t.shape[0]), dtype=np.float32)
+        return torch.cat(vals_batches, dim=0).numpy()
 
-        r_out_batches: List[np.ndarray] = []
-        for i in range(0, Xout_t.shape[0], batch_size):
-            batch = Xout_t[i : i + batch_size]
-            batch = _maybe_rotate_batch(batch)
-            with torch.no_grad():
-                out = F.conv2d(batch, k_t, padding=k_t.shape[-1] // 2)
-                val = _reduce_response(out)
-                r_out_batches.append(val)
-        r_out = np.concatenate(r_out_batches, axis=0) if r_out_batches else np.zeros((0,))
-
-        responses.append({"r_in": r_in, "r_out": r_out})
+    for start in tqdm(range(0, len(bank), kernel_batch_size), desc="Kernel chunks"):
+        k_t = filters[start : start + kernel_batch_size]
+        r_in_mat = _run_dataset(Xin_t, k_t)
+        r_out_mat = _run_dataset(Xout_t, k_t)
+        for j in range(k_t.shape[0]):
+            responses.append(
+                {
+                    "r_in": r_in_mat[:, j],
+                    "r_out": r_out_mat[:, j],
+                }
+            )
 
     return responses
 

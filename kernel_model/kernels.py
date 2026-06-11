@@ -458,6 +458,13 @@ def build_kernel_bank(
     sampling_seed: Optional[int] = None,
     qmc_scramble: bool = True,
 ) -> List[Dict]:
+    if size <= 0:
+        raise ValueError(f"Kernel size must be positive, got {size}.")
+    if size % 2 == 0:
+        raise ValueError(
+            f"Kernel size must be odd, got {size}. "
+            f"Use {size - 1} or {size + 1}."
+        )
     bank: List[Dict] = []
     spawned_seeds: Optional[List[Optional[int]]] = None
     if sampling_seed is not None:

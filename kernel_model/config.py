@@ -67,6 +67,7 @@ class SelectionConfig:
 class TrainingConfig:
     epochs: int = 60
     batch_size: int = 64
+    response_kernel_batch_size: Optional[int] = None  # None -> auto (cuda:16, cpu:4)
     lr: float = 5e-4
     model_type: str = "mlp"  # mlp or logistic
     hidden_dims: Tuple[int, int] = (64, 32)

@@ -57,7 +57,7 @@ This thesis studies adaptive kernel design for classification under low-volume m
 
 The implemented pipeline extracts lesion and non-lesion patches, builds a diverse kernel bank, computes scalar kernel-response features, performs adaptive selection, and trains lightweight classifiers. The work then extends this baseline through kernel selection, kernel composition, quasi-Monte Carlo parameter sampling, rotation-aware kernel design, and learned radial kernels.
 
-The experiments show that adaptive kernel design is viable in this setting. Better search over the kernel space improves the strongest bank-based model, kernel composition yields more compact but usually weaker representations, and explicit rotation invariance gives exact right-angle stability at some cost in discrimination. The radial family provides the strongest compact models. The final thesis endpoint is a signed radial kernel with learnable shell values and effective support radius, achieving test AUC 0.9101 with test accuracy 0.8449.
+The experiments show that adaptive kernel design is viable in this setting. Better search over the kernel space improves the strongest bank-based model, kernel composition yields more compact but usually weaker representations, and explicit rotation invariance gives exact right-angle stability at some cost in discrimination. The radial family provides the strongest compact models. The final thesis endpoint is a signed radial kernel with learnable shell values and effective support radius, achieving test AUC 0.9387 with test accuracy 0.8866, and remaining preferable to pure brightness-only averaging (test AUC 0.9286, accuracy@0.5 0.8668).
 
 Overall, the thesis argues that adaptive kernel design is an effective and interpretable strategy for low-volume medical imaging problems, and that progressively stronger structural priors can reduce model complexity while preserving useful classification performance.
 \end{abstract}
@@ -78,7 +78,8 @@ Deep learning has become dominant in medical image analysis, but its practical s
 This thesis adopts the position that low-volume medical data is a setting in which stronger priors and more structured models are not merely acceptable compromises, but often useful design choices. Instead of relying on a large end-to-end model, the work explores adaptive kernel design: a family of methods that transforms local image structure into explicit response features using carefully controlled filters, then adapts how those filters are sampled, selected, combined, regularized, or constrained.
 
 \section{Problem Statement}
-The research problem addressed in this thesis is: \emph{How can one build accurate and interpretable classifiers for low-volume medical image data by adapting the design of convolutional kernels rather than scaling model size?}
+The research problem addressed in this thesis is: \emph{Is it possible to achieve accurate medical image classification with a single optimally chosen convolution kernel?}
+This framing contrasts with standard CNN practice, where many generic kernels are learned jointly, and asks whether one carefully optimized kernel can provide a compact and interpretable alternative.
 
 The case study used throughout the manuscript is a local mammographic image collection with lesion metadata, pixel-level annotation files, and train/validation/test patch splits derived from those images. The thesis does not claim universal superiority of kernel methods over deep learning. Instead, it investigates whether adaptive kernels provide a defensible and practically useful trade-off between performance, compactness, and interpretability when the amount of labeled medical data is limited.
 
@@ -105,14 +106,14 @@ Chapter 2 reviews related work on low-data medical imaging, mammographic CAD, in
 
 \chapter{Related Work}
 \section{Low-volume Medical Imaging and Data Scarcity}
-Review papers consistently identify data scarcity as one of the defining constraints in medical image analysis. Litjens et al.\ report that classification datasets in medical imaging often contain hundreds or thousands of samples rather than the millions common in natural-image benchmarks, which changes both model design and expected generalization behavior \citep{litjens2017survey}. More recent reviews on few-shot and label-efficient learning in medical imaging make the same point from a different direction: the lack of annotated data remains a central bottleneck, and much of the field is organized around ways of reducing sample requirements or reusing prior structure more effectively \citep{pachetti2024fewshot}.
+Review papers consistently identify data scarcity as one of the defining constraints in medical image analysis. Report that classification datasets in medical imaging often contain hundreds or thousands of samples rather than the millions common in natural-image benchmarks, which changes both model design and expected generalization behavior \citep{litjens2017survey}. More recent reviews on few-shot and label-efficient learning in medical imaging make the same point from a different direction: the lack of annotated data remains a central bottleneck, and much of the field is organized around ways of reducing sample requirements or reusing prior structure more effectively \citep{pachetti2024fewshot}.
 
-In mammography, the challenge is especially visible because labels are not only scarce but expensive to validate. Gardezi et al.\ emphasize that annotated mammograms with image-level and pixel-level labels are difficult to acquire, and that expert annotation is time-consuming, subjective, and costly \citep{gardezi2019mammographic}. Their review also notes that conventional augmentation by geometric transformations alone does not fully solve the overfitting problem because it does not create new morphological variability \citep{gardezi2019mammographic}. This observation is important for the present thesis: rather than only expanding data synthetically, the work also strengthens the representation itself through explicit structural priors.
+In mammography, the challenge is especially visible because labels are not only scarce but expensive to validate. Emphasize that annotated mammograms with image-level and pixel-level labels are difficult to acquire, and that expert annotation is time-consuming, subjective, and costly \citep{gardezi2019mammographic}. Their review also notes that conventional augmentation by geometric transformations alone does not fully solve the overfitting problem because it does not create new morphological variability \citep{gardezi2019mammographic}. This observation is important for the present thesis: rather than only expanding data synthetically, the work also strengthens the representation itself through explicit structural priors.
 
 \section{Classical Feature Design in Mammographic Analysis}
 Before deep learning became dominant, mammographic CAD systems relied heavily on engineered features describing texture, shape, contrast, and multiscale structure. Reviews of mammographic CAD continue to describe texture analysis as a useful component of lesion detection and tissue characterization \citep{gardezi2019mammographic}. This classical tradition remains relevant in low-data settings because it offers domain-controlled features with far fewer parameters than end-to-end deep networks.
 
-Several descriptors used in the present work descend directly from that literature. Haralick et al.\ introduced gray-level co-occurrence statistics for texture characterization \citep{haralick1973texture}. Ojala et al.\ developed the local binary pattern framework, which remains one of the most influential hand-crafted rotation-aware texture descriptors \citep{ojala2002lbp}. In the broader mammography literature, textured and multiresolution descriptors continue to play an important role in lesion analysis and density characterization \citep{gardezi2019mammographic}. The filter families used in this thesis, such as Gaussian, anisotropic Gaussian, Gabor, GLCM-inspired kernels, LBP-inspired kernels, and Markov random field style smoothness filters, can be viewed as a controlled extension of this tradition into a unified adaptive bank.
+Several descriptors used in the present work descend directly from that literature. Haralick et al.\ introduced gray-level co-occurrence statistics for texture characterization \citep{haralick1973texture}. Ojala et al.\ developed the local binary pattern framework, which remains one of the most influential hand-crafted rotation-aware texture descriptors \citep{ojala2002lbp}. In the broader mammography literature, textured and multiresolution descriptors continue to play an important role in lesion analysis and density characterization \citep{gardezi2019mammographic}. The filter families used in this thesis, such as Gaussian, anisotropic Gaussian, Gabor, GLCM-inspired kernels, LBP-inspired kernels, and Markov random field style smoothness filters, can be viewed as a controlled extension of this tradition into a unified adaptive bank \citep{gabor1946theory}.
 
 \section{Interpretability in High-stakes Machine Learning}
 Interpretability matters particularly strongly in medical applications because users need to understand not only whether a system performs well on average, but also what kinds of patterns it prefers, how it fails, and whether those failures are clinically plausible. Rudin argues that for high-stakes decisions, one should prefer models that are interpretable by design rather than relying only on post hoc explanations for opaque systems \citep{rudin2019blackbox}. In medical imaging, Salahuddin et al.\ similarly frame transparency as a requirement for trustworthy deployment and review a wide family of interpretability methods developed to inspect learned models \citep{salahuddin2022transparency}.
@@ -125,11 +126,12 @@ When data is limited, encoded symmetries can improve sample efficiency. Cohen an
 The project also depends on efficient selection and search. Maximal Marginal Relevance (MMR) was introduced to balance relevance and diversity during selection \citep{goldstein1998mmr}. In this thesis, the same idea is adapted to kernel selection: the chosen kernels should be individually discriminative but not redundant. For parameter sampling, the work compares random draws with Sobol low-discrepancy sequences, which are a classical quasi-Monte Carlo construction designed to cover bounded spaces more uniformly than naive random sampling \citep{sobol1967cube}. This connection is conceptually important: under low-volume data, not only model capacity but also the efficiency of search over candidate kernels becomes part of the overall learning strategy.
 
 \section{Positioning of This Thesis}
-The literature points to three persistent needs: data-efficient learning, robust priors, and interpretable decision mechanisms. This thesis positions itself at the intersection of those needs. Unlike many current pipelines, it does not seek to replace all manual structure with a deeper network. Instead, it asks how much performance can be obtained from a carefully adapted kernel representation, and how the resulting model behavior changes when one varies bank diversity, selection strategy, parameter sampling, rotational structure, and radial compactness.
+The literature points to three persistent needs: data-efficient learning, robust priors, and interpretable decision mechanisms \citep{litjens2017survey,pachetti2024fewshot,rudin2019blackbox,salahuddin2022transparency}. This thesis positions itself at the intersection of those needs. Unlike many current pipelines, it does not seek to replace all manual structure with a deeper network. Instead, it asks how much performance can be obtained from a carefully adapted kernel representation, and how the resulting model behavior changes when one varies bank diversity, selection strategy, parameter sampling, rotational structure, and radial compactness.
 
 \chapter{Data and Methodology}
 \section{Case-study Dataset}
 The experimental case study is a local mammographic image collection stored in the repository. Because the repository contains locally curated folders and annotation files but no definitive template-level documentation naming a benchmark release, this thesis describes it conservatively as a \emph{local annotated mammographic dataset}. The image tree currently contains 511 TIFF mammograms under \texttt{data/TIFF Images/all}, 269 pixel-level annotation files under \texttt{data/Pixel-level annotation}, and additional metadata records in \texttt{data/Info.txt}. The metadata includes view information, tissue-density codes, lesion categories, and lesion pathology tags, indicating that the collection covers normal cases as well as multiple lesion types such as circumscribed masses, spiculated lesions, calcifications, miscellaneous abnormalities, architectural distortions, and asymmetries.
+The complete project implementation used throughout the thesis (data preparation, kernel models, experiment scripts, and figures) is available at \href{https://github.com/Masoudvahid/Kernel-Based-Cancer-Classification}{GitHub: Masoudvahid/Kernel-Based-Cancer-Classification}.
 
 Two points are important for the thesis framing. First, even though patch extraction yields several thousand training samples, the number of \emph{source examinations and expert annotations} remains limited. In other words, patch-level expansion increases the number of training instances but not the number of independent patients or expert-labeled studies. Second, the project therefore fits the operational notion of low-volume medical data used in this thesis: the learning signal is derived from a modest set of annotated medical images rather than from a very large population-scale corpus.
 
@@ -202,7 +204,7 @@ For a patch $x$ and kernel $K_j$, the baseline response stage computes a convolu
 This scalar summarization is important both computationally and conceptually. It greatly reduces dimensionality, but it also discards some geometric detail. This later helps explain why visually different kernels can still yield similar classification behavior: if they induce similar patch rankings after scalar aggregation, a classifier may treat them as nearly interchangeable.
 
 \section{Adaptive Selection and Classification}
-Two main selection mechanisms are used in the project: MMR and ABESS. In the MMR variant, kernel relevance is balanced against redundancy. If $S$ is the set of already selected kernels and $j$ is a candidate, the selection score has the familiar form
+Two main selection mechanisms are used in the project: MMR and ABESS \citep{goldstein1998mmr,zhu2020abess,zhu2022abess}. In the MMR variant, kernel relevance is balanced against redundancy. If $S$ is the set of already selected kernels and $j$ is a candidate, the selection score has the familiar form
 \[
 \text{MMR}(j) = \lambda \, \text{Rel}(j) - (1-\lambda)\max_{i \in S}\text{Sim}(i,j),
 \]
@@ -211,7 +213,7 @@ where $\text{Rel}(j)$ measures discriminative utility and $\text{Sim}(i,j)$ meas
 The selected responses are then passed to either logistic regression or a small multilayer perceptron, depending on the configuration. Most comparisons use logistic regression because it keeps the classifier stage simple and makes the effect of kernel design easier to interpret.
 
 \section{Evaluation Criteria}
-The main quantitative metrics reported throughout the repository are the area under the ROC curve (AUC) and accuracy at threshold 0.5. In addition, several experiments visualize confusion matrices, ROC/PR curves, selected kernels, and full-image heatmaps produced by sliding-window inference. These qualitative outputs are not cosmetic. They are part of the interpretability argument: they reveal whether stronger priors improve not only patch classification but also spatial localization behavior on full mammograms.
+The main quantitative metrics reported throughout the repository are the area under the ROC curve (AUC) \citep{fawcett2006roc,hanley1982auc} and accuracy at threshold 0.5. In addition, several experiments visualize confusion matrices, ROC/PR curves, selected kernels, and full-image heatmaps produced by sliding-window inference. These qualitative outputs are not cosmetic. They are part of the interpretability argument: they reveal whether stronger priors improve not only patch classification but also spatial localization behavior on full mammograms.
 
 \chapter{Adaptive Kernel Design Framework}
 \section{Overview}
@@ -228,10 +230,10 @@ The second form of adaptation composes multiple selected kernels into a smaller 
 K_{\text{comp}} = \sum_{i=1}^{n} w_i K_i.
 \]
 
-This reduces the number of explicit features and can yield visually meaningful aggregate filters. However, the thesis results show that compression before classification introduces a trade-off. When per-kernel responses are first collapsed through a nonlinear statistic such as absolute maximum, the operation ``compose then respond'' is not equivalent to ``respond then classify''. As a result, some discriminative information is lost. The composition stage is therefore useful as an efficiency and interpretability mechanism, but it is not automatically performance-preserving.
+This reduces the number of explicit features and can yield visually meaningful aggregate filters. However, the thesis results show that pre-classification aggregation introduces a trade-off. When per-kernel responses are first collapsed through a nonlinear statistic such as absolute maximum, the operation ``compose then respond'' is not equivalent to ``respond then classify''. As a result, some discriminative information is lost. The composition stage is therefore useful as an efficiency and interpretability mechanism, but it is not automatically performance-preserving.
 
 \section{Adaptive Sampling of Kernel Parameters}
-A third adaptive mechanism concerns how kernel parameters are sampled. Random sampling is the legacy baseline, but the structured code also supports Sobol quasi-Monte Carlo sampling and Latin hypercube sampling. The thesis focuses on Sobol sampling because low-discrepancy sequences cover bounded parameter spaces more uniformly than naive random draws \citep{sobol1967cube}. In a finite kernel-bank regime, this matters: better coverage of parameter space can improve the odds of discovering discriminative filters without increasing bank size excessively.
+A third adaptive mechanism concerns how kernel parameters are sampled. Random sampling is the legacy baseline, but the structured code also supports Sobol quasi-Monte Carlo sampling and Latin hypercube sampling \citep{mckay1979lhs}. The thesis focuses on Sobol sampling because low-discrepancy sequences cover bounded parameter spaces more uniformly than naive random draws \citep{sobol1967cube}. In a finite kernel-bank regime, this matters: better coverage of parameter space can improve the odds of discovering discriminative filters without increasing bank size excessively.
 
 In conceptual terms, this is a form of adaptation at the search level rather than the model level. Under low-volume conditions, one cannot assume that broad random exploration will always be efficient. QMC sampling imposes more structure on the search itself.
 
@@ -244,7 +246,7 @@ K_{\text{RI}} = \frac{1}{4}\sum_{r=0}^{3}\operatorname{rot90}(K,r).
 This is a strict and transparent form of prior encoding. It removes orientation preference by construction rather than by data augmentation alone. The price is that orientation-specific information may also be removed. The experiments show both sides of this trade-off clearly.
 
 \section{Adaptive Learned Radial Kernels}
-The final and most important adaptation compresses the kernel itself into a radial parameterization. Instead of learning or selecting many free 2D filters, the model defines a kernel by ring-shaped basis functions $B_r$ and shell coefficients $f_r$:
+The final and most important adaptation re-parameterizes the kernel itself into a radial form. Instead of learning or selecting many free 2D filters, the model defines a kernel by ring-shaped basis functions $B_r$ and shell coefficients $f_r$:
 \[
 K(x,y) = \sum_{r=0}^{R} f_r B_r(x,y).
 \]
@@ -275,7 +277,7 @@ The final learnable-radius version also introduces a differentiable support para
 
 \chapter{Results and Discussion}
 \section{Reading the Results}
-The results are best read as a chronological development path. The project begins with sparse bank selection, then tests stronger compression and search strategies, then studies rotational structure, and finally moves into progressively more structured radial models. Not every stage uses exactly the same split, pooling rule, or optimization objective, so the chapter distinguishes between two kinds of comparison:
+The results are best read as a chronological development path. The project begins with sparse bank selection, then tests stronger aggregation and search strategies, then studies rotational structure, and finally moves into progressively more structured radial models. Not every stage uses exactly the same split, pooling rule, or optimization objective, so the chapter distinguishes between two kinds of comparison:
 \begin{itemize}
     \item \textbf{matched comparisons}, where runs were designed as direct alternatives under the same experimental setup;
     \item \textbf{developmental comparisons}, where runs illustrate how one modeling issue was identified and then addressed in the next step.
@@ -304,7 +306,7 @@ Very dense ABESS subset & ABESS & 300 & 0.8966 & 0.8032 \\
 \end{tabular}
 \end{table}
 
-Two points are immediately visible. First, the best AUC does not come from the largest selected set. A small MMR subset of three kernels already reaches a test AUC of 0.9239. Second, increasing feature count shifts the operating point: the 300-kernel MMR model reduces AUC but increases thresholded accuracy relative to the smaller sparse models. This suggests that adaptive selection is not only a relevance filter but also a mechanism for controlling the complexity-versus-stability trade-off of the final classifier.
+Two points are immediately visible. First, the best AUC does not come from the largest selected set. A small MMR subset of three kernels already reaches a test AUC of 0.9239 which nicely supports our more general hypothesis of small models being sufficient for good classification. Second, increasing feature count shifts the operating point: the 300-kernel MMR model reduces AUC but increases thresholded accuracy relative to the smaller sparse models. This suggests that adaptive selection is not only a relevance filter but also a mechanism for controlling the complexity-versus-stability trade-off of the final classifier.
 
 The corresponding kernel visualizations show that the selected sets are dominated by Gaussian, anisotropic Gaussian, and Gabor-like structures, which is consistent with the texture-and-shape emphasis of mammographic lesions. Figure~\ref{fig:selectedkernels} illustrates one representative selected-kernel panel.
 
@@ -316,7 +318,7 @@ The corresponding kernel visualizations show that the selected sets are dominate
 \end{figure}
 
 \section{Early Heatmap Validation and Qualitative Error Analysis}
-Before the later compression steps were attempted, an early sparse branch established an important qualitative checkpoint. After the patch extraction and heatmap rendering were corrected, a small 5-kernel model already produced meaningful lesion localization instead of only patch-level separation. This mattered because it showed that sparse explicit kernels could remain spatially informative.
+Before the later aggregation steps were attempted, an early sparse branch established an important qualitative checkpoint. After the patch extraction and heatmap rendering were corrected, a small 5-kernel model already produced meaningful lesion localization instead of only patch-level separation. This mattered because it showed that sparse explicit kernels could remain spatially informative.
 
 Figure~\ref{fig:exp019heatmaps} reproduces representative full-image heatmaps from that stage. The malignant cases show concentrated activation around suspicious regions, while the normal cases remain more diffuse or suppressed. This kind of visual inspection directly influenced later decisions to keep lightweight classifiers and interpretable filter responses rather than optimizing only leaderboard numbers.
 
@@ -330,7 +332,7 @@ Figure~\ref{fig:exp019heatmaps} reproduces representative full-image heatmaps fr
     \label{fig:exp019heatmaps}
 \end{figure}
 
-This early phase also exposed an unavoidable difficulty of the case study: some normal-labeled images look visually suspicious. That ambiguity is exactly why the thesis emphasizes interpretable feature design and qualitative review together. A model can be penalized by the nominal label even when its heatmap appears visually reasonable, and such cases should be treated as a dataset limitation rather than as pure model failure.
+In the right column of Figure~\ref{fig:exp019heatmaps}, some red activations likely come from the image's right border and should be treated as an artifacts rather than lesion evidence. That ambiguity is exactly why the thesis emphasizes interpretable feature design and qualitative review together.
 
 \section{Reduced-bank Sparse Variants}
 The next question was how aggressively the bank could be reduced before the classifier became too weak. Table~\ref{tab:reducedbank} summarizes representative reduced-bank MMR variants.
@@ -354,30 +356,31 @@ Ten per family, 3 selected & 10 & 3 & 0.9032 & 0.8449 \\
 \end{table}
 
 These runs are interesting because they retain strong thresholded accuracy despite drastically reducing the bank size. Relative to the strongest AUC-focused sparse baseline, they lose some ranking performance, but they show that the pipeline does not require hundreds of filters to remain useful. In a low-data setting, this is valuable evidence: compactness can be increased very aggressively before performance collapses.
+This directly supports the working hypothesis that small structured models can remain sufficient for useful classification in this dataset.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.48\linewidth]{../results/exp_022_mmr_n1_k1/heatmaps_side_by_side.png}\hfill
     \includegraphics[width=0.48\linewidth]{../results/exp_022_mmr_n10_k3/heatmaps_side_by_side.png}
-    \caption{Heatmap summaries for two reduced-bank sparse variants. Even very small kernel banks can remain qualitatively informative, though their AUC trails the strongest larger-bank models.}
+    \caption{Heatmap summaries for two reduced-bank sparse variants. Even very small kernel banks can remain qualitatively informative, though their AUC trails the strongest larger-bank models. Border-only activation near the image edge in some right-column examples is a rendering artifact and is not interpreted as lesion evidence.}
     \label{fig:reducedbankheatmaps}
 \end{figure}
 
 \section{Composition and QMC Sampling}
-After sparse selection had been validated, the next step was to ask whether many useful kernels could be compressed into a smaller set of aggregate filters. Composition improves compactness and visual readability, but the compression happens before classification, so part of the discriminative signal is lost. In the strongest composition setting used here, the composite model reaches test AUC 0.8933 and test accuracy 0.8150.
+After sparse selection had been validated, the next step was to ask whether many useful kernels could be aggregated into a smaller set of composite filters. Composition improves compactness and visual readability, but the aggregation happens before classification, so part of the discriminative signal is lost. In the strongest composition setting used here, the composite model reaches test AUC 0.8933 and test accuracy 0.8150.
 
-What remains consistent across the composition studies is the qualitative conclusion: composition can produce compact and visually meaningful filters, but it often falls short of the non-compressed selected-kernel classifier because nonlinear response pooling makes pre-classification compression lossy.
+What remains consistent across the composition studies is the qualitative conclusion: composition can produce compact and visually meaningful filters, but it often falls short of the non-aggregated selected-kernel classifier because nonlinear response pooling makes pre-classification aggregation lossy.
 
 Figure~\ref{fig:compositegrid} shows a representative composite-kernel panel from this stage. These filters are easier to inspect than hundreds of separate kernels, but the numerical gap confirms that compactness alone is not enough; how the composition is constructed matters.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\linewidth]{../results/exp_022/composite_kernels_grid.png}
-    \caption{Composite kernel grid from the rotation/composition experiments. Composition improves compactness and visual interpretability, but usually compresses away some discriminative information.}
+    \caption{Composite kernel grid from the rotation/composition experiments. Composition improves compactness and visual interpretability, but usually aggregates away some discriminative information.}
     \label{fig:compositegrid}
 \end{figure}
 
-The next improvement targeted search rather than compression. Replacing random parameter draws with Sobol quasi-Monte Carlo sampling gives the cleanest matched gain in the thesis because it changes only how the kernel space is explored. Table~\ref{tab:qmc} summarizes the key comparison.
+The next improvement targeted search rather than pre-classification aggregation. Replacing random parameter draws with Sobol quasi-Monte Carlo sampling gives the cleanest matched gain in the thesis because it changes only how the kernel space is explored. Table~\ref{tab:qmc} summarizes the key comparison.
 
 \begin{table}[H]
 \centering
@@ -420,6 +423,7 @@ The next step optimized the shell coefficients directly from that seed. This imp
 To reduce that ambiguity, a signed compact version was introduced. This model switched to a signed response and controlled the support more directly. The result was more stable but also more conservative, with test AUC 0.8885 and test accuracy 0.8118.
 
 The next improvement removed dependence on the old seed entirely. An independent signed radial model was learned from scratch with a signed top-$k$ response and explicit normalization. This solved the initialization problem, but a new issue became visible: when positivity and monotonicity were enforced too strongly, the kernel behaved too much like an averaging filter over bright tissue. That made the representation cleaner, but also too restrictive.
+Compared with the final signed learnable-radius model (test AUC 0.9101), this averaging-like constrained variant (test AUC 0.8885) confirms that brightness-dominated behavior alone is not sufficient for the best discrimination.
 
 To test whether that restriction was the real bottleneck, positivity and monotonicity were removed in a free signed radial ablation. This restored positive and negative structure, but the unconstrained profile became less stable and dropped to test AUC 0.8864 and test accuracy 0.8096. The lesson was that signed freedom was necessary, but some structural control was still needed.
 
@@ -433,29 +437,104 @@ The geometric ablations help justify the radial prior. When the radial structure
     \centering
     \includegraphics[width=0.48\linewidth]{../results/triangular_square_shape_sensitive/exp_001/heatmaps_pairs/IMG015_pair.png}\hfill
     \includegraphics[width=0.48\linewidth]{../Reports/figures/radial_single_kernel_heatmap.png}
-    \caption{Geometric ablation versus radial heatmap comparison. The geometric model spreads probability broadly across boundaries and texture, whereas the radial model is more selective around the suspicious region.}
+    \caption{Geometric ablation versus radial heatmap comparison. The geometric model spreads probability broadly across boundaries and texture, whereas the radial model is more selective around the suspicious region. Occasional right-edge red bands are border artifacts from patch scanning and are not treated as lesion localization.}
     \label{fig:triangularradialcompare}
 \end{figure}
 
 \section{Interpreting the Radial Transition}
 Two observations explain why the radial development required several redesigns. First, the spike in the early seed-based fit was not evidence of a uniquely meaningful lesion ring. It came from the optimization setup: a non-neutral seed, weak smoothness control, and a pooled score that over-rewarded isolated large activations. This is exactly why later signed and scratch-trained models were introduced.
 
-Second, visually different kernels can still produce similar classification behavior when the response map is compressed to one or a few scalar values. The later signed top-$k$ formulation was introduced partly to reduce that ambiguity and make the score depend on a more consistent signed pattern rather than on one dominant absolute peak.
+Second, visually different kernels can still produce similar classification behavior when the response map is reduced to one or a few scalar values. The later signed top-$k$ formulation was introduced partly to reduce that ambiguity and make the score depend on a more consistent signed pattern rather than on one dominant absolute peak. In the final learned profile, negative shell values are essential because they explicitly reject pure averaging behavior, while the outer shells fading toward zero indicate finite effective support rather than unconstrained long-range smoothing.
 
 Figure~\ref{fig:radialsummary} shows the final learnable-radius radial model, and Figure~\ref{fig:radialheatmap} shows a representative heatmap from the signed radial development line.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\linewidth]{../Reports/figures/radial_learnable_radius_summary.png}
-    \caption{Final learnable-radius radial model. The summary shows the signed normalized profile, the learned support gate, and the resulting kernel.}
+    \caption{Final learnable-radius radial model. The summary shows the signed normalized profile, the learned support gate, and the resulting kernel. The negative shell values are important because they show that the kernel is not a simple averaging filter, and the outer values fading toward zero indicate finite effective support.}
     \label{fig:radialsummary}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.96\linewidth]{../Reports/figures/radial_kernel_from_scratch_heatmap.png}
-    \caption{Representative heatmap from the signed radial family. The qualitative output supports the claim that compact radial filters can remain spatially meaningful.}
+    \includegraphics[width=0.48\linewidth]{../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG015_original_vs_heatmap.png}\hfill
+    \includegraphics[width=0.48\linewidth]{../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG033_original_vs_heatmap.png}\par\smallskip
+    \includegraphics[width=0.48\linewidth]{../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG263_original_vs_heatmap.png}\hfill
+    \includegraphics[width=0.48\linewidth]{../Reports/figures/radial_single_kernel_original_vs_heatmap/IMG351_original_vs_heatmap.png}
+    \caption{Single-kernel radial heatmap summary for four cases: two malignant (IMG015, IMG033) and two normal (IMG263, IMG351). Each panel shows original image (left) and heatmap (right), with probability color bar from 0 (blue) to 1 (red).}
     \label{fig:radialheatmap}
+\end{figure}
+
+\section{Comparison with a Deep CNN Baseline}
+To address the reviewer request for explicit deep-learning comparison, the thesis includes a compact patch-CNN baseline trained on the same train/validation/test split used in the main kernel experiments. The CNN is intentionally small (four convolutional blocks with batch normalization \citep{ioffe2015batchnorm}, max pooling, dropout \citep{srivastava2014dropout}, and a linear head) so that the comparison remains fair to low-data constraints rather than relying on a very large pretrained architecture.
+
+Table~\ref{tab:cnncomparison} summarizes the core quantitative comparison. Three points are clear. First, the averaging-like constrained radial variant is weaker than the signed variants. Second, the final signed radial model remains competitive while using a single interpretable kernel. Third, the CNN gives the strongest absolute AUC/accuracy on this split.
+
+\begin{table}[H]
+\centering
+\caption{Kernel-based models versus deep CNN baseline on the shared held-out split.}
+\label{tab:cnncomparison}
+\begin{tabular}{lcc}
+\toprule
+Model & Test AUC & Test ACC \\
+\midrule
+Averaging-like constrained radial variant & 0.8885 & 0.8118 \\
+Final signed radial with learnable radius & 0.9101 & 0.8449 \\
+Best selected kernel bank (Sobol-QMC, 90 kernels) & 0.9387 & 0.8866 \\
+Deep patch CNN baseline & \textbf{0.9626} & \textbf{0.9021} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:cnndetailed} and Table~\ref{tab:cnnconfusion} report detailed CNN operating characteristics on the test split.
+
+\begin{table}[H]
+\centering
+\caption{Detailed deep patch CNN test metrics (threshold 0.5).}
+\label{tab:cnndetailed}
+\begin{tabular}{lc}
+\toprule
+Metric & Value \\
+\midrule
+Accuracy & 0.9021 \\
+Precision & 0.8850 \\
+Recall & 0.9471 \\
+F1-score & 0.9150 \\
+ROC-AUC & 0.9626 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Deep patch CNN test confusion matrix (threshold 0.5).}
+\label{tab:cnnconfusion}
+\begin{tabular}{lcc}
+\toprule
+ & Predicted outside & Predicted inside \\
+\midrule
+True outside & 702 & 128 \\
+True inside & 55 & 985 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:cnnrocs} compares held-out ROC behavior for the strongest selected-kernel classifier and the CNN. Figure~\ref{fig:cnnqualitative} compares qualitative heatmaps on a representative test image; the CNN output is sharper in this example, but both methods focus on similar suspicious tissue regions. Additional right-edge activation in some CNN overlays is a border artifact from sliding-window inference and is ignored in interpretation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\linewidth]{../publication/figures/selected_kernel_roc_pr.png}\hfill
+    \includegraphics[width=0.48\linewidth]{../publication/figures/cnn_roc_curve.png}
+    \caption{Held-out ROC comparisons: selected-kernel model (left) and deep patch CNN (right).}
+    \label{fig:cnnrocs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.48\linewidth]{../publication/figures/selected_kernel_heatmap_example.png}\hfill
+    \includegraphics[width=0.48\linewidth]{../publication/figures/cnn_heatmap_example.png}
+    \caption{Qualitative heatmap comparison on a representative test image: selected-kernel model (left) and deep patch CNN (right).}
+    \label{fig:cnnqualitative}
 \end{figure}
 
 \section{Synthesis}

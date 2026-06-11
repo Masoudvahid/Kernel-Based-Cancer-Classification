@@ -175,6 +175,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
         Xout,
         device=device,
         batch_size=cfg.training.batch_size,
+        kernel_batch_size=cfg.training.response_kernel_batch_size,
         response_fn=cfg.selection.response_fn,
         standardize_patches=cfg.selection.standardize_responses,
         rotation_aug=cfg.training.rotation_aug,
@@ -297,6 +298,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
             Xout_split,
             device=device,
             batch_size=cfg.training.batch_size,
+            kernel_batch_size=cfg.training.response_kernel_batch_size,
             response_fn=cfg.selection.response_fn,
             standardize_patches=cfg.selection.standardize_responses,
         )
@@ -377,6 +379,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
                     Xout,
                     device=device,
                     batch_size=cfg.training.batch_size,
+                    kernel_batch_size=cfg.training.response_kernel_batch_size,
                     response_fn=cfg.selection.response_fn,
                     standardize_patches=cfg.selection.standardize_responses,
                     rotation_aug=cfg.training.rotation_aug,
@@ -413,6 +416,7 @@ def run_pipeline(cfg: PipelineConfig) -> Dict:
                         Xout_split,
                         device=device,
                         batch_size=cfg.training.batch_size,
+                        kernel_batch_size=cfg.training.response_kernel_batch_size,
                         response_fn=cfg.selection.response_fn,
                         standardize_patches=cfg.selection.standardize_responses,
                     )

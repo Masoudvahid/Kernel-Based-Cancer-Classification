@@ -1,10 +1,14 @@
 **/*.tif
 Kernel Based Cancer Classification.code-workspace
 .venv
-__pycache__
+**/__pycache__
 
 data2/
+data_brain/
+
 *.out
 *.aux
 *.fls
 *.dfdb_latexmk
+**/build
+*.gz
