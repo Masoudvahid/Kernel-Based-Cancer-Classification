@@ -1,0 +1,16 @@
+2026-05-16 12:50:35,781 [INFO] Starting pipeline. Output: results/exp_tissue_train_pos_v1_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-16 18:07:59,150 [INFO] Starting pipeline. Output: results/exp_tissue_train_pos_v1_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-16 18:08:05,608 [INFO] Loaded train split: Xin=3000 Xout=608 resize=128 (patients in=75 out=107)
+2026-05-16 18:08:06,753 [INFO] Loaded val split: Xin=760 Xout=109 resize=128 (patients in=19 out=25)
+2026-05-16 18:08:07,386 [INFO] Loaded test split: Xin=360 Xout=109 resize=128 (patients in=9 out=21)
+2026-05-16 18:08:07,719 [INFO] Built kernel bank: 4500 kernels (sampling=random seed=None)
+2026-05-16 18:27:05,269 [INFO] Patient-level grouping enabled (115 unique ids)
+2026-05-16 18:37:42,963 [INFO] MMR selected kernels (bank idx): [4470, 2097, 2486, 2457, 2122, 2357, 2188, 2311, 2316, 4028, 2437, 2015, 2432, 2434, 2206, 2077, 2477, 2116, 2353, 2057, 2274, 2350, 2431, 2301, 4024, 2254, 2388, 2126, 2310, 4463, 2214, 2119, 2200, 2023, 4286, 2290, 2128, 2177, 2001, 2404, 2139, 2071, 4225, 2065, 4137, 2379, 2158, 2178, 2030, 2229, 4114, 4266, 4498, 4397, 4166, 4387, 4442, 4249, 4257, 4228, 4102, 4122, 4008, 4020, 4165, 4185, 4205, 4373, 4464, 4457, 4298, 4159, 4171, 2305, 4310, 4448, 4108, 4199, 4232, 4399, 4146, 4082, 4133, 4197, 4202, 4254, 4393, 4322, 4070, 2112]
+2026-05-16 18:37:48,159 [INFO] Classifier results: AUC=0.7997 ACC=0.8141
+2026-05-16 18:42:21,179 [INFO] Eval val: AUC=0.8337 ACC=0.8861
+2026-05-16 18:44:53,455 [INFO] Eval test: AUC=0.8106 ACC=0.7868
+2026-05-16 18:44:58,525 [INFO] Composite eval val: AUC=0.8037 ACC=0.8746
+2026-05-16 18:44:58,573 [INFO] Composite eval test: AUC=0.7675 ACC=0.7676
+2026-05-16 18:44:58,574 [INFO] Composite results: AUC=0.6956 ACC=0.8543 (groups=1 total kernels=90)
+2026-05-16 18:44:58,575 [INFO] No kernel pair met correlation threshold 0.200
+2026-05-16 18:44:58,670 [INFO] Saved artifacts to results/exp_tissue_train_pos_v1_mmr_nperFamily500_nComposition1250

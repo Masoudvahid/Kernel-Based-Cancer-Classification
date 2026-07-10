@@ -1,0 +1,29 @@
+{
+  "dataset_root": "data_brain2/kaggle_3m",
+  "patch_output_root": "data_brain2/patches_radial_v2_p64_strict",
+  "n_pairs_used": 3929,
+  "n_patients": 110,
+  "split_counts": {
+    "train": {
+      "inside": 3000,
+      "outside": 3000
+    },
+    "val": {
+      "inside": 1000,
+      "outside": 1000
+    },
+    "test": {
+      "inside": 1000,
+      "outside": 1000
+    }
+  },
+  "config": {
+    "patch_size": 64,
+    "n_pos_per_image": 12,
+    "n_neg_per_image": 12,
+    "min_pos_coverage": 0.2,
+    "max_neg_coverage": 0.0,
+    "near_neg_fraction": 0.25,
+    "near_neg_dilation": 12
+  }
+}

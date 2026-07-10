@@ -1,0 +1,1305 @@
+
+=================== CELL 14 (markdown) ===================
+## Independent Smooth Normalized Radial Training
+
+This final section trains a new radial kernel from a generic decaying initialization instead of reusing a previously learned profile.
+It uses a signed top-k response so the learned radial shape matters to accuracy much more than an absolute-max objective.
+The profile remains normalized, monotone decreasing, and smooth to avoid spikes and unstable growth in the outer shells.
+
+
+=================== CELL 15 (code) ===================
+# Optional: scratch monotone-normalized radial fit.
+# This cell learns a fresh radial profile from a generic decaying initialization.
+# It does not reuse coefficients from any previously trained kernel.
+# The profile is constrained to be nonnegative, nonincreasing, smooth, and unit-norm.
+# Unlike abs_max / mean_abs, the classifier uses a signed top-k response so the
+# learned radial shape affects accuracy through the signed convolution pattern.
+
+SCRATCH_RESPONSE_NAME = "signed_topk_mean"
+SCRATCH_TOPK_RATIO = 0.01
+SCRATCH_TOPK_MIN = 8
+SCRATCH_TOPK_MAX = 128
+
+SCRATCH_EPOCHS = max(EPOCHS, 20)
+SCRATCH_LR_PROFILE = LR_F * 0.35
+SCRATCH_LR_HEAD = LR_HEAD
+SCRATCH_LAMBDA_SMOOTH = max(LAMBDA_SMOOTH, 2e-2)
+SCRATCH_LAMBDA_CURVATURE = 5e-2
+SCRATCH_LAMBDA_DECAY = 1e-1
+SCRATCH_LAMBDA_EDGE = 1e-1
+SCRATCH_OUT_DIR = OUT_DIR / "scratch_monotone_normalized_signed"
+SCRATCH_OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+SCRATCH_EXACT_HEATMAP_STRIDE = 8
+SCRATCH_EXACT_HEATMAP_ROW_BLOCK = 24
+SCRATCH_EXACT_HEATMAP_BATCH_PATCHES = 128
+SCRATCH_EXACT_HEATMAP_MASK_THRESHOLD = 0.02
+SCRATCH_EXACT_HEATMAP_DISPLAY_PERCENTILE = 99.0
+SCRATCH_EXACT_HEATMAP_ALPHA = min(float(DENSE_OVERLAY_ALPHA), 0.55)
+SCRATCH_EXACT_HEATMAP_EXTRA_SMOOTH_SIGMA = max(float(HEATMAP_SMOOTH_SIGMA), float(SCRATCH_EXACT_HEATMAP_STRIDE) * 0.90)
+SCRATCH_EXACT_HEATMAP_BREAST_EROSION = max(2, RESIZE_PATCH // 12)
+SCRATCH_EXACT_HEATMAP_OUT_DIR = SCRATCH_OUT_DIR / "exact_patch_heatmap"
+SCRATCH_EXACT_HEATMAP_OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+scratch_basis_t = basis_t if "basis_t" in globals() else torch.from_numpy(basis_np).to(DEVICE)
+scratch_train_loader = DataLoader(
+    TensorDataset(X_train_t, y_train_t),
+    batch_size=BATCH_SIZE,
+    shuffle=True,
+)
+
+scratch_len = full_radius_count
+scratch_radius_np = np.linspace(0.0, 1.0, scratch_len, dtype=np.float32)
+scratch_init = np.exp(-4.0 * (scratch_radius_np ** 2)).astype(np.float32)
+scratch_init = scratch_init / max(float(np.linalg.norm(scratch_init)), 1e-8)
+scratch_radius_t = torch.from_numpy(scratch_radius_np).to(DEVICE)
+
+
+def scratch_inverse_softplus_np(x):
+    x = np.asarray(x, dtype=np.float32)
+    x = np.maximum(x, 1e-6)
+    return np.where(x > 20.0, x, np.log(np.expm1(x)))
+
+
+def scratch_profile_from_raw(raw_delta_t: torch.Tensor):
+    delta_t = F.softplus(raw_delta_t) + 1e-6
+    profile_t = torch.flip(torch.cumsum(torch.flip(delta_t, dims=[0]), dim=0), dims=[0])
+    profile_t = profile_t / (torch.norm(profile_t) + 1e-8)
+    return profile_t
+
+
+def scratch_signed_topk_response(
+    x_t: torch.Tensor,
+    kernel2d_t: torch.Tensor,
+    topk_ratio: float = SCRATCH_TOPK_RATIO,
+    topk_min: int = SCRATCH_TOPK_MIN,
+    topk_max: int = SCRATCH_TOPK_MAX,
+):
+    out = F.conv2d(x_t, kernel2d_t[None, None], padding=kernel2d_t.shape[-1] // 2)
+    flat = out[:, 0].reshape(out.shape[0], -1)
+    total_positions = flat.shape[1]
+    k = int(round(float(total_positions) * float(topk_ratio)))
+    k = max(int(topk_min), k)
+    k = min(int(topk_max), k, total_positions)
+    idx = flat.abs().topk(k=k, dim=1).indices
+    signed_topk = flat.gather(1, idx)
+    return signed_topk.mean(dim=1)
+
+
+@torch.no_grad()
+def extract_scratch_responses(x_t: torch.Tensor, kernel2d_t: torch.Tensor, batch_size: int):
+    kernel2d_t = kernel2d_t.to(DEVICE)
+    feats = []
+    for i in range(0, x_t.shape[0], batch_size):
+        xb = x_t[i : i + batch_size].to(DEVICE, non_blocking=True)
+        feat = scratch_signed_topk_response(xb, kernel2d_t)
+        feats.append(feat.detach().cpu().numpy())
+    return np.concatenate(feats, axis=0) if feats else np.zeros((0,), dtype=np.float32)
+
+
+scratch_delta_init = np.empty_like(scratch_init)
+scratch_delta_init[:-1] = np.maximum(scratch_init[:-1] - scratch_init[1:], 1e-5)
+scratch_delta_init[-1] = max(float(scratch_init[-1]), 1e-5)
+
+scratch_raw_delta = torch.nn.Parameter(torch.from_numpy(scratch_inverse_softplus_np(scratch_delta_init)).to(DEVICE))
+scratch_head_w = torch.nn.Parameter(torch.tensor(1.0, dtype=torch.float32, device=DEVICE))
+scratch_head_b = torch.nn.Parameter(torch.tensor(0.0, dtype=torch.float32, device=DEVICE))
+
+scratch_optimizer = torch.optim.Adam(
+    [
+        {"params": [scratch_raw_delta], "lr": SCRATCH_LR_PROFILE},
+        {"params": [scratch_head_w, scratch_head_b], "lr": SCRATCH_LR_HEAD},
+    ]
+)
+scratch_loss_fn = torch.nn.BCEWithLogitsLoss()
+scratch_best_state = None
+scratch_best_val_auc = -float("inf")
+scratch_history = []
+
+for epoch in range(1, SCRATCH_EPOCHS + 1):
+    total_loss = 0.0
+    n_seen = 0
+
+    for xb, yb in scratch_train_loader:
+        xb = xb.to(DEVICE, non_blocking=True)
+        yb = yb.to(DEVICE, non_blocking=True)
+
+        scratch_profile_t = scratch_profile_from_raw(scratch_raw_delta)
+        scratch_kernel_t = torch.einsum("r,rhw->hw", scratch_profile_t, scratch_basis_t)
+        scratch_feat = scratch_signed_topk_response(xb, scratch_kernel_t)
+        scratch_logits = scratch_head_w * scratch_feat + scratch_head_b
+
+        scratch_loss_cls = scratch_loss_fn(scratch_logits, yb)
+        scratch_first_diff = scratch_profile_t[1:] - scratch_profile_t[:-1]
+        scratch_loss_smooth = (
+            torch.mean(scratch_first_diff ** 2)
+            if scratch_len > 1
+            else torch.tensor(0.0, device=DEVICE)
+        )
+        scratch_second_diff = scratch_profile_t[2:] - 2.0 * scratch_profile_t[1:-1] + scratch_profile_t[:-2]
+        scratch_loss_curvature = (
+            torch.mean(scratch_second_diff ** 2)
+            if scratch_len > 2
+            else torch.tensor(0.0, device=DEVICE)
+        )
+        scratch_loss_decay = torch.mean((scratch_radius_t ** 2) * (scratch_profile_t ** 2))
+        scratch_loss_edge = scratch_profile_t[-1] ** 2
+        scratch_loss = (
+            scratch_loss_cls
+            + SCRATCH_LAMBDA_SMOOTH * scratch_loss_smooth
+            + SCRATCH_LAMBDA_CURVATURE * scratch_loss_curvature
+            + SCRATCH_LAMBDA_DECAY * scratch_loss_decay
+            + SCRATCH_LAMBDA_EDGE * scratch_loss_edge
+        )
+
+        scratch_optimizer.zero_grad()
+        scratch_loss.backward()
+        scratch_optimizer.step()
+
+        batch_n = xb.shape[0]
+        total_loss += float(scratch_loss.item()) * batch_n
+        n_seen += batch_n
+
+    scratch_profile_eval_t = scratch_profile_from_raw(scratch_raw_delta)
+    scratch_kernel_eval_t = torch.einsum("r,rhw->hw", scratch_profile_eval_t, scratch_basis_t)
+    scratch_val_resp = extract_scratch_responses(X_val_t, scratch_kernel_eval_t.detach(), BATCH_SIZE)
+    scratch_val_probs = sigmoid_np(
+        float(scratch_head_w.detach().cpu()) * scratch_val_resp + float(scratch_head_b.detach().cpu())
+    )
+    scratch_val_metrics = metrics_from_probs(y_val, scratch_val_probs, threshold=0.5)
+
+    scratch_history.append(
+        {
+            "epoch": int(epoch),
+            "loss": float(total_loss / max(n_seen, 1)),
+            "val_auc": float(scratch_val_metrics["auc"]),
+            "val_acc": float(scratch_val_metrics["acc"]),
+            "optimizer_head_w": float(scratch_head_w.detach().cpu()),
+            "optimizer_head_b": float(scratch_head_b.detach().cpu()),
+        }
+    )
+
+    if scratch_val_metrics["auc"] > scratch_best_val_auc:
+        scratch_best_val_auc = scratch_val_metrics["auc"]
+        scratch_best_state = {
+            "epoch": int(epoch),
+            "raw_delta": scratch_raw_delta.detach().cpu().clone(),
+            "optimizer_head_w": float(scratch_head_w.detach().cpu()),
+            "optimizer_head_b": float(scratch_head_b.detach().cpu()),
+            "val_auc": float(scratch_val_metrics["auc"]),
+            "val_acc": float(scratch_val_metrics["acc"]),
+        }
+
+    print(
+        f"scratch epoch={epoch:02d} "
+        f"loss={scratch_history[-1]['loss']:.6f} "
+        f"val_auc={scratch_val_metrics['auc']:.6f} "
+        f"val_acc={scratch_val_metrics['acc']:.6f} "
+        f"w={float(scratch_head_w.detach().cpu()):+.4f} "
+        f"b={float(scratch_head_b.detach().cpu()):+.4f}"
+    )
+
+print("\nRestoring best scratch checkpoint:")
+print(scratch_best_state)
+
+scratch_raw_best = scratch_best_state["raw_delta"].to(DEVICE)
+scratch_optimizer_head_w_best = float(scratch_best_state["optimizer_head_w"])
+scratch_optimizer_head_b_best = float(scratch_best_state["optimizer_head_b"])
+
+with torch.no_grad():
+    f_best_full_scratch_t = scratch_profile_from_raw(scratch_raw_best)
+    kernel_best_scratch_t = torch.einsum("r,rhw->hw", f_best_full_scratch_t, scratch_basis_t)
+
+f_best_full_scratch = f_best_full_scratch_t.detach().cpu().numpy().astype(np.float32)
+kernel_best_scratch = kernel_best_scratch_t.detach().cpu().numpy().astype(np.float32)
+
+train_resp_scratch = extract_scratch_responses(X_train_t, kernel_best_scratch_t.detach(), BATCH_SIZE)
+val_resp_scratch = extract_scratch_responses(X_val_t, kernel_best_scratch_t.detach(), BATCH_SIZE)
+test_resp_scratch = extract_scratch_responses(X_test_t, kernel_best_scratch_t.detach(), BATCH_SIZE)
+
+calib_mu_scratch = float(train_resp_scratch.mean())
+calib_std_scratch = float(train_resp_scratch.std())
+calib_std_scratch = calib_std_scratch if calib_std_scratch > 1e-8 else 1.0
+
+calib_clf_scratch = LogisticRegression(max_iter=1000)
+calib_clf_scratch.fit(((train_resp_scratch - calib_mu_scratch) / calib_std_scratch).reshape(-1, 1), y_train)
+
+calib_w_scratch = float(calib_clf_scratch.coef_[0, 0])
+calib_b_scratch = float(calib_clf_scratch.intercept_[0])
+
+train_probs_scratch = calib_clf_scratch.predict_proba(
+    ((train_resp_scratch - calib_mu_scratch) / calib_std_scratch).reshape(-1, 1)
+)[:, 1]
+val_probs_scratch = calib_clf_scratch.predict_proba(
+    ((val_resp_scratch - calib_mu_scratch) / calib_std_scratch).reshape(-1, 1)
+)[:, 1]
+test_probs_scratch = calib_clf_scratch.predict_proba(
+    ((test_resp_scratch - calib_mu_scratch) / calib_std_scratch).reshape(-1, 1)
+)[:, 1]
+
+scratch_threshold_val, scratch_val_acc_tuned = best_threshold_by_accuracy(
+    y_val,
+    val_probs_scratch,
+    THRESHOLD_GRID_SIZE,
+)
+
+learned_results_scratch = {
+    "val_05": metrics_from_probs(y_val, val_probs_scratch, threshold=0.5),
+    "val_tuned": metrics_from_probs(y_val, val_probs_scratch, threshold=scratch_threshold_val),
+    "test_05": metrics_from_probs(y_test, test_probs_scratch, threshold=0.5),
+    "test_tuned": metrics_from_probs(y_test, test_probs_scratch, threshold=scratch_threshold_val),
+    "threshold_val": float(scratch_threshold_val),
+    "best_epoch": int(scratch_best_state["epoch"]),
+    "optimizer_head_w": scratch_optimizer_head_w_best,
+    "optimizer_head_b": scratch_optimizer_head_b_best,
+    "calib_mu": calib_mu_scratch,
+    "calib_std": calib_std_scratch,
+    "calib_w": calib_w_scratch,
+    "calib_b": calib_b_scratch,
+    "response_name": SCRATCH_RESPONSE_NAME,
+    "topk_ratio": float(SCRATCH_TOPK_RATIO),
+    "topk_min": int(SCRATCH_TOPK_MIN),
+    "topk_max": int(SCRATCH_TOPK_MAX),
+}
+
+print("\nCalibrated scratch signed radial-kernel metrics:")
+print(
+    f"  Val  | AUC={learned_results_scratch['val_05']['auc']:.6f} ACC@0.5={learned_results_scratch['val_05']['acc']:.6f} "
+    f"ACC@thr_val={learned_results_scratch['val_tuned']['acc']:.6f} (thr_val={learned_results_scratch['threshold_val']:.3f})"
+)
+print(
+    f"  Test | AUC={learned_results_scratch['test_05']['auc']:.6f} ACC@0.5={learned_results_scratch['test_05']['acc']:.6f} "
+    f"ACC@thr_val={learned_results_scratch['test_tuned']['acc']:.6f}"
+)
+
+print("\nScratch radial coefficients:")
+for idx, value in enumerate(f_best_full_scratch):
+    print(f"  f{idx:02d} = {value:+.7e}")
+
+fig, axes = plt.subplots(1, 4, figsize=(20, 4))
+scratch_vmax = max(
+    float(np.max(np.abs(seed_radial_kernel))),
+    float(np.max(np.abs(kernel_best_scratch))),
+    float(np.max(np.abs(kernel_best))) if "kernel_best" in globals() else 0.0,
+) + 1e-12
+
+axes[0].imshow(seed_radial_kernel, cmap="coolwarm", vmin=-scratch_vmax, vmax=scratch_vmax)
+axes[0].set_title("Seed radial kernel")
+axes[0].axis("off")
+
+axes[1].imshow(kernel_best_scratch, cmap="coolwarm", vmin=-scratch_vmax, vmax=scratch_vmax)
+axes[1].set_title("Scratch signed kernel")
+axes[1].axis("off")
+
+axes[2].plot(np.arange(len(f_seed_full)), f_seed_full, marker="o", linewidth=1.2, alpha=0.65, label="seed")
+if "f_best_full" in globals():
+    axes[2].plot(np.arange(len(f_best_full)), f_best_full, marker="s", linewidth=1.0, alpha=0.5, label="current learned")
+if "f_best_full_mono" in globals():
+    axes[2].plot(np.arange(len(f_best_full_mono)), f_best_full_mono, marker="^", linewidth=1.2, alpha=0.6, label="monotone")
+if "f_best_full_signed" in globals():
+    axes[2].plot(np.arange(len(f_best_full_signed)), f_best_full_signed, marker="x", linewidth=1.2, alpha=0.7, label="signed compact")
+axes[2].plot(np.arange(len(scratch_init)), scratch_init, linestyle="--", linewidth=1.4, color="tab:gray", label="scratch init")
+axes[2].plot(np.arange(len(f_best_full_scratch)), f_best_full_scratch, marker="D", linewidth=2.0, label="scratch learned")
+axes[2].set_xlabel("radius bin")
+axes[2].set_ylabel("f(r)")
+axes[2].set_title("Smooth normalized signed profile")
+axes[2].grid(alpha=0.3)
+axes[2].legend()
+
+scratch_epochs = np.array([row["epoch"] for row in scratch_history], dtype=int)
+scratch_val_auc_curve = np.array([row["val_auc"] for row in scratch_history], dtype=np.float32)
+scratch_val_acc_curve = np.array([row["val_acc"] for row in scratch_history], dtype=np.float32)
+axes[3].plot(scratch_epochs, scratch_val_auc_curve, label="val AUC")
+axes[3].plot(scratch_epochs, scratch_val_acc_curve, label="val ACC@0.5")
+axes[3].set_xlabel("epoch")
+axes[3].set_title("Scratch validation")
+axes[3].grid(alpha=0.3)
+axes[3].legend()
+
+plt.tight_layout()
+plt.show()
+
+from scipy.ndimage import binary_erosion
+
+
+def exact_scratch_patch_prob_grid(
+    image_np: np.ndarray,
+    kernel_np: np.ndarray,
+    patch_size: int,
+    stride: int,
+    batch_patches: int,
+    row_block: int,
+):
+    image_t = to_tensor_batch(image_np[None, ...].astype(np.float32), torch.device("cpu"))
+    h, w = image_np.shape
+
+    pad_top = patch_size // 2
+    pad_left = patch_size // 2
+    pad_bottom = patch_size - pad_top - 1
+    pad_right = patch_size - pad_left - 1
+    padded = F.pad(image_t, (pad_left, pad_right, pad_top, pad_bottom), mode="constant", value=0.0)
+
+    y_positions = list(range(0, h, stride))
+    x_positions = list(range(0, w, stride))
+    feat_grid = np.zeros((len(y_positions), len(x_positions)), dtype=np.float32)
+    kernel_t = torch.from_numpy(kernel_np).to(DEVICE)
+
+    for row_start in range(0, len(y_positions), row_block):
+        block_rows = y_positions[row_start : row_start + row_block]
+        y0 = block_rows[0]
+        crop_h = (len(block_rows) - 1) * stride + patch_size
+        crop = padded[:, :, y0 : y0 + crop_h, :]
+
+        patches_unfold = F.unfold(crop, kernel_size=(patch_size, patch_size), stride=(stride, stride))
+        patches = patches_unfold.transpose(1, 2).reshape(-1, 1, patch_size, patch_size).contiguous()
+
+        if STANDARDIZE_PATCHES:
+            patches = patch_standardize(patches)
+
+        block_feats = []
+        for i in range(0, patches.shape[0], batch_patches):
+            pb = patches[i : i + batch_patches].to(DEVICE, non_blocking=True)
+            feat = scratch_signed_topk_response(pb, kernel_t)
+            block_feats.append(feat.detach().cpu().numpy())
+
+        block_feats = np.concatenate(block_feats, axis=0).astype(np.float32)
+        feat_grid[row_start : row_start + len(block_rows), :] = block_feats.reshape(len(block_rows), len(x_positions))
+
+    return feat_grid, np.array(y_positions, dtype=np.int64), np.array(x_positions, dtype=np.int64)
+
+
+scratch_example_path = ensure_example_image(EXAMPLE_IMAGE_PATH)
+scratch_img_arr = np.array(Image.open(scratch_example_path).convert("L"), dtype=np.float32) / 255.0
+
+feat_grid_scratch, y_grid_scratch, x_grid_scratch = exact_scratch_patch_prob_grid(
+    scratch_img_arr,
+    kernel_best_scratch,
+    patch_size=RESIZE_PATCH,
+    stride=SCRATCH_EXACT_HEATMAP_STRIDE,
+    batch_patches=SCRATCH_EXACT_HEATMAP_BATCH_PATCHES,
+    row_block=SCRATCH_EXACT_HEATMAP_ROW_BLOCK,
+)
+
+prob_grid_scratch = sigmoid_np(
+    calib_w_scratch * ((feat_grid_scratch - calib_mu_scratch) / calib_std_scratch) + calib_b_scratch
+).astype(np.float32)
+
+prob_map_exact_scratch = F.interpolate(
+    torch.from_numpy(prob_grid_scratch)[None, None],
+    size=scratch_img_arr.shape,
+    mode="bicubic",
+    align_corners=False,
+)[0, 0].cpu().numpy().astype(np.float32)
+
+h_img, w_img = scratch_img_arr.shape
+pad_top = RESIZE_PATCH // 2
+pad_left = RESIZE_PATCH // 2
+pad_bottom = RESIZE_PATCH - pad_top - 1
+pad_right = RESIZE_PATCH - pad_left - 1
+valid_center_mask_scratch = np.zeros_like(scratch_img_arr, dtype=np.float32)
+valid_center_mask_scratch[pad_top : h_img - pad_bottom, pad_left : w_img - pad_right] = 1.0
+
+breast_mask_scratch = scratch_img_arr > float(SCRATCH_EXACT_HEATMAP_MASK_THRESHOLD)
+display_mask_scratch = binary_erosion(
+    breast_mask_scratch,
+    iterations=int(SCRATCH_EXACT_HEATMAP_BREAST_EROSION),
+).astype(np.float32)
+display_mask_scratch *= valid_center_mask_scratch
+
+smooth_num = gaussian_filter(
+    prob_map_exact_scratch * display_mask_scratch,
+    sigma=float(SCRATCH_EXACT_HEATMAP_EXTRA_SMOOTH_SIGMA),
+)
+smooth_den = gaussian_filter(display_mask_scratch, sigma=float(SCRATCH_EXACT_HEATMAP_EXTRA_SMOOTH_SIGMA))
+prob_map_exact_vis_scratch = smooth_num / np.maximum(smooth_den, 1e-6)
+prob_map_exact_vis_scratch *= display_mask_scratch
+
+if display_mask_scratch.any():
+    masked_vals = prob_map_exact_vis_scratch[display_mask_scratch > 0]
+    display_hi = float(np.percentile(masked_vals, SCRATCH_EXACT_HEATMAP_DISPLAY_PERCENTILE))
+else:
+    masked_vals = prob_map_exact_vis_scratch.ravel()
+    display_hi = float(np.percentile(masked_vals, SCRATCH_EXACT_HEATMAP_DISPLAY_PERCENTILE))
+
+display_hi = max(display_hi, 1e-6)
+prob_map_exact_display_scratch = np.clip(prob_map_exact_vis_scratch / display_hi, 0.0, 1.0).astype(np.float32)
+prob_map_exact_display_scratch *= display_mask_scratch.astype(np.float32)
+prob_map_exact_display_scratch = gaussian_filter(
+    prob_map_exact_display_scratch,
+    sigma=max(1.0, float(SCRATCH_EXACT_HEATMAP_STRIDE) * 0.35),
+).astype(np.float32)
+prob_map_exact_display_scratch *= display_mask_scratch.astype(np.float32)
+prob_map_exact_display_scratch = np.clip(prob_map_exact_display_scratch, 0.0, 1.0)
+
+scratch_score_max = float((prob_map_exact_scratch * display_mask_scratch).max())
+scratch_score_mean = float(prob_map_exact_scratch.mean())
+scratch_score_mean_breast = float(masked_vals.mean()) if masked_vals.size > 0 else float(prob_map_exact_scratch.mean())
+
+fig, axes = plt.subplots(1, 4, figsize=(18, 4.8))
+axes[0].imshow(scratch_img_arr, cmap="gray")
+axes[0].set_title(f"Original\n{scratch_example_path.name}")
+axes[0].axis("off")
+
+axes[1].imshow(scratch_img_arr, cmap="gray")
+scratch_im = axes[1].imshow(
+    prob_map_exact_vis_scratch,
+    cmap="jet",
+    alpha=SCRATCH_EXACT_HEATMAP_ALPHA,
+    vmin=0.0,
+    vmax=1.0,
+    interpolation="bilinear",
+)
+axes[1].set_title(
+    "Signed top-k overlay\n"
+    f"max={scratch_score_max:.3f} mean={scratch_score_mean_breast:.3f}"
+)
+axes[1].axis("off")
+
+axes[2].imshow(scratch_img_arr, cmap="gray")
+axes[2].imshow(
+    prob_map_exact_display_scratch,
+    cmap="jet",
+    alpha=SCRATCH_EXACT_HEATMAP_ALPHA,
+    vmin=0.0,
+    vmax=1.0,
+    interpolation="bilinear",
+)
+axes[2].set_title(
+    "Contrast-enhanced overlay\n"
+    f"scaled to {SCRATCH_EXACT_HEATMAP_DISPLAY_PERCENTILE:.1f}th pct"
+)
+axes[2].axis("off")
+
+axes[3].imshow(prob_map_exact_display_scratch, cmap="jet", vmin=0.0, vmax=1.0, interpolation="bilinear")
+axes[3].set_title("Exact heatmap only")
+axes[3].axis("off")
+
+fig.suptitle(
+    "Independent smooth normalized signed radial kernel inference | "
+    f"stride={SCRATCH_EXACT_HEATMAP_STRIDE} "
+    f"Test AUC={learned_results_scratch['test_05']['auc']:.3f} "
+    f"Test ACC@0.5={learned_results_scratch['test_05']['acc']:.3f}",
+    y=1.02,
+)
+
+cbar = fig.colorbar(scratch_im, ax=axes.ravel().tolist(), shrink=0.82)
+cbar.set_label("Predicted probability")
+fig.subplots_adjust(top=0.80, wspace=0.04)
+plt.show()
+
+print(
+    f"Scratch exact heatmap stats: max={scratch_score_max:.6f} "
+    f"mean_all={scratch_score_mean:.6f} "
+    f"mean_breast={scratch_score_mean_breast:.6f}"
+)
+print(f"Scratch exact heatmap grid size: {prob_grid_scratch.shape} with stride={SCRATCH_EXACT_HEATMAP_STRIDE}")
+
+scratch_summary = {
+    "scratch_init_profile": [float(x) for x in scratch_init],
+    "f_scratch_full": [float(x) for x in f_best_full_scratch],
+    "learned_scratch": learned_results_scratch,
+    "history_scratch": scratch_history,
+    "response_name": SCRATCH_RESPONSE_NAME,
+    "constraints": {
+        "nonnegative": True,
+        "monotone_decreasing": True,
+        "unit_norm": True,
+    },
+}
+
+if SAVE_ARTIFACTS:
+    np.save(SCRATCH_OUT_DIR / "f_scratch_init.npy", scratch_init.astype(np.float32))
+    np.save(SCRATCH_OUT_DIR / "f_scratch_full.npy", f_best_full_scratch.astype(np.float32))
+    np.save(SCRATCH_OUT_DIR / "kernel_scratch_monotone_signed.npy", kernel_best_scratch.astype(np.float32))
+    np.save(SCRATCH_EXACT_HEATMAP_OUT_DIR / f"{scratch_example_path.stem}_scratch_exact_prob_map.npy", prob_map_exact_scratch)
+    np.save(SCRATCH_EXACT_HEATMAP_OUT_DIR / f"{scratch_example_path.stem}_scratch_exact_prob_grid.npy", prob_grid_scratch)
+    fig.savefig(SCRATCH_EXACT_HEATMAP_OUT_DIR / f"{scratch_example_path.stem}_scratch_exact_heatmap.png", dpi=260, bbox_inches="tight")
+    (SCRATCH_OUT_DIR / "scratch_monotone_summary.json").write_text(json.dumps(scratch_summary, indent=2))
+    print(f"\nSaved scratch signed monotone artifacts to {SCRATCH_OUT_DIR}")
+
+
+=================== CELL 16 (code) ===================
+fig, axes = plt.subplots(1, 3, figsize=(20, 4))
+scratch_vmax = max(
+    float(np.max(np.abs(seed_radial_kernel))),
+    float(np.max(np.abs(kernel_best_scratch))),
+    float(np.max(np.abs(kernel_best))) if "kernel_best" in globals() else 0.0,
+) + 1e-12
+
+# axes[0].imshow(seed_radial_kernel, cmap="coolwarm", vmin=-scratch_vmax, vmax=scratch_vmax)
+# axes[0].set_title("Seed radial kernel")
+# axes[0].axis("off")
+
+axes[0].imshow(kernel_best_scratch, cmap="coolwarm", vmin=-scratch_vmax, vmax=scratch_vmax)
+axes[0].set_title("Scratch signed kernel")
+axes[0].axis("off")
+
+# axes[1].plot(np.arange(len(f_seed_full)), f_seed_full, marker="o", linewidth=1.2, alpha=0.65, label="seed")
+# if "f_best_full" in globals():
+#     axes[1].plot(np.arange(len(f_best_full)), f_best_full, marker="s", linewidth=1.0, alpha=0.5, label="current learned")
+# if "f_best_full_mono" in globals():
+#     axes[1].plot(np.arange(len(f_best_full_mono)), f_best_full_mono, marker="^", linewidth=1.2, alpha=0.6, label="monotone")
+# if "f_best_full_signed" in globals():
+#     axes[1].plot(np.arange(len(f_best_full_signed)), f_best_full_signed, marker="x", linewidth=1.2, alpha=0.7, label="signed compact")
+# axes[1].plot(np.arange(len(scratch_init)), scratch_init, linestyle="--", linewidth=1.4, color="tab:gray", label="scratch init")
+axes[1].plot(np.arange(len(f_best_full_scratch)), f_best_full_scratch, marker="D", linewidth=2.0, label="scratch learned")
+axes[1].set_xlabel("radius bin")
+axes[1].set_ylabel("f(r)")
+axes[1].set_title("Smooth normalized signed profile")
+axes[1].grid(alpha=0.3)
+axes[1].legend()
+
+scratch_epochs = np.array([row["epoch"] for row in scratch_history], dtype=int)
+# scratch_val_auc_curve = np.array([row["val_auc"] for row in scratch_history], dtype=np.float32)
+scratch_val_acc_curve = np.array([row["val_acc"] for row in scratch_history], dtype=np.float32)
+# axes[2].plot(scratch_epochs, scratch_val_auc_curve, label="val AUC")
+axes[2].plot(scratch_epochs, scratch_val_acc_curve, label="val ACC@0.5")
+axes[2].set_xlabel("epoch")
+axes[2].set_title("Scratch validation")
+axes[2].grid(alpha=0.3)
+axes[2].legend()
+
+plt.tight_layout()
+plt.show()
+
+
+=================== CELL 17 (code) ===================
+# Optional: independent signed radial fit without positivity / monotonicity constraints.
+# This ablation keeps the signed top-k objective, but removes the positive and
+# monotone profile construction to test whether a free signed radial profile
+# gives better quality than the averaging-like constrained fit.
+
+FREE_RESPONSE_NAME = "signed_topk_mean_free_profile"
+FREE_TOPK_RATIO = SCRATCH_TOPK_RATIO if "SCRATCH_TOPK_RATIO" in globals() else 0.01
+FREE_TOPK_MIN = SCRATCH_TOPK_MIN if "SCRATCH_TOPK_MIN" in globals() else 8
+FREE_TOPK_MAX = SCRATCH_TOPK_MAX if "SCRATCH_TOPK_MAX" in globals() else 128
+
+FREE_EPOCHS = max(EPOCHS, 20)
+FREE_LR_PROFILE = LR_F * 0.35
+FREE_LR_HEAD = LR_HEAD
+FREE_LAMBDA_SMOOTH = max(LAMBDA_SMOOTH, 2e-2)
+FREE_LAMBDA_CURVATURE = 5e-2
+FREE_LAMBDA_DECAY = 1e-1
+FREE_LAMBDA_EDGE = 1e-1
+FREE_OUT_DIR = OUT_DIR / "scratch_free_signed"
+FREE_OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+free_basis_t = basis_t if "basis_t" in globals() else torch.from_numpy(basis_np).to(DEVICE)
+free_train_loader = DataLoader(
+    TensorDataset(X_train_t, y_train_t),
+    batch_size=BATCH_SIZE,
+    shuffle=True,
+)
+
+free_len = full_radius_count
+free_radius_np = np.linspace(0.0, 1.0, free_len, dtype=np.float32)
+free_radius_t = torch.from_numpy(free_radius_np).to(DEVICE)
+
+# Signed difference-of-Gaussians style initialization to avoid starting from
+# an all-positive averaging filter while still remaining independent.
+free_init = (
+    np.exp(-6.0 * (free_radius_np ** 2))
+    - 0.55 * np.exp(-1.5 * (free_radius_np ** 2))
+).astype(np.float32)
+if np.linalg.norm(free_init) < 1e-8:
+    free_init[0] = 1.0
+free_init = free_init / max(float(np.linalg.norm(free_init)), 1e-8)
+
+
+def free_signed_topk_response(
+    x_t: torch.Tensor,
+    kernel2d_t: torch.Tensor,
+    topk_ratio: float = FREE_TOPK_RATIO,
+    topk_min: int = FREE_TOPK_MIN,
+    topk_max: int = FREE_TOPK_MAX,
+):
+    out = F.conv2d(x_t, kernel2d_t[None, None], padding=kernel2d_t.shape[-1] // 2)
+    flat = out[:, 0].reshape(out.shape[0], -1)
+    total_positions = flat.shape[1]
+    k = int(round(float(total_positions) * float(topk_ratio)))
+    k = max(int(topk_min), k)
+    k = min(int(topk_max), k, total_positions)
+    idx = flat.abs().topk(k=k, dim=1).indices
+    signed_topk = flat.gather(1, idx)
+    return signed_topk.mean(dim=1)
+
+
+@torch.no_grad()
+def extract_free_responses(x_t: torch.Tensor, kernel2d_t: torch.Tensor, batch_size: int):
+    kernel2d_t = kernel2d_t.to(DEVICE)
+    feats = []
+    for i in range(0, x_t.shape[0], batch_size):
+        xb = x_t[i : i + batch_size].to(DEVICE, non_blocking=True)
+        feat = free_signed_topk_response(xb, kernel2d_t)
+        feats.append(feat.detach().cpu().numpy())
+    return np.concatenate(feats, axis=0) if feats else np.zeros((0,), dtype=np.float32)
+
+
+def free_profile_from_param(profile_param_t: torch.Tensor):
+    return profile_param_t / (torch.norm(profile_param_t) + 1e-8)
+
+
+free_profile_param = torch.nn.Parameter(torch.from_numpy(free_init).to(DEVICE))
+free_head_w = torch.nn.Parameter(torch.tensor(1.0, dtype=torch.float32, device=DEVICE))
+free_head_b = torch.nn.Parameter(torch.tensor(0.0, dtype=torch.float32, device=DEVICE))
+
+free_optimizer = torch.optim.Adam(
+    [
+        {"params": [free_profile_param], "lr": FREE_LR_PROFILE},
+        {"params": [free_head_w, free_head_b], "lr": FREE_LR_HEAD},
+    ]
+)
+free_loss_fn = torch.nn.BCEWithLogitsLoss()
+free_best_state = None
+free_best_val_auc = -float("inf")
+free_history = []
+
+for epoch in range(1, FREE_EPOCHS + 1):
+    total_loss = 0.0
+    n_seen = 0
+
+    for xb, yb in free_train_loader:
+        xb = xb.to(DEVICE, non_blocking=True)
+        yb = yb.to(DEVICE, non_blocking=True)
+
+        free_profile_t = free_profile_from_param(free_profile_param)
+        free_kernel_t = torch.einsum("r,rhw->hw", free_profile_t, free_basis_t)
+        free_feat = free_signed_topk_response(xb, free_kernel_t)
+        free_logits = free_head_w * free_feat + free_head_b
+
+        free_loss_cls = free_loss_fn(free_logits, yb)
+        free_first_diff = free_profile_t[1:] - free_profile_t[:-1]
+        free_loss_smooth = (
+            torch.mean(free_first_diff ** 2)
+            if free_len > 1
+            else torch.tensor(0.0, device=DEVICE)
+        )
+        free_second_diff = free_profile_t[2:] - 2.0 * free_profile_t[1:-1] + free_profile_t[:-2]
+        free_loss_curvature = (
+            torch.mean(free_second_diff ** 2)
+            if free_len > 2
+            else torch.tensor(0.0, device=DEVICE)
+        )
+        free_loss_decay = torch.mean((free_radius_t ** 2) * (free_profile_t ** 2))
+        free_loss_edge = free_profile_t[-1] ** 2
+        free_loss = (
+            free_loss_cls
+            + FREE_LAMBDA_SMOOTH * free_loss_smooth
+            + FREE_LAMBDA_CURVATURE * free_loss_curvature
+            + FREE_LAMBDA_DECAY * free_loss_decay
+            + FREE_LAMBDA_EDGE * free_loss_edge
+        )
+
+        free_optimizer.zero_grad()
+        free_loss.backward()
+        free_optimizer.step()
+
+        batch_n = xb.shape[0]
+        total_loss += float(free_loss.item()) * batch_n
+        n_seen += batch_n
+
+    free_profile_eval_t = free_profile_from_param(free_profile_param)
+    free_kernel_eval_t = torch.einsum("r,rhw->hw", free_profile_eval_t, free_basis_t)
+    free_val_resp = extract_free_responses(X_val_t, free_kernel_eval_t.detach(), BATCH_SIZE)
+    free_val_probs = sigmoid_np(
+        float(free_head_w.detach().cpu()) * free_val_resp + float(free_head_b.detach().cpu())
+    )
+    free_val_metrics = metrics_from_probs(y_val, free_val_probs, threshold=0.5)
+
+    free_history.append(
+        {
+            "epoch": int(epoch),
+            "loss": float(total_loss / max(n_seen, 1)),
+            "val_auc": float(free_val_metrics["auc"]),
+            "val_acc": float(free_val_metrics["acc"]),
+            "optimizer_head_w": float(free_head_w.detach().cpu()),
+            "optimizer_head_b": float(free_head_b.detach().cpu()),
+        }
+    )
+
+    if free_val_metrics["auc"] > free_best_val_auc:
+        free_best_val_auc = free_val_metrics["auc"]
+        free_best_state = {
+            "epoch": int(epoch),
+            "profile_param": free_profile_param.detach().cpu().clone(),
+            "optimizer_head_w": float(free_head_w.detach().cpu()),
+            "optimizer_head_b": float(free_head_b.detach().cpu()),
+            "val_auc": float(free_val_metrics["auc"]),
+            "val_acc": float(free_val_metrics["acc"]),
+        }
+
+    print(
+        f"free epoch={epoch:02d} "
+        f"loss={free_history[-1]['loss']:.6f} "
+        f"val_auc={free_val_metrics['auc']:.6f} "
+        f"val_acc={free_val_metrics['acc']:.6f} "
+        f"w={float(free_head_w.detach().cpu()):+.4f} "
+        f"b={float(free_head_b.detach().cpu()):+.4f}"
+    )
+
+print("\nRestoring best free-profile checkpoint:")
+print(free_best_state)
+
+free_profile_best_param = free_best_state["profile_param"].to(DEVICE)
+free_optimizer_head_w_best = float(free_best_state["optimizer_head_w"])
+free_optimizer_head_b_best = float(free_best_state["optimizer_head_b"])
+
+with torch.no_grad():
+    f_best_full_free_t = free_profile_from_param(free_profile_best_param)
+    kernel_best_free_t = torch.einsum("r,rhw->hw", f_best_full_free_t, free_basis_t)
+
+f_best_full_free = f_best_full_free_t.detach().cpu().numpy().astype(np.float32)
+kernel_best_free = kernel_best_free_t.detach().cpu().numpy().astype(np.float32)
+
+train_resp_free = extract_free_responses(X_train_t, kernel_best_free_t.detach(), BATCH_SIZE)
+val_resp_free = extract_free_responses(X_val_t, kernel_best_free_t.detach(), BATCH_SIZE)
+test_resp_free = extract_free_responses(X_test_t, kernel_best_free_t.detach(), BATCH_SIZE)
+
+calib_mu_free = float(train_resp_free.mean())
+calib_std_free = float(train_resp_free.std())
+calib_std_free = calib_std_free if calib_std_free > 1e-8 else 1.0
+
+calib_clf_free = LogisticRegression(max_iter=1000)
+calib_clf_free.fit(((train_resp_free - calib_mu_free) / calib_std_free).reshape(-1, 1), y_train)
+
+calib_w_free = float(calib_clf_free.coef_[0, 0])
+calib_b_free = float(calib_clf_free.intercept_[0])
+
+train_probs_free = calib_clf_free.predict_proba(
+    ((train_resp_free - calib_mu_free) / calib_std_free).reshape(-1, 1)
+)[:, 1]
+val_probs_free = calib_clf_free.predict_proba(
+    ((val_resp_free - calib_mu_free) / calib_std_free).reshape(-1, 1)
+)[:, 1]
+test_probs_free = calib_clf_free.predict_proba(
+    ((test_resp_free - calib_mu_free) / calib_std_free).reshape(-1, 1)
+)[:, 1]
+
+free_threshold_val, free_val_acc_tuned = best_threshold_by_accuracy(
+    y_val,
+    val_probs_free,
+    THRESHOLD_GRID_SIZE,
+)
+
+learned_results_free = {
+    "val_05": metrics_from_probs(y_val, val_probs_free, threshold=0.5),
+    "val_tuned": metrics_from_probs(y_val, val_probs_free, threshold=free_threshold_val),
+    "test_05": metrics_from_probs(y_test, test_probs_free, threshold=0.5),
+    "test_tuned": metrics_from_probs(y_test, test_probs_free, threshold=free_threshold_val),
+    "threshold_val": float(free_threshold_val),
+    "best_epoch": int(free_best_state["epoch"]),
+    "optimizer_head_w": free_optimizer_head_w_best,
+    "optimizer_head_b": free_optimizer_head_b_best,
+    "calib_mu": calib_mu_free,
+    "calib_std": calib_std_free,
+    "calib_w": calib_w_free,
+    "calib_b": calib_b_free,
+    "response_name": FREE_RESPONSE_NAME,
+    "topk_ratio": float(FREE_TOPK_RATIO),
+    "topk_min": int(FREE_TOPK_MIN),
+    "topk_max": int(FREE_TOPK_MAX),
+}
+
+print("\nCalibrated free signed radial-kernel metrics:")
+print(
+    f"  Val  | AUC={learned_results_free['val_05']['auc']:.6f} ACC@0.5={learned_results_free['val_05']['acc']:.6f} "
+    f"ACC@thr_val={learned_results_free['val_tuned']['acc']:.6f} (thr_val={learned_results_free['threshold_val']:.3f})"
+)
+print(
+    f"  Test | AUC={learned_results_free['test_05']['auc']:.6f} ACC@0.5={learned_results_free['test_05']['acc']:.6f} "
+    f"ACC@thr_val={learned_results_free['test_tuned']['acc']:.6f}"
+)
+
+if "learned_results_scratch" in globals():
+    print("\nComparison against constrained scratch fit:")
+    print(
+        f"  constrained test ACC@0.5={learned_results_scratch['test_05']['acc']:.6f} "
+        f"AUC={learned_results_scratch['test_05']['auc']:.6f}"
+    )
+    print(
+        f"  free        test ACC@0.5={learned_results_free['test_05']['acc']:.6f} "
+        f"AUC={learned_results_free['test_05']['auc']:.6f}"
+    )
+
+print("\nFree signed radial coefficients:")
+for idx, value in enumerate(f_best_full_free):
+    print(f"  f{idx:02d} = {value:+.7e}")
+
+fig, axes = plt.subplots(1, 3, figsize=(20, 4))
+free_vmax = max(
+    float(np.max(np.abs(kernel_best_free))),
+    float(np.max(np.abs(kernel_best_scratch))) if "kernel_best_scratch" in globals() else 0.0,
+    float(np.max(np.abs(seed_radial_kernel))),
+) + 1e-12
+
+axes[0].imshow(kernel_best_free, cmap="coolwarm", vmin=-free_vmax, vmax=free_vmax)
+axes[0].set_title("Free signed kernel")
+axes[0].axis("off")
+
+axes[1].plot(np.arange(len(free_init)), free_init, linestyle="--", linewidth=1.4, color="tab:gray", label="free init")
+if "f_best_full_scratch" in globals():
+    axes[1].plot(
+        np.arange(len(f_best_full_scratch)),
+        f_best_full_scratch,
+        linewidth=1.6,
+        alpha=0.75,
+        label="constrained scratch",
+    )
+axes[1].plot(np.arange(len(f_best_full_free)), f_best_full_free, marker="D", linewidth=2.0, label="free learned")
+axes[1].set_xlabel("radius bin")
+axes[1].set_ylabel("f(r)")
+axes[1].set_title("Free signed profile")
+axes[1].grid(alpha=0.3)
+axes[1].legend()
+
+free_epochs = np.array([row["epoch"] for row in free_history], dtype=int)
+free_val_acc_curve = np.array([row["val_acc"] for row in free_history], dtype=np.float32)
+axes[2].plot(free_epochs, free_val_acc_curve, label="free val ACC@0.5")
+if "scratch_history" in globals():
+    scratch_val_acc_curve = np.array([row["val_acc"] for row in scratch_history], dtype=np.float32)
+    scratch_epochs = np.array([row["epoch"] for row in scratch_history], dtype=int)
+    axes[2].plot(scratch_epochs, scratch_val_acc_curve, alpha=0.7, label="constrained val ACC@0.5")
+axes[2].set_xlabel("epoch")
+axes[2].set_title("Validation comparison")
+axes[2].grid(alpha=0.3)
+axes[2].legend()
+
+plt.tight_layout()
+plt.show()
+
+free_summary = {
+    "free_init_profile": [float(x) for x in free_init],
+    "f_free_full": [float(x) for x in f_best_full_free],
+    "learned_free": learned_results_free,
+    "history_free": free_history,
+    "response_name": FREE_RESPONSE_NAME,
+    "constraints": {
+        "nonnegative": False,
+        "monotone_decreasing": False,
+        "unit_norm": True,
+    },
+}
+
+if SAVE_ARTIFACTS:
+    np.save(FREE_OUT_DIR / "f_free_init.npy", free_init.astype(np.float32))
+    np.save(FREE_OUT_DIR / "f_free_full.npy", f_best_full_free.astype(np.float32))
+    np.save(FREE_OUT_DIR / "kernel_free_signed.npy", kernel_best_free.astype(np.float32))
+    (FREE_OUT_DIR / "free_signed_summary.json").write_text(json.dumps(free_summary, indent=2))
+    print(f"\nSaved free signed artifacts to {FREE_OUT_DIR}")
+
+
+=================== CELL 18 (code) ===================
+fig, axes = plt.subplots(1, 3, figsize=(20, 4))
+free_vmax = max(
+    float(np.max(np.abs(kernel_best_free))),
+    float(np.max(np.abs(kernel_best_scratch))) if "kernel_best_scratch" in globals() else 0.0,
+    float(np.max(np.abs(seed_radial_kernel))),
+) + 1e-12
+
+axes[0].imshow(kernel_best_free, cmap="coolwarm", vmin=-free_vmax, vmax=free_vmax)
+axes[0].set_title("Free signed kernel")
+axes[0].axis("off")
+
+axes[1].plot(np.arange(len(free_init)), free_init, linestyle="--", linewidth=1.4, color="tab:gray", label="free init")
+if "f_best_full_scratch" in globals():
+    axes[1].plot(
+        np.arange(len(f_best_full_scratch)),
+        f_best_full_scratch,
+        linewidth=1.6,
+        alpha=0.75,
+        label="constrained scratch",
+    )
+axes[1].plot(np.arange(len(f_best_full_free[:-2])), f_best_full_free[:-2], marker="D", linewidth=2.0, label="free learned")
+axes[1].set_xlabel("radius bin")
+axes[1].set_ylabel("f(r)")
+axes[1].set_title("Free signed profile")
+axes[1].grid(alpha=0.3)
+axes[1].legend()
+
+free_epochs = np.array([row["epoch"] for row in free_history], dtype=int)
+free_val_acc_curve = np.array([row["val_acc"] for row in free_history], dtype=np.float32)
+axes[2].plot(free_epochs, free_val_acc_curve, label="free val ACC@0.5")
+if "scratch_history" in globals():
+    scratch_val_acc_curve = np.array([row["val_acc"] for row in scratch_history], dtype=np.float32)
+    scratch_epochs = np.array([row["epoch"] for row in scratch_history], dtype=int)
+    axes[2].plot(scratch_epochs, scratch_val_acc_curve, alpha=0.7, label="constrained val ACC@0.5")
+axes[2].set_xlabel("epoch")
+axes[2].set_title("Validation comparison")
+axes[2].grid(alpha=0.3)
+axes[2].legend()
+
+plt.tight_layout()
+plt.show()
+
+
+=================== CELL 19 (markdown) ===================
+## Signed Radial Training With Learnable Radius
+
+This section learns a signed radial profile together with a differentiable radius/support parameter, so the optimizer can change both the radial values and the effective kernel size.
+The profile remains normalized, but it is not constrained to be positive or monotone.
+
+
+=================== CELL 20 (code) ===================
+# Optional: signed normalized radial fit with learnable radius / support.
+# This cell optimizes both:
+# 1) a signed radial profile with positive and negative values allowed
+# 2) an effective radius/support parameter that can shrink or expand the kernel
+# The final profile is L2-normalized, but it is not forced to be positive or monotone.
+
+RADIUS_RESPONSE_NAME = "signed_topk_mean_learnable_radius"
+RADIUS_TOPK_RATIO = SCRATCH_TOPK_RATIO if "SCRATCH_TOPK_RATIO" in globals() else 0.01
+RADIUS_TOPK_MIN = SCRATCH_TOPK_MIN if "SCRATCH_TOPK_MIN" in globals() else 8
+RADIUS_TOPK_MAX = SCRATCH_TOPK_MAX if "SCRATCH_TOPK_MAX" in globals() else 128
+
+RADIUS_EPOCHS = max(EPOCHS, 20)
+RADIUS_LR_PROFILE = LR_F * 0.30
+RADIUS_LR_RADIUS = LR_F * 0.10
+RADIUS_LR_HEAD = LR_HEAD
+RADIUS_LAMBDA_SMOOTH = max(LAMBDA_SMOOTH, 1e-2)
+RADIUS_LAMBDA_CURVATURE = 2e-2
+RADIUS_LAMBDA_EDGE = 5e-2
+RADIUS_LAMBDA_OUTER = 5e-2
+RADIUS_GATE_TEMP = 0.75
+RADIUS_MIN_SHELL = 2.0
+RADIUS_MAX_SHELL = float(full_radius_count - 1)
+RADIUS_OUT_DIR = OUT_DIR / "scratch_learnable_radius_signed"
+RADIUS_OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+radius_basis_t = basis_t if "basis_t" in globals() else torch.from_numpy(basis_np).to(DEVICE)
+radius_train_loader = DataLoader(
+    TensorDataset(X_train_t, y_train_t),
+    batch_size=BATCH_SIZE,
+    shuffle=True,
+)
+
+radius_len = full_radius_count
+radius_shell_t = torch.arange(radius_len, dtype=torch.float32, device=DEVICE)
+radius_shell_np = np.arange(radius_len, dtype=np.float32)
+radius_shell_norm_np = radius_shell_np / max(float(radius_len - 1), 1.0)
+
+# Signed, radius-centered initialization so the optimizer does not start from an
+# averaging-like all-positive kernel.
+radius_init = (
+    np.exp(-7.5 * (radius_shell_norm_np ** 2))
+    - 0.60 * np.exp(-1.6 * (radius_shell_norm_np ** 2))
+).astype(np.float32)
+if np.linalg.norm(radius_init) < 1e-8:
+    radius_init[0] = 1.0
+radius_init = radius_init / max(float(np.linalg.norm(radius_init)), 1e-8)
+
+
+def radius_inverse_sigmoid_scalar(prob_value: float):
+    prob_value = min(max(float(prob_value), 1e-4), 1.0 - 1e-4)
+    return float(np.log(prob_value / (1.0 - prob_value)))
+
+
+def radius_parameter_to_shell(raw_radius_t: torch.Tensor):
+    return RADIUS_MIN_SHELL + (RADIUS_MAX_SHELL - RADIUS_MIN_SHELL) * torch.sigmoid(raw_radius_t)
+
+
+def radius_signed_topk_response(
+    x_t: torch.Tensor,
+    kernel2d_t: torch.Tensor,
+    topk_ratio: float = RADIUS_TOPK_RATIO,
+    topk_min: int = RADIUS_TOPK_MIN,
+    topk_max: int = RADIUS_TOPK_MAX,
+):
+    out = F.conv2d(x_t, kernel2d_t[None, None], padding=kernel2d_t.shape[-1] // 2)
+    flat = out[:, 0].reshape(out.shape[0], -1)
+    total_positions = flat.shape[1]
+    k = int(round(float(total_positions) * float(topk_ratio)))
+    k = max(int(topk_min), k)
+    k = min(int(topk_max), k, total_positions)
+    idx = flat.abs().topk(k=k, dim=1).indices
+    signed_topk = flat.gather(1, idx)
+    return signed_topk.mean(dim=1)
+
+
+@torch.no_grad()
+def extract_radius_responses(x_t: torch.Tensor, kernel2d_t: torch.Tensor, batch_size: int):
+    kernel2d_t = kernel2d_t.to(DEVICE)
+    feats = []
+    for i in range(0, x_t.shape[0], batch_size):
+        xb = x_t[i : i + batch_size].to(DEVICE, non_blocking=True)
+        feat = radius_signed_topk_response(xb, kernel2d_t)
+        feats.append(feat.detach().cpu().numpy())
+    return np.concatenate(feats, axis=0) if feats else np.zeros((0,), dtype=np.float32)
+
+
+def interpolate_radius_profile(control_t: torch.Tensor, sample_pos_t: torch.Tensor):
+    pos_t = torch.clamp(sample_pos_t, 0.0, float(control_t.numel() - 1))
+    idx0 = torch.floor(pos_t).long()
+    idx1 = torch.clamp(idx0 + 1, max=control_t.numel() - 1)
+    frac_t = pos_t - idx0.to(pos_t.dtype)
+    return (1.0 - frac_t) * control_t[idx0] + frac_t * control_t[idx1]
+
+
+def build_radius_scaled_kernel(profile_param_t: torch.Tensor, raw_radius_t: torch.Tensor):
+    radius_shell_value_t = radius_parameter_to_shell(raw_radius_t)
+    base_profile_t = profile_param_t / (torch.norm(profile_param_t) + 1e-8)
+    scaled_pos_t = (radius_shell_t / torch.clamp(radius_shell_value_t, min=1e-6)) * float(radius_len - 1)
+    sampled_profile_t = interpolate_radius_profile(base_profile_t, scaled_pos_t)
+    support_gate_t = torch.sigmoid((radius_shell_value_t - radius_shell_t) / RADIUS_GATE_TEMP)
+    full_profile_t = sampled_profile_t * support_gate_t
+    full_profile_t = full_profile_t / (torch.norm(full_profile_t) + 1e-8)
+    kernel_t = torch.einsum("r,rhw->hw", full_profile_t, radius_basis_t)
+    return kernel_t, full_profile_t, radius_shell_value_t, support_gate_t
+
+
+radius_profile_param = torch.nn.Parameter(torch.from_numpy(radius_init).to(DEVICE))
+radius_init_fraction = (0.65 * RADIUS_MAX_SHELL - RADIUS_MIN_SHELL) / max(RADIUS_MAX_SHELL - RADIUS_MIN_SHELL, 1e-6)
+radius_raw_shell = torch.nn.Parameter(
+    torch.tensor(radius_inverse_sigmoid_scalar(radius_init_fraction), dtype=torch.float32, device=DEVICE)
+)
+radius_head_w = torch.nn.Parameter(torch.tensor(1.0, dtype=torch.float32, device=DEVICE))
+radius_head_b = torch.nn.Parameter(torch.tensor(0.0, dtype=torch.float32, device=DEVICE))
+
+radius_optimizer = torch.optim.Adam(
+    [
+        {"params": [radius_profile_param], "lr": RADIUS_LR_PROFILE},
+        {"params": [radius_raw_shell], "lr": RADIUS_LR_RADIUS},
+        {"params": [radius_head_w, radius_head_b], "lr": RADIUS_LR_HEAD},
+    ]
+)
+radius_loss_fn = torch.nn.BCEWithLogitsLoss()
+radius_best_state = None
+radius_best_val_auc = -float("inf")
+radius_history = []
+
+for epoch in range(1, RADIUS_EPOCHS + 1):
+    total_loss = 0.0
+    n_seen = 0
+
+    for xb, yb in radius_train_loader:
+        xb = xb.to(DEVICE, non_blocking=True)
+        yb = yb.to(DEVICE, non_blocking=True)
+
+        radius_kernel_t, radius_profile_t, radius_shell_value_t, radius_gate_t = build_radius_scaled_kernel(
+            radius_profile_param,
+            radius_raw_shell,
+        )
+        radius_feat = radius_signed_topk_response(xb, radius_kernel_t)
+        radius_logits = radius_head_w * radius_feat + radius_head_b
+
+        radius_loss_cls = radius_loss_fn(radius_logits, yb)
+        radius_first_diff = radius_profile_t[1:] - radius_profile_t[:-1]
+        radius_loss_smooth = (
+            torch.mean(radius_first_diff ** 2)
+            if radius_len > 1
+            else torch.tensor(0.0, device=DEVICE)
+        )
+        radius_second_diff = radius_profile_t[2:] - 2.0 * radius_profile_t[1:-1] + radius_profile_t[:-2]
+        radius_loss_curvature = (
+            torch.mean(radius_second_diff ** 2)
+            if radius_len > 2
+            else torch.tensor(0.0, device=DEVICE)
+        )
+        radius_loss_edge = radius_profile_t[-1] ** 2
+        radius_loss_outer = torch.mean((radius_shell_t / max(float(radius_len - 1), 1.0)) ** 2 * (radius_profile_t ** 2))
+        radius_loss = (
+            radius_loss_cls
+            + RADIUS_LAMBDA_SMOOTH * radius_loss_smooth
+            + RADIUS_LAMBDA_CURVATURE * radius_loss_curvature
+            + RADIUS_LAMBDA_EDGE * radius_loss_edge
+            + RADIUS_LAMBDA_OUTER * radius_loss_outer
+        )
+
+        radius_optimizer.zero_grad()
+        radius_loss.backward()
+        radius_optimizer.step()
+
+        batch_n = xb.shape[0]
+        total_loss += float(radius_loss.item()) * batch_n
+        n_seen += batch_n
+
+    radius_kernel_eval_t, radius_profile_eval_t, radius_shell_eval_t, _ = build_radius_scaled_kernel(
+        radius_profile_param,
+        radius_raw_shell,
+    )
+    radius_val_resp = extract_radius_responses(X_val_t, radius_kernel_eval_t.detach(), BATCH_SIZE)
+    radius_val_probs = sigmoid_np(
+        float(radius_head_w.detach().cpu()) * radius_val_resp + float(radius_head_b.detach().cpu())
+    )
+    radius_val_metrics = metrics_from_probs(y_val, radius_val_probs, threshold=0.5)
+
+    radius_history.append(
+        {
+            "epoch": int(epoch),
+            "loss": float(total_loss / max(n_seen, 1)),
+            "val_auc": float(radius_val_metrics["auc"]),
+            "val_acc": float(radius_val_metrics["acc"]),
+            "radius_shell": float(radius_shell_eval_t.detach().cpu()),
+            "optimizer_head_w": float(radius_head_w.detach().cpu()),
+            "optimizer_head_b": float(radius_head_b.detach().cpu()),
+        }
+    )
+
+    if radius_val_metrics["auc"] > radius_best_val_auc:
+        radius_best_val_auc = radius_val_metrics["auc"]
+        radius_best_state = {
+            "epoch": int(epoch),
+            "profile_param": radius_profile_param.detach().cpu().clone(),
+            "raw_radius": radius_raw_shell.detach().cpu().clone(),
+            "optimizer_head_w": float(radius_head_w.detach().cpu()),
+            "optimizer_head_b": float(radius_head_b.detach().cpu()),
+            "val_auc": float(radius_val_metrics["auc"]),
+            "val_acc": float(radius_val_metrics["acc"]),
+            "radius_shell": float(radius_shell_eval_t.detach().cpu()),
+        }
+
+    print(
+        f"radius epoch={epoch:02d} "
+        f"loss={radius_history[-1]['loss']:.6f} "
+        f"val_auc={radius_val_metrics['auc']:.6f} "
+        f"val_acc={radius_val_metrics['acc']:.6f} "
+        f"radius={float(radius_shell_eval_t.detach().cpu()):.3f} "
+        f"w={float(radius_head_w.detach().cpu()):+.4f} "
+        f"b={float(radius_head_b.detach().cpu()):+.4f}"
+    )
+
+print("\nRestoring best learnable-radius checkpoint:")
+print(radius_best_state)
+
+radius_best_profile_param = radius_best_state["profile_param"].to(DEVICE)
+radius_best_raw_shell = radius_best_state["raw_radius"].to(DEVICE)
+radius_optimizer_head_w_best = float(radius_best_state["optimizer_head_w"])
+radius_optimizer_head_b_best = float(radius_best_state["optimizer_head_b"])
+
+with torch.no_grad():
+    kernel_best_radius_t, f_best_full_radius_t, radius_shell_best_t, radius_gate_best_t = build_radius_scaled_kernel(
+        radius_best_profile_param,
+        radius_best_raw_shell,
+    )
+
+kernel_best_radius = kernel_best_radius_t.detach().cpu().numpy().astype(np.float32)
+f_best_full_radius = f_best_full_radius_t.detach().cpu().numpy().astype(np.float32)
+radius_shell_best = float(radius_shell_best_t.detach().cpu())
+radius_gate_best = radius_gate_best_t.detach().cpu().numpy().astype(np.float32)
+
+train_resp_radius = extract_radius_responses(X_train_t, kernel_best_radius_t.detach(), BATCH_SIZE)
+val_resp_radius = extract_radius_responses(X_val_t, kernel_best_radius_t.detach(), BATCH_SIZE)
+test_resp_radius = extract_radius_responses(X_test_t, kernel_best_radius_t.detach(), BATCH_SIZE)
+
+calib_mu_radius = float(train_resp_radius.mean())
+calib_std_radius = float(train_resp_radius.std())
+calib_std_radius = calib_std_radius if calib_std_radius > 1e-8 else 1.0
+
+calib_clf_radius = LogisticRegression(max_iter=1000)
+calib_clf_radius.fit(((train_resp_radius - calib_mu_radius) / calib_std_radius).reshape(-1, 1), y_train)
+
+calib_w_radius = float(calib_clf_radius.coef_[0, 0])
+calib_b_radius = float(calib_clf_radius.intercept_[0])
+
+train_probs_radius = calib_clf_radius.predict_proba(
+    ((train_resp_radius - calib_mu_radius) / calib_std_radius).reshape(-1, 1)
+)[:, 1]
+val_probs_radius = calib_clf_radius.predict_proba(
+    ((val_resp_radius - calib_mu_radius) / calib_std_radius).reshape(-1, 1)
+)[:, 1]
+test_probs_radius = calib_clf_radius.predict_proba(
+    ((test_resp_radius - calib_mu_radius) / calib_std_radius).reshape(-1, 1)
+)[:, 1]
+
+radius_threshold_val, radius_val_acc_tuned = best_threshold_by_accuracy(
+    y_val,
+    val_probs_radius,
+    THRESHOLD_GRID_SIZE,
+)
+
+learned_results_radius = {
+    "val_05": metrics_from_probs(y_val, val_probs_radius, threshold=0.5),
+    "val_tuned": metrics_from_probs(y_val, val_probs_radius, threshold=radius_threshold_val),
+    "test_05": metrics_from_probs(y_test, test_probs_radius, threshold=0.5),
+    "test_tuned": metrics_from_probs(y_test, test_probs_radius, threshold=radius_threshold_val),
+    "threshold_val": float(radius_threshold_val),
+    "best_epoch": int(radius_best_state["epoch"]),
+    "optimizer_head_w": radius_optimizer_head_w_best,
+    "optimizer_head_b": radius_optimizer_head_b_best,
+    "calib_mu": calib_mu_radius,
+    "calib_std": calib_std_radius,
+    "calib_w": calib_w_radius,
+    "calib_b": calib_b_radius,
+    "response_name": RADIUS_RESPONSE_NAME,
+    "radius_shell": float(radius_shell_best),
+}
+
+print("\nCalibrated signed learnable-radius radial-kernel metrics:")
+print(
+    f"  Val  | AUC={learned_results_radius['val_05']['auc']:.6f} ACC@0.5={learned_results_radius['val_05']['acc']:.6f} "
+    f"ACC@thr_val={learned_results_radius['val_tuned']['acc']:.6f} (thr_val={learned_results_radius['threshold_val']:.3f})"
+)
+print(
+    f"  Test | AUC={learned_results_radius['test_05']['auc']:.6f} ACC@0.5={learned_results_radius['test_05']['acc']:.6f} "
+    f"ACC@thr_val={learned_results_radius['test_tuned']['acc']:.6f}"
+)
+print(f"\nLearned effective radius shell: {radius_shell_best:.3f}")
+
+print("\nLearnable-radius signed radial coefficients:")
+for idx, value in enumerate(f_best_full_radius):
+    print(f"  f{idx:02d} = {value:+.7e}")
+
+fig, axes = plt.subplots(1, 4, figsize=(21, 4))
+radius_vmax = max(
+    float(np.max(np.abs(kernel_best_radius))),
+    float(np.max(np.abs(kernel_best_free))) if "kernel_best_free" in globals() else 0.0,
+    float(np.max(np.abs(kernel_best_scratch))) if "kernel_best_scratch" in globals() else 0.0,
+    float(np.max(np.abs(seed_radial_kernel))),
+) + 1e-12
+
+axes[0].imshow(kernel_best_radius, cmap="coolwarm", vmin=-radius_vmax, vmax=radius_vmax)
+axes[0].set_title(f"Learnable-radius kernel\nradius={radius_shell_best:.2f}")
+axes[0].axis("off")
+
+if "f_best_full_free" in globals():
+    axes[1].plot(np.arange(len(f_best_full_free)), f_best_full_free, linewidth=1.2, alpha=0.75, label="free signed")
+if "f_best_full_scratch" in globals():
+    axes[1].plot(np.arange(len(f_best_full_scratch)), f_best_full_scratch, linewidth=1.2, alpha=0.75, label="constrained")
+axes[1].plot(np.arange(len(radius_init)), radius_init, linestyle="--", color="tab:gray", linewidth=1.2, label="radius init")
+axes[1].plot(np.arange(len(f_best_full_radius)), f_best_full_radius, marker="D", linewidth=2.0, label="learnable radius")
+axes[1].axvline(radius_shell_best, color="tab:red", linestyle="--", linewidth=1.2, label="effective radius")
+axes[1].set_xlabel("radius bin")
+axes[1].set_ylabel("f(r)")
+axes[1].set_title("Profile and learned size")
+axes[1].grid(alpha=0.3)
+axes[1].legend()
+
+radius_epochs = np.array([row["epoch"] for row in radius_history], dtype=int)
+radius_val_acc_curve = np.array([row["val_acc"] for row in radius_history], dtype=np.float32)
+radius_shell_curve = np.array([row["radius_shell"] for row in radius_history], dtype=np.float32)
+axes[2].plot(radius_epochs, radius_val_acc_curve, label="val ACC@0.5")
+axes[2].set_xlabel("epoch")
+axes[2].set_title("Validation accuracy")
+axes[2].grid(alpha=0.3)
+axes[2].legend()
+
+axes[3].plot(radius_epochs, radius_shell_curve, label="radius shell")
+axes[3].set_xlabel("epoch")
+axes[3].set_title("Radius optimization")
+axes[3].grid(alpha=0.3)
+axes[3].legend()
+
+plt.tight_layout()
+plt.show()
+
+learnable_radius_summary = {
+    "radius_init_profile": [float(x) for x in radius_init],
+    "f_radius_full": [float(x) for x in f_best_full_radius],
+    "radius_gate": [float(x) for x in radius_gate_best],
+    "learned_radius": learned_results_radius,
+    "history_radius": radius_history,
+    "radius_shell": float(radius_shell_best),
+    "response_name": RADIUS_RESPONSE_NAME,
+    "constraints": {
+        "nonnegative": False,
+        "monotone_decreasing": False,
+        "unit_norm": True,
+    },
+}
+
+if SAVE_ARTIFACTS:
+    np.save(RADIUS_OUT_DIR / "f_radius_init.npy", radius_init.astype(np.float32))
+    np.save(RADIUS_OUT_DIR / "f_radius_full.npy", f_best_full_radius.astype(np.float32))
+    np.save(RADIUS_OUT_DIR / "radius_gate.npy", radius_gate_best.astype(np.float32))
+    np.save(RADIUS_OUT_DIR / "kernel_learnable_radius_signed.npy", kernel_best_radius.astype(np.float32))
+    (RADIUS_OUT_DIR / "learnable_radius_summary.json").write_text(json.dumps(learnable_radius_summary, indent=2))
+    print(f"\nSaved learnable-radius artifacts to {RADIUS_OUT_DIR}")

@@ -1,0 +1,45 @@
+2026-05-22 12:15:49,015 [INFO] Starting pipeline. Output: results/exp_brisc2025_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-22 12:16:58,480 [INFO] Loaded train split: Xin=3000 Xout=3000 resize=128 (patients in=150 out=150)
+2026-05-22 13:16:28,599 [INFO] Starting pipeline. Output: results/exp_brisc2025_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-22 13:16:29,072 [INFO] Loaded train split: Xin=512 Xout=1024 resize=128 (patients in=64 out=128)
+2026-05-22 13:16:29,158 [INFO] Loaded val split: Xin=80 Xout=176 resize=128 (patients in=10 out=22)
+2026-05-22 13:16:29,625 [INFO] Loaded test split: Xin=488 Xout=1000 resize=128 (patients in=61 out=125)
+2026-05-22 13:16:29,964 [INFO] Built kernel bank: 4500 kernels (sampling=random seed=None)
+2026-05-22 13:45:16,124 [INFO] Patient-level grouping enabled (128 unique ids)
+2026-05-22 13:54:48,205 [INFO] MMR selected kernels (bank idx): [616, 2451, 2066, 2447, 2124, 2412, 2291, 2225, 3141, 3532, 2381, 2100, 2445, 3048, 2356, 2092, 2133, 2028, 2178, 2136, 4301, 2389, 2305, 941, 814, 913, 970, 535, 699, 2345, 960, 2057, 619, 2203, 625, 641, 974, 2465, 846, 516, 678, 668, 646, 811, 225, 511, 542, 286, 2439, 808, 753, 76, 248, 13, 2354, 2091, 770, 980, 29, 515, 655, 299, 669, 489, 785, 783, 996, 267, 806, 245, 868, 388, 973, 981, 696, 794, 179, 570, 113, 64, 445, 355, 341, 320, 458, 589, 2335, 223, 547, 603]
+2026-05-22 13:54:50,857 [INFO] Classifier results: AUC=0.7888 ACC=0.8056
+2026-05-22 14:00:20,917 [INFO] Eval val: AUC=0.7447 ACC=0.6914
+2026-05-22 14:32:02,167 [INFO] Eval test: AUC=0.7182 ACC=0.7097
+2026-05-22 14:32:04,550 [INFO] Composite eval val: AUC=0.5334 ACC=0.6719
+2026-05-22 14:32:04,988 [INFO] Composite eval test: AUC=0.4501 ACC=0.6337
+2026-05-22 14:32:04,989 [INFO] Composite results: AUC=0.4691 ACC=0.6562 (groups=1 total kernels=90)
+2026-05-22 14:32:04,989 [INFO] No kernel pair met correlation threshold 0.200
+2026-05-22 14:32:05,061 [INFO] Saved artifacts to results/exp_brisc2025_mmr_nperFamily500_nComposition1250
+2026-05-22 15:14:21,369 [INFO] Starting pipeline. Output: results/exp_brisc2025_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-22 15:14:23,664 [INFO] Loaded train split: Xin=3000 Xout=3000 resize=128 (patients in=188 out=188)
+2026-05-22 15:14:24,268 [INFO] Loaded val split: Xin=672 Xout=1000 resize=128 (patients in=42 out=63)
+2026-05-22 15:14:25,094 [INFO] Loaded test split: Xin=1000 Xout=1000 resize=128 (patients in=63 out=63)
+2026-05-22 15:17:03,718 [INFO] Starting pipeline. Output: results/exp_brisc2025_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-22 15:17:05,975 [INFO] Loaded train split: Xin=3000 Xout=3000 resize=128 (patients in=188 out=188)
+2026-05-22 15:17:06,534 [INFO] Loaded val split: Xin=672 Xout=1000 resize=128 (patients in=42 out=63)
+2026-05-22 15:17:07,389 [INFO] Loaded test split: Xin=1000 Xout=1000 resize=128 (patients in=63 out=63)
+2026-05-22 15:21:40,466 [INFO] Starting pipeline. Output: results/exp_brisc2025_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-22 15:21:42,497 [INFO] Loaded train split: Xin=3000 Xout=3000 resize=128 (patients in=188 out=188)
+2026-05-22 15:21:43,065 [INFO] Loaded val split: Xin=672 Xout=1000 resize=128 (patients in=42 out=63)
+2026-05-22 15:21:43,685 [INFO] Loaded test split: Xin=1000 Xout=1000 resize=128 (patients in=63 out=63)
+2026-05-22 15:21:45,022 [INFO] Built kernel bank: 4500 kernels (sampling=random seed=None)
+2026-05-22 16:19:25,783 [INFO] Starting pipeline. Output: results/exp_brisc2025_mmr_nperFamily500_nComposition1250 Device: cuda Selection: mmr
+2026-05-22 16:19:28,010 [INFO] Loaded train split: Xin=3000 Xout=3000 resize=128 (patients in=188 out=188)
+2026-05-22 16:19:28,551 [INFO] Loaded val split: Xin=672 Xout=1000 resize=128 (patients in=42 out=63)
+2026-05-22 16:19:29,260 [INFO] Loaded test split: Xin=1000 Xout=1000 resize=128 (patients in=63 out=63)
+2026-05-22 16:19:30,690 [INFO] Built kernel bank: 4500 kernels (sampling=random seed=None)
+2026-05-23 11:46:52,942 [INFO] Patient-level grouping enabled (284 unique ids)
+2026-05-23 11:49:32,997 [INFO] MMR selected kernels (bank idx): [873, 2423, 712, 2822, 764, 804, 698, 925, 852, 508, 607, 642, 741, 571, 995, 572, 674, 527, 650, 579, 517, 501, 293, 532, 76, 141, 846, 356, 60, 3, 460, 158, 380, 230, 17, 67, 193, 214, 529, 320, 270, 455, 533, 103, 531, 728, 835, 450, 644, 308, 365, 172, 413, 922, 126, 51, 195, 944, 986, 583, 119, 474, 187, 485, 881, 638, 374, 588, 112, 309, 327, 83, 249, 580, 829, 206, 18, 834, 637, 913, 310, 915, 702, 2831, 173, 729, 844, 420, 681, 784]
+2026-05-23 11:49:38,916 [INFO] Classifier results: AUC=0.8198 ACC=0.7573
+2026-05-23 16:18:42,687 [INFO] Eval val: AUC=0.8366 ACC=0.7398
+2026-05-23 22:49:49,484 [INFO] Eval test: AUC=0.8321 ACC=0.7715
+2026-05-23 22:50:32,228 [INFO] Composite eval val: AUC=0.6994 ACC=0.6764
+2026-05-23 22:50:41,896 [INFO] Composite eval test: AUC=0.7013 ACC=0.6225
+2026-05-23 22:50:41,897 [INFO] Composite results: AUC=0.7064 ACC=0.6364 (groups=1 total kernels=90)
+2026-05-23 22:50:41,897 [INFO] No kernel pair met correlation threshold 0.200
+2026-05-23 22:50:42,106 [INFO] Saved artifacts to results/exp_brisc2025_mmr_nperFamily500_nComposition1250

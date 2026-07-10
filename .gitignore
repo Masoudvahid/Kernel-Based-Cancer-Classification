@@ -12,3 +12,5 @@ data_brain/
 *.dfdb_latexmk
 **/build
 *.gz
+ORCA/
+*.npy
