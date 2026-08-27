@@ -1,0 +1,19 @@
+{
+  "spatial_threshold": 0.01,
+  "validation_macro_dice": 0.25943840348071845,
+  "validation_slices": [
+    "TCGA_CS_5396_20010302_12",
+    "TCGA_CS_5396_20010302_13",
+    "TCGA_CS_5396_20010302_14",
+    "TCGA_CS_5396_20010302_15",
+    "TCGA_CS_5396_20010302_16",
+    "TCGA_CS_5396_20010302_17"
+  ],
+  "example_stem": "TCGA_CS_6186_20000601_15",
+  "example_dice": 0.09844542411084226,
+  "config": {
+    "block": 8,
+    "max_windows": 160,
+    "window_percentile": 90.0
+  }
+}

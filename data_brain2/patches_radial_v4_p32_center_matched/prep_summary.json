@@ -1,0 +1,32 @@
+{
+  "dataset_root": "data_brain2/kaggle_3m",
+  "patch_output_root": "data_brain2/patches_radial_v4_p32_center_matched",
+  "n_pairs_used": 3929,
+  "n_patients": 110,
+  "split_counts": {
+    "train": {
+      "inside": 3000,
+      "outside": 3000
+    },
+    "val": {
+      "inside": 1000,
+      "outside": 1000
+    },
+    "test": {
+      "inside": 1000,
+      "outside": 1000
+    }
+  },
+  "config": {
+    "patch_size": 32,
+    "n_pos_per_image": 12,
+    "n_neg_per_image": 12,
+    "center_label_size": 9,
+    "min_pos_center_coverage": 0.5,
+    "max_neg_center_coverage": 0.0,
+    "same_tumor_positive_slices_for_both_classes": true,
+    "mirrored_neg_fraction": 0.5,
+    "near_neg_fraction": 0.25,
+    "near_neg_dilation": 20
+  }
+}
