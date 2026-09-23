@@ -6,6 +6,7 @@
 \setlength{\parindent}{1em}
 \setlist[itemize]{leftmargin=1.35em,itemsep=0.15em,topsep=0.15em}
 \renewcommand{\arraystretch}{1.12}
+\setlength{\belowcaptionskip}{4pt}
 \title{\vspace{-1.2em}\textbf{Interpretable Adaptive Kernel Banks for Cancer Classification with Limited Data}}
 \author{Masoud Vahid Dastgerdi\\ \textit{Higher School of Economics}\\ \texttt{masoud.vahid10@gmail.com}
 \and Oleg Stanislavovich Pianykh\\ \textit{Massachusetts General Hospital}\\ \texttt{opianykh@mgh.harvard.edu}}
@@ -14,7 +15,7 @@
 \maketitle
 
 \begin{abstract}
-Cancer classification from annotated medical images is difficult when training data are limited: high-capacity convolutional neural networks (CNNs) can be accurate but require substantial supervision and provide limited insight into the visual evidence used for a decision. We propose an interpretable alternative based on a small bank of jointly learned circularly symmetric kernels. Each image region is represented by pooled responses from the learned kernels, and redundant kernels are identified through correlation of their responses on training data, clustered, sign-aligned, and merged. The resulting model is defined by a small set of one-dimensional radial profiles rather than an opaque filter stack. We evaluate the approach using patient-level splits on a breast TIFF cohort (10,070 regions) and a lower-grade glioma (LGG) MRI cohort (110 patients; 10,000 regions). On breast data, merging reduces a 16-kernel bank to nine kernels without loss of test ROC-AUC (0.9415) and retains 0.8727 accuracy. On LGG MRI, the full bank improves test ROC-AUC from 0.6903 for a single radial kernel to 0.7624; the nine-kernel merged model retains 0.7335. A CNN reference is stronger on breast data (0.9626 ROC-AUC), but the proposed model offers a compact and inspectable representation. Ablation shows that informative pooled responses account for much of the breast improvement, whereas retaining multiple kernels is more important for MRI.
+Cancer classification from annotated medical images is difficult when training data are limited. High-capacity convolutional neural networks (CNNs) can be accurate, but they require substantial supervision and give little insight into the visual evidence behind a decision. We propose an interpretable alternative built from a small bank of jointly learned circularly symmetric kernels. Each image region is summarized by pooled responses of the learned kernels, and kernels whose responses on training images are nearly collinear are identified by correlation, clustered, sign-aligned, and merged. The resulting classifier is defined by a handful of one-dimensional radial profiles rather than an opaque filter stack. We evaluate the approach with patient-level splits on a breast cohort of high-resolution annotated images and a lower-grade glioma (LGG) MRI cohort. On breast images, merging reduces a 16-kernel bank to nine kernels with no loss in held-out discrimination, and the merged bank outperforms analytic selected-kernel banks that use ten times as many kernels, reaching 0.94 test ROC-AUC against 0.96 for a CNN reference. On MRI, the learned bank improves substantially over a single radial kernel. A controlled sweep over bank size shows that on breast images much of the gain over a single kernel comes from the pooled response encoding, whereas on MRI retaining several distinct kernels matters more. The method therefore offers a compact, inspectable representation for limited-data cancer classification, with an explicit account of where its capacity resides.
 \end{abstract}
 
 \section{Introduction}
@@ -24,38 +25,26 @@ Before end-to-end deep learning, medical-image analysis commonly used explicit v
 
 Hybrid approaches offer a useful middle ground: constrained visual features remain inspectable while a lightweight classifier learns the decision boundary. Recent work has combined texture and deep features for renal cancer detection \cite{cai2022}, and feed-forward breast-image classifiers have used logistic-regression or SVM modules \cite{karuppasamy2024}. Sparse selection \cite{zhu2020} and maximal marginal relevance (MMR) \cite{carbonell1998} can also produce compact feature sets. The outstanding gap is a method that is both adapted to a limited medical dataset and transparent at the level of its learned visual primitives.
 
-We address this gap with a learned radial-kernel bank. Circular symmetry constrains each kernel to a one-dimensional radial profile, reducing its degrees of freedom and making its form directly inspectable. The approach learns several profiles jointly, summarizes their responses with a small interpretable readout, and then merges kernels that are redundant on real training images. The objective is not to replace CNNs universally, but to determine how much discriminative performance can be retained with a compact representation under constrained supervision.
+We address this gap with a learned radial-kernel bank. Circular symmetry constrains each kernel to a one-dimensional radial profile, reducing its degrees of freedom and making its form directly inspectable. The approach learns several profiles jointly, summarizes their responses with a small interpretable readout, and then merges kernels that are redundant on real training images. The objective is not to replace CNNs universally, but to determine how much discriminative performance can be retained with a compact representation under constrained supervision, and to identify where the capacity of such a model actually resides.
 
 The contributions are:
 \begin{itemize}
 \item a limited-data cancer-classification framework based on jointly learned, circularly symmetric kernels and a lightweight classifier;
 \item response-space redundancy merging, in which kernels are clustered by real-image response correlation, sign-aligned, and merged into the smallest bank that preserves validation quality;
-\item an ablation separating the value of multiple kernels from pooled-response encoding, evaluated on breast TIFF and LGG MRI cohorts using patient-level splits; and
+\item an ablation separating the value of multiple kernels from that of the pooled-response encoding, evaluated on breast and LGG MRI cohorts using patient-level splits; and
 \item comparison with analytic selected-kernel models, sparse selection, composite and rotation-invariant variants, and a CNN reference.
 \end{itemize}
 
 \section{Methods}
 \subsection{Problem formulation}
-Let $x_i\in\mathbb{R}^{H\times W}$ be an image region with binary label $y_i\in\{0,1\}$, where positive regions are sampled from a malignant or tumor annotation and negative regions from non-lesion tissue. Given $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^N$, the task is to estimate $p(y=1\mid x)$. We use \emph{image region} for the local input to avoid unnecessarily implementation-specific terminology.
-
-For analytic comparison models, kernels are drawn from Gaussian, anisotropic Gaussian, difference-of-Gaussians, Laplacian-of-Gaussian, Gabor, derivative, co-occurrence, local-contrast, and discrete-Laplacian families. Candidate kernels are ranked by univariate ROC-AUC and Fisher score, then MMR selects features that are discriminative and nonredundant. The standard scalar response is
-\begin{equation}
-r_j(x)=\max_{u,v}|(x*k_j)_{u,v}|,
-\label{eq:response}
-\end{equation}
-where $*$ denotes convolution. MMR balances relevance against response correlation:
-\begin{equation}
-k^*=\arg\max_{k_j\notin S}\left[\lambda\mathrm{AUC}(k_j)-(1-\lambda)\max_{k_\ell\in S}|\rho(r_j,r_\ell)|\right],
-\label{eq:mmr}
-\end{equation}
-with $\lambda=0.75$.
+Let $x\in\mathbb{R}^{H\times W}$ denote an image region with binary label $y\in\{0,1\}$, where positive regions are sampled from a malignant or tumor annotation and negative regions from non-lesion tissue. Given $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^N$, the task is to estimate $p(y=1\mid x)$. Every model considered here shares one structure: a bank of convolution kernels $\{k_j\}_{j=1}^{K}$ maps a region to response maps $z_j=x*k_j$, each map is reduced to a few pooled scalars, and a lightweight classifier operates on the concatenated feature vector $\phi(x)$. The models differ in how the kernels are obtained, analytic families versus learned radial profiles, in how many are retained, and in how each response map is summarized. Because the classifier is linear or nearly so, the kernels and their pooled summaries are the only place where visual evidence enters the decision, which is what makes the representation inspectable.
 
 \subsection{Data and preprocessing}
-The breast cohort contains high-resolution TIFF images with expert red-contour malignant annotations: 127 malignant images, 365 normal images, and 125 annotation files. Contours are converted to binary lesion masks using color thresholding and morphological cleanup. We extract $128\times128$-pixel image regions at native resolution. Positive regions require at least 0.80 lesion coverage and negatives at most 0.02; near- and far-lesion negatives are included. Low-tissue regions are excluded.
+The breast cohort contains high-resolution TIFF images of approximately $6000\times4750$ pixels with expert red-contour malignant annotations: 127 malignant images, 365 normal images, and 125 annotation files. Contours are converted to binary lesion masks by thresholding the red channel while suppressing green and blue, followed by morphological dilation, erosion, closing, and hole filling. We extract $128\times128$-pixel image regions at native resolution. Positive regions require at least 0.80 lesion coverage and negatives at most 0.02; negatives are drawn both near and far from the lesion. Regions with a low fraction of nonzero intensity are excluded as low-tissue.
 
-The LGG MRI cohort of Buda et al. \cite{buda2019}, derived from TCGA/TCIA, comprises paired FLAIR slices and manual tumor masks from 110 patients. From the masks, we sample $64\times64$-pixel regions: positives have at least 0.80 tumor coverage, while negatives have zero coverage, with a subset sampled near the tumor boundary. A tissue-occupancy requirement removes background-air regions. Patient or image identifiers determine fixed 70/15/15 train/validation/test splits, preventing source-image leakage (Table~\ref{tab:datasets}). Breast images are not intensity-standardized because absolute contrast is informative; MRI regions are standardized because scanner-dependent offsets are not diagnostically meaningful.
+The LGG MRI cohort of Buda et al. \cite{buda2019}, derived from The Cancer Genome Atlas and The Cancer Imaging Archive (TCGA/TCIA), comprises fluid-attenuated inversion recovery (FLAIR) slices with manual tumor masks from 110 patients. From the masks we sample $64\times64$-pixel regions: positives have at least 0.80 tumor coverage, while negatives have zero coverage, with a subset drawn from a dilated band around the tumor so that the negative class contains hard near-boundary examples. A tissue-occupancy requirement removes background-air regions, and per-class caps balance the two classes.
 
-ROC-AUC is the primary metric because it is threshold independent and remains informative under the modest breast-class imbalance. Accuracy is also reported at a threshold selected only on validation data. CNN experiments additionally record precision, recall, F1, loss, and confusion matrices. This separation between model selection and held-out reporting is used for all comparisons, including the choice of the merged-bank size.
+Patient or image identifiers, inferred from filenames, determine fixed 70/15/15 train/validation/test splits, so no source image contributes to more than one split (Table~\ref{tab:datasets}). The slight imbalance in the breast splits follows from patient-level assignment and region-extraction yield. Regions are loaded in grayscale. Breast regions are not intensity-standardized because absolute contrast is informative in that cohort; MRI regions are standardized per region because scanner-dependent offsets carry no diagnostic meaning. Section~\ref{sec:results-std} quantifies the cost of reversing this choice.
 
 \begin{table}[!t]
 \centering
@@ -79,15 +68,16 @@ Cohort & Split & Pos. & Neg. & Total\\
 \end{tabular}
 \end{table}
 
-\subsection{Learned radial kernels and response encoding}
-The primary model replaces an unconstrained $s\times s$ kernel with a circularly symmetric profile. Let $B_r$ denote the indicator for the shell at distance $r$ from the kernel center. A radial kernel is
+\subsection{Learned radial bank and encoding}
+
+The primary model replaces an unconstrained $s\times s$ kernel with a circularly symmetric one. Let $B_r\in\{0,1\}^{s\times s}$ be the indicator of the shell of pixels at integer distance $r$ from the kernel center. A radial kernel is
 \begin{equation}
-k=\sum_{r=0}^{R}f(r)B_r,
+k=\sum_{r=0}^{R}f(r)\,B_r,
 \label{eq:radial}
 \end{equation}
-where $f(r)$ is a learned one-dimensional profile. This constraint reduces complexity, preserves an isotropic bias appropriate for blob-like or halo-like patterns, and allows direct inspection. Shells beyond $R_{\max}$ remain fixed at seed values, limiting effective support.
+where $f(r)$ is a learned one-dimensional profile, so an $s\times s$ filter is described by $R+1$ numbers. The constraint reduces the degrees of freedom, imposes an isotropic bias suited to blob-like and halo-like tissue patterns, and makes every kernel readable as a single curve. Shells beyond a radius $R_{\max}$ stay fixed at their seed values, which bounds the effective support.
 
-We jointly learn $K=16$ profiles seeded from rotation-invariant composite profiles and synthetic center--surround shapes. Training uses class-balanced binary cross-entropy through a 32-unit hidden head with dropout 0.1 and profile regularization:
+We learn $K=16$ profiles jointly. Profiles are seeded from two sources chosen to span different spatial scales: variants of the rotation-invariant profile extracted from the composite kernel of Section~\ref{sec:baselines}, and synthetic center--surround shapes of increasing width. Training minimizes a class-balanced binary cross-entropy through a 32-unit hidden head with dropout 0.1, regularized by
 \begin{equation}
 \begin{aligned}
 \mathcal{L}={}&\mathcal{L}_{\rm cls}+\lambda_s\mathcal{L}_{\rm smooth}+\lambda_c\mathcal{L}_{\rm curv}\\
@@ -95,57 +85,88 @@ We jointly learn $K=16$ profiles seeded from rotation-invariant composite profil
 \end{aligned}
 \label{eq:objective}
 \end{equation}
-Smoothness and curvature penalize abrupt profile changes; anchoring limits drift from the seed; scale normalization keeps profiles comparable; and $\mathcal{L}_{\rm div}=\operatorname{mean}\exp(-\lVert f_i-f_j\rVert^2)$ discourages collapsed profiles. Checkpoints are selected by validation ROC-AUC, after which a class-balanced logistic model is refit on frozen features.
+The smoothness and curvature terms in Eq.~\eqref{eq:objective} penalize first and second differences of $f$ along $r$; the anchor term limits drift from the seed; the scale term keeps profile norms comparable; and $\mathcal{L}_{\rm div}=\operatorname{mean}_{i\neq j}\exp(-\lVert f_i-f_j\rVert^2)$ discourages profiles from collapsing onto one another. The checkpoint with the highest validation ROC-AUC is retained, and a class-balanced logistic model is then refit on the frozen bank to provide calibrated probabilities.
 
-For response map $z=x*k_j$, each kernel contributes mean absolute response, maximum absolute response, and signed top-$m$ response:
+A single scalar per kernel discards most of the response map. Each kernel therefore contributes three pooled statistics of $z=x*k_j$:
 \begin{equation}
-\psi_j(x)=\left[\operatorname{mean}|z|,\ \max|z|,\ \frac{1}{m}\sum_{\mathrm{top}-m}z-\frac{1}{m}\sum_{\mathrm{top}-m}(-z)\right].
+\psi_j(x)=\Big[\operatorname{mean}|z|,\ \max|z|,\ \tfrac{1}{m}\!\sum_{\text{top-}m}\! z-\tfrac{1}{m}\!\sum_{\text{top-}m}\!(-z)\Big],
 \label{eq:encoding}
 \end{equation}
-The absolute summaries capture distributed and localized activity, while the signed term distinguishes opposite contrast polarity. Both absolute summaries are retained because they describe different evidence, not simply because they were previously implemented. A bank of $K$ kernels gives $3K$ features.
+where the top-$m$ sums run over the $m$ largest entries of $z$ and of $-z$, and $m$ is a fixed fraction of the map (1\% for breast regions and 10\% for the smaller MRI regions). The three statistics answer different questions. Mean magnitude measures how much of the region responds, which separates diffuse texture from a quiet background. Maximum magnitude measures the strongest single structure, which detects a focal pattern even when the rest of the region is quiet. The two are decoupled in practice: a small lesion in a large region gives a high maximum with a low mean, whereas widespread texture gives the opposite, so neither can be recovered from the other. The signed statistic distinguishes bright-on-dark from dark-on-bright structure, which both absolute statistics conflate. A bank of $K$ kernels thus yields $3K$ features. Section~\ref{sec:results-sweep} quantifies how much of the method's gain comes from this encoding rather than from kernel count.
 
-\subsection{Redundancy merging and implementation}
-Visually different profiles need not provide independent information on observed data. For normalized response vectors, zero correlation corresponds to orthogonality in response space; high absolute correlation indicates nearly the same direction of evidence. We therefore start with the $K$-kernel bank and successively consider $K-1$, $K-2$, \ldots, one-kernel banks rather than assuming the initial count is necessary.
+\subsection{Redundancy merging}
+\label{sec:merge}
+Jointly trained profiles need not be independent. Two profiles that look different can still produce nearly the same responses on real tissue, and a profile and its sign-reversed copy carry identical information after pooling. The bank is therefore compressed after training, using the geometry of the responses rather than the geometry of the kernels.
 
-Pearson correlation $\rho_{ij}$ is computed from convolutional responses over a fixed training subset. Kernels are clustered by average-linkage distance $1-|\rho_{ij}|$. Absolute correlation treats a sign-reversed pair as redundant when its downstream evidence is equivalent. Within each cluster, profiles are aligned to the medoid sign, averaged, and renormalized to the mean member norm; Eq.~\ref{eq:radial} keeps the result radial. For every achievable count $K'$, the logistic head is refit. We retain the smallest bank whose validation ROC-AUC and threshold-tuned accuracy are within $\tau=0.005$ of the full-bank values. Test data are used only for final reporting.
+Let $r_j\in\mathbb{R}^{n}$ collect the centered convolutional responses of kernel $j$ over the pixels of a fixed subsample of training regions. The classifier only ever observes functions of these vectors, so what matters is the subspace they span. If $|\rho_{ij}|\approx1$, where $\rho_{ij}$ is the Pearson correlation of $r_i$ and $r_j$, the two vectors are nearly collinear: replacing the pair by a single kernel leaves the span, and hence the set of achievable decision functions, essentially unchanged. If $\rho_{ij}=0$ the vectors are orthogonal and the two kernels supply complementary evidence. Orthogonality in kernel space is not a substitute for this test. Natural image statistics are strongly correlated across scales and orientations, so two kernels with orthogonal weights routinely produce correlated responses on tissue, and only the response-space test reflects what the classifier can use. The redundancy of a pair is accordingly measured by the distance
+\begin{equation}
+d_{ij}=1-|\rho_{ij}|,
+\label{eq:distance}
+\end{equation}
+where the absolute value makes a sign-reversed pair maximally redundant.
 
-The breast configuration uses $31\times31$ kernels, $R_{\max}=20$, 25 epochs, and a profile learning rate selected from $\{10^{-2},2\times10^{-3},5\times10^{-4}\}$. The MRI configuration uses $63\times63$ kernels, $R_{\max}=30$, and 40 epochs. Both use Adam, batch size 128, and validation-only threshold selection. Analytic-bank experiments use $31\times31$ kernels, 60 epochs, batch size 64, and learning rate $5\times10^{-4}$. The CNN reference uses $128\times128$ RGB breast inputs, four convolutional blocks, batch normalization, ReLU, pooling, dropout, adaptive pooling, and a two-layer head; AdamW uses learning rate $3\times10^{-4}$, weight decay $10^{-4}$, patience six, and at most 25 epochs.
+Rather than assuming that the initial count $K$ is necessary, we start from the full $K$-kernel bank and ask whether a $(K-1)$-kernel bank spans the same evidence, then a $(K-2)$-kernel bank, and so on down to a single kernel. Average-linkage hierarchical clustering on Eq.~\eqref{eq:distance} provides exactly this nested sequence: cutting the dendrogram at $K'$ clusters gives the $K'$-kernel bank. Each cluster is collapsed to one profile: members are sign-aligned to the cluster medoid, averaged, and renormalized to the members' mean norm. Because averaging acts on the radial coefficients $f(r)$ and the result is re-expanded through Eq.~\eqref{eq:radial}, every merged kernel remains exactly radial and inspectable. For each $K'$ the same class-balanced logistic head is refit on the reduced bank, and we retain the smallest $K'$ whose validation ROC-AUC and validation threshold-tuned accuracy both remain within a tolerance $\tau$ of the full bank. All selection uses validation data only; test data are touched only for final reporting.
 
-The analytic and learned-radial experiments answer complementary questions. Analytic banks test whether a broad library of known visual patterns, selected after response ranking, is sufficient. The learned bank tests whether a strongly constrained representation can adapt to the cohort without becoming an unconstrained CNN. Composite and rotation-averaged models evaluate two alternative ways of simplifying selected filters; ABESS evaluates sparse selection under a different selection objective. Thus, these variants are comparisons of representation and compression strategies rather than interchangeable estimates of one model's uncertainty.
+\subsection{Baselines and experimental protocol}
+\label{sec:baselines}
+\paragraph{Analytic kernel banks.} The analytic comparison models draw kernels from nine families: Gaussian, anisotropic Gaussian, difference-of-Gaussians, Laplacian-of-Gaussian, Gabor, derivative, two-point co-occurrence, center--neighbor local-contrast, and discrete-Laplacian filters. Family parameters are sampled either independently at random or with Sobol quasi-Monte Carlo (QMC) sequences, which cover heterogeneous parameter spaces more evenly. Each analytic kernel is summarized by the single scalar
+\begin{equation}
+r_j(x)=\max_{u,v}\left|(x*k_j)_{u,v}\right|.
+\label{eq:response}
+\end{equation}
+Candidates are ranked by the univariate ROC-AUC and Fisher score of $r_j$ on training regions, and MMR then selects a subset that is discriminative and nonredundant:
+\begin{equation}
+k^*=\arg\max_{k_j\notin S}\Big[\lambda\,\mathrm{AUC}(k_j)-(1-\lambda)\max_{k_\ell\in S}\left|\rho(r_j,r_\ell)\right|\Big],
+\label{eq:mmr}
+\end{equation}
+where $S$ is the current selection and $\lambda=0.75$. The redundancy term in Eq.~\eqref{eq:mmr} uses the same response correlation as Eq.~\eqref{eq:distance}, so selection and merging are two applications of one principle: MMR avoids adding a collinear kernel, and merging removes one after learning. A logistic classifier is trained on the selected responses.
+
+\paragraph{Derived analytic models.} Composite kernels compress a selected bank by grouping its kernels and summing each group with normalized weights, $k_{\rm comp}=\sum_i w_i k_i$, so that eight composites, or a single composite, replace the selected kernels. Rotation-averaged kernels enforce right-angle invariance by averaging a composite over its four rotations, $k_{\rm RI}=\tfrac14\sum_{q=0}^{3}\operatorname{rot}_{90q}(k_{\rm comp})$; a finer variant averages every $10^\circ$. Adaptive best-subset selection (ABESS) \cite{zhu2020} provides a sparse-selection alternative to MMR under an $\ell_0$ objective. A shape-sensitive bank of triangular and square kernels tests non-circular primitives.
+
+\paragraph{CNN reference.} The reference network takes $128\times128$ RGB breast regions through four convolutional blocks with batch normalization, ReLU, max pooling, and dropout, followed by adaptive average pooling and a two-layer linear head. It is trained with cross-entropy and AdamW at learning rate $3\times10^{-4}$, weight decay $10^{-4}$, patience six, and at most 25 epochs; the best model by validation ROC-AUC occurred at epoch six. The CNN was evaluated on the breast cohort only.
+
+\paragraph{Evaluation protocol.} The primary metric is the area under the receiver operating characteristic curve (ROC-AUC), which is threshold independent and remains informative under the modest breast-class imbalance. Accuracy is reported at the default 0.5 threshold for the cross-model comparison in Table~\ref{tab:main-results}, and at a threshold tuned on validation data for the radial-bank analyses in Tables~\ref{tab:minimal-bank} and \ref{tab:sweep}; for the radial banks the two conventions differ by less than 0.001. CNN experiments additionally record precision, recall, F1, loss, and confusion matrices. All model selection, including checkpoint choice, threshold tuning, and the merged-bank size, uses validation data; test data are used only for final reporting.
+
+\paragraph{Implementation details.} The radial bank uses $K=16$ seeds, three statistics per kernel, Adam, and batch size 128 on both cohorts. The breast configuration uses $31\times31$ kernels, $R_{\max}=20$, 25 epochs, and profile learning rate $2\times10^{-3}$ chosen on validation ROC-AUC from $\{10^{-2},2\times10^{-3},5\times10^{-4}\}$. The MRI configuration uses $63\times63$ kernels, $R_{\max}=30$, 40 epochs, and profile learning rate $10^{-2}$. Merging uses $\tau=0.005$. Analytic banks use $31\times31$ kernels, 60 epochs, batch size 64, and learning rate $5\times10^{-4}$; the strongest configurations select 90 kernels from pools of up to 4,500 candidates, and compact models with one, three, and five kernels are also reported.
+
+The analytic and learned-radial experiments answer complementary questions. Analytic banks test whether a broad library of known visual patterns, selected after response ranking, is sufficient. The learned bank tests whether a strongly constrained representation can adapt to the cohort without becoming an unconstrained CNN. Composite and rotation-averaged models evaluate two ways of simplifying selected filters, and ABESS evaluates sparse selection under a different objective. These variants therefore compare representation and compression strategies; they are not interchangeable estimates of one model's uncertainty.
 
 \section{Results}
 \subsection{Primary comparison}
-Table~\ref{tab:main-results} reports held-out breast results. The nine-kernel merged radial bank achieves 0.9415 test ROC-AUC and 0.8727 test accuracy. It exceeds the single radial and analytic selected-kernel baselines while using far fewer kernels than the 90-kernel analytic banks. The CNN reference has the strongest reported performance.
-
-The difference between validation and test values is also informative. The full and merged breast banks have very similar values on both splits, indicating that merging did not simply exploit a favorable validation operating point in this cohort. The CNN's higher test ROC-AUC shows that hierarchical learned features retain additional useful information. At the same time, the radial-bank result demonstrates that much of the discriminative signal can be represented using a small number of constrained local patterns, which is the intended operating regime for limited-data, inspection-oriented use.
+Table~\ref{tab:main-results} reports held-out breast results for all model families. The nine kernel merged radial bank has the highest test ROC-AUC among the interpretable models and exceeds every analytic selected bank, including the 90 and 200 kernel configurations, while using at most one tenth as many kernels. Its validation and test values are close, as are those of the unmerged 16 kernel bank. The CNN reference has the highest test ROC-AUC and accuracy overall, with a margin of 0.021 ROC-AUC over the merged bank. Among the analytic banks, test ROC-AUC varies within a narrow range whereas accuracy varies more widely; the ABESS bank shows the largest gap between the two metrics.
 
 \begin{table*}[!t]
 \centering
-\caption{Representative held-out breast results.}
+\caption{Held-out breast results. Accuracy is at the default 0.5 threshold. ``Kernels'' is the number of retained kernels; the CNN learns its filters end to end.}
 \label{tab:main-results}
 \small
 \begin{tabular}{p{0.40\linewidth}ccccc}
 \toprule
-Model / configuration & Features & Val AUC & Val Acc. & Test AUC & Test Acc.\\
+Model / configuration & Kernels & Val AUC & Val Acc. & Test AUC & Test Acc.\\
 \midrule
 \textbf{Minimal merged radial bank} & \textbf{9} & \textbf{0.9373} & \textbf{0.8856} & \textbf{0.9415} & \textbf{0.8727}\\
 Radial kernel bank before merging & 16 & 0.9388 & 0.8861 & 0.9411 & 0.8754\\
 Learned single radial kernel & 1 & 0.9189 & 0.8545 & 0.9286 & 0.8668\\
-Patch CNN reference & learned & 0.9445 & 0.8818 & \textbf{0.9626} & \textbf{0.9021}\\
+CNN reference & -- & 0.9445 & 0.8818 & \textbf{0.9626} & \textbf{0.9021}\\
 Selected kernel bank with QMC sampling & 90 & 0.9270 & 0.8603 & 0.9387 & 0.8866\\
 Selected kernel bank, variant A & 90 & 0.9271 & 0.8636 & 0.9377 & 0.8882\\
+Selected kernel bank, variant B & 90 & 0.9273 & 0.8620 & 0.9376 & 0.8888\\
+Larger selected kernel bank & 200 & 0.9159 & 0.8514 & 0.9313 & 0.8578\\
 Sparse ABESS-selected bank & 200 & 0.9095 & 0.7849 & 0.9236 & 0.7690\\
 Shape-sensitive triangular/square bank & 24 & 0.9109 & 0.8481 & 0.9221 & 0.8465\\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\subsection{Minimal-bank results and ablation}
-The full radial bank improves over its single-kernel counterpart on both cohorts (Table~\ref{tab:minimal-bank}). On breast data, merging reduces 16 profiles to nine without a measurable test loss. On MRI, the full bank also improves markedly over a single kernel, but the validation-selected nine-kernel bank loses some performance on test; this indicates that one validation split may be insufficient to certify a merge in a noisier cohort.
+\subsection{Radial banks and merging}
+
+On both cohorts the 16 kernel bank outperforms the corresponding single learned radial kernel (Table~\ref{tab:minimal-bank}). The breast single-kernel reference is the strongest saved single radial run under the same radial support $R_{\max}=20$ as the bank, a monotone-decreasing variant; across all radial supports the best single kernel reaches 0.9227 test ROC-AUC, so the comparison is insensitive to this choice. Constrained single-kernel variants trade accuracy for interpretability: an unconstrained learned radial kernel reaches 0.9286 test ROC-AUC (Table~\ref{tab:main-results}), whereas a signed compact variant with a hard radial cutoff and decay regularization drops to 0.8808, and an independently initialized smooth signed variant reaches 0.9187.
+
+On breast images, the merging procedure of Section~\ref{sec:merge} reduces 16 profiles to nine, a 44\% reduction, and leaves test ROC-AUC and accuracy unchanged within 0.002. The merge grouped the trained bank into one cluster of six profiles, two pairs, and six singletons, so most of the reduction came from a single family of near duplicate profiles. On MRI the 16-kernel bank improves test ROC-AUC over a single kernel by 0.072, a larger relative gain than on breast data. The validation selected nine kernel MRI bank, which has the same cluster structure of one six member cluster, two pairs, and six singletons, satisfies the validation tolerance but loses 0.029 test ROC-AUC relative to the full bank; intermediate sizes lose less, with the eight kernel bank retaining 0.7434 (Table~\ref{tab:sweep}).
 
 \begin{table*}[!t]
 \centering
-\caption{Radial banks and single radial kernels. Merged banks are selected on validation data; accuracy uses a validation-tuned threshold.}
+\caption{Radial banks and single radial kernels. ``Features'' is the number of scalars seen by the classifier. Merged banks are selected on validation data with $\tau=0.005$; accuracy uses the validation-tuned threshold.}
 \label{tab:minimal-bank}
 \small
 \begin{tabular}{llccccc}
@@ -163,37 +184,79 @@ Cohort & Model & Kernels & Features & Val AUC & Test AUC & Test Acc.\\
 \end{tabular}
 \end{table*}
 
-The merge sweep in Table~\ref{tab:sweep} separates kernel count from encoding. On breast data, even the merged one-kernel configuration reaches 0.9346 test ROC-AUC, above the 0.9212 obtained by the directly optimized single-kernel reference. Since the former uses Eq.~\ref{eq:encoding} and the latter uses only Eq.~\ref{eq:response}, much of the improvement follows from preserving complementary response information. Increasing from one to nine merged kernels gives a further but smaller breast gain. On MRI, performance falls substantially as $K'$ approaches one, indicating that multiple spatial patterns are important for this modality.
+\subsection{Kernel count versus encoding}
+\label{sec:results-sweep}
+Because the merge sweep refits the same head at every $K'$, it doubles as an ablation on kernel count with the encoding held fixed (Table~\ref{tab:sweep}). On breast images a bank merged all the way to one kernel still reaches 0.9346 test ROC-AUC, above the 0.9212 of the best directly optimized single radial kernel. The two models have the same number of filters. They differ only in that the merged model reads the three statistics of Eq.~\eqref{eq:encoding} and uses a class-balanced logistic head, whereas the single-kernel reference reads the one scalar of Eq.~\eqref{eq:response}. Of the total breast improvement from 0.9212 to 0.9415, 0.0134 is already present at $K'=1$ and the remaining 0.0069 comes from increasing $K'$ to nine. The optimization traces agree: on breast images the validation-selected checkpoint occurred at the first epoch for every profile learning rate tried, so the seeded profiles were already close to their final form. On MRI the picture reverses. Test ROC-AUC falls steadily as $K'$ decreases, apart from the dip at nine kernels, reaching 0.6671 at a single kernel, and the selected checkpoint occurred at epoch 33 of 40.
 
 \begin{table}[!t]
 \centering
-\caption{Representative merge-sweep ROC-AUC values. Asterisks denote validation-selected banks.}
+\caption{Merge sweep. Each row refits the same class-balanced logistic head on a bank merged to $K'$ kernels. Asterisks mark validation-selected banks.}
 \label{tab:sweep}
 \footnotesize
 \begin{tabular}{rcc@{\hskip 1.2em}cc}
 \toprule
 & \multicolumn{2}{c}{Breast} & \multicolumn{2}{c}{Brain LGG}\\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}
-$K'$ & Val & Test & Val & Test\\
+$K'$ & Val AUC & Test AUC & Val AUC & Test AUC\\
 \midrule
 16 & 0.9389 & 0.9411 & 0.7850 & 0.7624\\
+13 & 0.9388 & 0.9412 & 0.7740 & 0.7593\\
 11 & 0.9364 & 0.9407 & 0.7755 & 0.7531\\
 9$^*$ & 0.9373 & 0.9415 & 0.7801 & 0.7335\\
+8 & 0.9365 & 0.9405 & 0.7794 & 0.7434\\
 6 & 0.9299 & 0.9356 & 0.7593 & 0.7256\\
+4 & 0.9295 & 0.9349 & 0.7220 & 0.7098\\
 2 & 0.9259 & 0.9326 & 0.7039 & 0.6964\\
 1 & 0.9271 & 0.9346 & 0.6218 & 0.6671\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Intensity preprocessing is modality dependent. Applying per-region standardization to the breast configuration reduces test ROC-AUC from 0.9411 to 0.8605 and accuracy from 0.8754 to 0.7898.
+\subsection{Intensity standardization}
+\label{sec:results-std}
+Applying per-region intensity standardization to the otherwise identical breast configuration reduces test ROC-AUC from 0.9411 to 0.8605 and accuracy from 0.8754 to 0.7898. This drop is larger than any gap between model variants in Table~\ref{tab:minimal-bank}.
 
-The two datasets therefore provide complementary evidence rather than a single pooled estimate. Breast images reward an encoding that preserves absolute intensity and gain relatively little after the first well-encoded radial profile. MRI requires standardized inputs and benefits more from retaining distinct profiles. This modality dependence cautions against a universal preprocessing recipe or a fixed kernel count: both should be treated as validation-selected design choices.
+\subsection{Analytic-bank comparisons}
 
-\subsection{Additional comparisons and qualitative assessment}
-Compact MMR models confirm that a single analytic kernel can be discriminative: reported test ROC-AUC ranges from 0.9157 to 0.9239 for one- to five-kernel configurations. Their accuracy varies more than their AUC, suggesting that univariate ranking does not guarantee a stable operating threshold. Sobol quasi-Monte Carlo sampling improves a matched 90-kernel selected-bank model from 0.9195 to 0.9387 test ROC-AUC and from 0.8646 to 0.8866 accuracy. In contrast, composing selected kernels by normalized summation loses information: 90-kernel models with test ROC-AUC of 0.9376--0.9387 fall to 0.8934--0.9026 when represented by eight composites. Rotation averaging provides exact right-angle invariance but has a reported cost (0.8755 versus 0.8933 test ROC-AUC for the corresponding non-invariant composite). ABESS selection is competitive in AUC (0.9236 for 200 features) but has lower reported accuracy (0.7690).
+Table~\ref{tab:compact} reports compact MMR models. A single selected kernel reaches 0.9157 test ROC-AUC and the best three-kernel model 0.9239, but thresholded accuracy ranges from 0.7594 to 0.8449 across configurations whose ROC-AUC differs by at most 0.014. Table~\ref{tab:sampling} compares kernel sampling and composition on matched 90-kernel banks. Sobol QMC sampling improves the base model over random sampling on both metrics, and the improvement carries over to the composite model. Composition itself loses information in every case: eight composites cost 0.034--0.045 test ROC-AUC relative to their base bank, and a single composite costs 0.074. Rotation averaging of a composite kernel yields identical metrics under $0^\circ$, $90^\circ$, $180^\circ$, and $270^\circ$ rotations of the test regions, at a cost of 0.018 ROC-AUC and 0.014 accuracy relative to the non-invariant composite on the same split; averaging every $10^\circ$ is slightly lower still. ABESS selection is competitive in ROC-AUC, 0.9236 with 200 features and 0.9216--0.9225 with three to five, but has lower accuracy than the corresponding MMR models in every reported run.
 
-Figures~\ref{fig:confusion}--\ref{fig:minimal-bank-brain} provide diagnostic outputs: confusion matrices and probability overlays on held-out images. They allow inspection of whether high-response areas correspond to lesion-like tissue, but no expert localization scoring or pixel-level localization metric is claimed.
+\begin{table*}[!t]
+\centering
+\caption{Compact MMR-selected analytic models on the breast cohort.}
+\label{tab:compact}
+\small
+\begin{tabular}{p{0.40\linewidth}rrrrr}
+\toprule
+Compact configuration & Kernels & Val AUC & Val Acc. & Test AUC & Test Acc.\\
+\midrule
+Single-kernel selected model & 1 & 0.8994 & 0.8307 & 0.9157 & 0.8449\\
+Single-kernel model from a larger candidate shortlist & 1 & 0.9010 & 0.8330 & 0.9179 & 0.8428\\
+Three-kernel selected model, configuration A & 3 & 0.9085 & 0.8497 & 0.9101 & 0.8417\\
+Three-kernel selected model, configuration B & 3 & 0.9085 & 0.8011 & 0.9239 & 0.7914\\
+Five-kernel selected model & 5 & 0.9071 & 0.7765 & 0.9234 & 0.7594\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!t]
+\centering
+\caption{Effect of kernel sampling and composition on 90-kernel selected banks (breast test set). Composite models replace the selected bank by eight composites unless noted.}
+\label{tab:sampling}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Configuration & Base AUC & Base Acc. & Composite AUC & Composite Acc.\\
+\midrule
+Random sampling & 0.9195 & 0.8646 & 0.8855 & 0.8063\\
+Sobol QMC sampling & 0.9387 & 0.8866 & 0.8934 & 0.8176\\
+Selected-bank variant B & 0.9376 & 0.8888 & 0.9026 & 0.8299\\
+Single-composite compression & 0.9377 & -- & 0.8635 & 0.7797\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Qualitative outputs}
+Figures~\ref{fig:confusion}--\ref{fig:minimal-bank-brain} provide diagnostic outputs: confusion matrices for the selected-kernel classifier and the CNN, and probability overlays from the merged radial bank on held-out images. Because the bank features are pooled statistics over a region rather than a single dense convolution, each overlay is produced by scoring a sliding grid of regions with exactly the classifier used at training time. The overlays allow inspection of whether high-probability areas correspond to lesion-like tissue, but no expert localization scoring or pixel-level localization metric is claimed.
 
 \begin{figure}[H]
 \centering
@@ -214,11 +277,13 @@ Figures~\ref{fig:confusion}--\ref{fig:minimal-bank-brain} provide diagnostic out
 \end{figure}
 
 \section{Discussion and Conclusion}
-This study addresses limited-data cancer classification with an interpretable representation whose visual primitives remain explicit. The central objective was achieved on the available cohorts: jointly learned radial profiles, followed by response-space merging, retain strong discrimination with a small number of kernels. On breast images, nine profiles preserve the performance of a 16-kernel bank and outperform the reported analytic selected-kernel baselines; on MRI, the full bank demonstrates that multiple radial patterns can improve substantially on a single profile. These findings support the contribution that compactness can be obtained by merging evidence-equivalent kernels rather than by fixing a small bank a priori.
+This study investigates whether an interpretable model can accurately classify cancer when only limited training data are available. On the available cohorts the objective was met. A bank of jointly learned radial profiles, merged in response space, reaches held out discrimination that exceeds analytic selected kernel banks with ten times as many filters, and it does so with nine one-dimensional curves that can be inspected directly. On MRI the same procedure shows that several distinct radial patterns are needed and that the bank captures them. These outcomes correspond to the first two contributions: a limited data framework built on constrained learned kernels, and a merging procedure that obtains compactness by removing evidence-equivalent kernels rather than by fixing a small bank in advance.
 
-The results also clarify where model capacity resides. On breast data, pooled encoding is a major source of improvement because it retains distributed, localized, and contrast-polarity evidence. On MRI, the number of kernels has a larger role, consistent with more variable tumor appearance across spatial scales. The CNN remains the best-performing breast reference, so the proposed method should be understood as an interpretable complement rather than a replacement for deep models where abundant data and opaque representations are acceptable.
+The ablation, the third contribution, changes how the headline results should be read. On breast images a bank merged to a single kernel still beats the directly optimized single kernel, so most of the improvement comes from reading three complementary statistics from each kernel and calibrating with a class balanced head, not from having many filters. The first epoch checkpoints point the same way: the seeded profiles were already adequate, and a richer readout, not longer profile training, was the effective lever. On MRI the balance reverses. Bank size matters, the profiles required substantial training, and merging to nine kernels lost accuracy that the validation tolerance did not predict. The likely cause is that with a noisier decision boundary the differences between candidate banks are comparable to the sampling error of a single validation split, so the tolerance criterion cannot discriminate among them; repeated or cross-validated selection would address this at no cost to the final model. The two cohorts thus provide complementary evidence rather than one pooled estimate, and they argue against fixed preprocessing or a fixed kernel count: intensity standardization was essential on MRI and harmful on breast images, and both choices should be validation-selected.
 
-Several limitations qualify these conclusions. Evaluation is at the image-region level, not the patient diagnostic level; labels originate from annotation coverage and are ambiguous near boundaries; reported differences have no repeated-seed confidence intervals; and qualitative maps lack formal localization metrics. The merge criterion also relies on one validation split, which did not fully transfer on the MRI cohort. Future work should use repeated or cross-validated merge selection, external clinical cohorts, formal localization evaluation, and a matched CNN reference on MRI.
+The comparisons in the fourth contribution locate the method among alternatives. Individual analytic kernels can be strongly discriminative, but their thresholded accuracy is unstable because univariate ranking optimizes separability rather than an operating point; the class-balanced head of the radial bank removes most of this instability, and sparse ABESS selection shows the same pattern as MMR. Composition by weighted summation is not a substitute for retaining separate response channels, because it discards the identity of channels that the classifier would otherwise weight independently, and rotation averaging buys exact right-angle invariance at a measurable cost. Quasi-Monte Carlo sampling is a cheap improvement for analytic banks. The CNN remains the strongest breast model, as expected for hierarchical features learned from RGB input, so the proposed model is best understood as an interpretable complement for settings where supervision is limited and the evidence behind a decision must be inspectable, not as a replacement for deep models where data are abundant and opacity is acceptable.
+
+Several limitations qualify these conclusions. Evaluation is at the image-region level rather than the patient level; labels derive from annotation coverage and are ambiguous near lesion boundaries; the reported differences carry no repeated-seed confidence intervals, so small gaps in Table~\ref{tab:sweep} should not be read individually; the qualitative maps lack localization metrics; the CNN reference was run only on breast data; and neither cohort constitutes prospective external validation. Future work should add cross-validated merge selection, external clinical cohorts, formal localization scoring, and a matched CNN reference on MRI.
 
 \begin{thebibliography}{99}
 \bibitem{haralick1973} R. M. Haralick, K. Shanmugam, and I. Dinstein. Textural features for image classification. \emph{IEEE Transactions on Systems, Man, and Cybernetics}, 1973.
